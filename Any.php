@@ -48,7 +48,6 @@ class Any implements Parser, Compiler
                 $result_any_' . $id . ' = $result_any_' . $id . '->concat($result);
             }
 
-            $input->follow($copy_any_' . $id . ');
             $result = $result_any_' . $id . ';
         ';
     }

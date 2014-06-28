@@ -84,7 +84,8 @@ if ($output instanceof Failure) {
     var_dump($output->getValue());
 }
 
-$source = $lexical['TAB']->compile('test');
+$compiler = new Any(new Choice(new Literal('a'), new Literal('b')));
+$source = $compiler->compile();
 
 echo "\n$source\n\n";
 
@@ -97,5 +98,5 @@ function test(Input $input)
     return $result;
 }
 
-var_dump(test(new Input('   ')));
-var_dump(test(new Input('        ')));
+var_dump(test(new Input('ababab')));
+var_dump(test(new Input('abcabc')));

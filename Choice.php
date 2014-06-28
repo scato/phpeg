@@ -21,15 +21,25 @@ class Choice implements Parser
             return $left;
         }
 
-        $copy = $input->copy();
-        $right = $this->right->parse($copy);
+        $right = $this->right->parse($input);
 
-        if ($right instanceof Success) {
-            $input->follow($copy);
+        return $right;
+    }
 
-            return $right;
-        }
+    private static $id = 0;
 
-        return $left;
+    public function compile()
+    {
+        $id = self::$id++;
+
+        return '
+            $copy_choice_' . $id . ' = $input->copy();
+            ' . $this->left->compile() . '
+
+            if ($result instanceof Failure) {
+                $input->follow($copy_choice_' . $id . ');
+                ' . $this->right->compile() . '
+            }
+        ';
     }
 }
