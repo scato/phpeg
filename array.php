@@ -2,20 +2,22 @@
 
 require_once 'Any.php';
 require_once 'Choice.php';
-require_once 'Concat.php';
+//require_once 'Concat.php';
 require_once 'Failure.php';
+require_once 'Grammar.php';
 require_once 'Input.php';
 require_once 'Literal.php';
-require_once 'Many.php';
+//require_once 'Many.php';
 require_once 'Map.php';
 require_once 'Proxy.php';
 require_once 'RegExp.php';
 require_once 'Success.php';
-require_once 'Void.php';
+require_once 'Symbol.php';
+//require_once 'Void.php';
 
-$input = print_r(array('foo' => array(1, 2, 3)), true);
+$string = print_r(array('foo' => array(1, 2, 3)), true);
 
-echo $input;
+echo $string;
 echo "\n";
 
 $lexical = array(
@@ -31,7 +33,7 @@ $lexical = array(
     'KEY' => new RegExp('[^\\]]*'),
 );
 
-$value = new Choice(new Proxy($array), new Any(new RegExp('[^\\n]')));
+$value = new Choice(new Symbol($array, 'array'), new Any(new RegExp('[^\\n]')));
 
 $keyValue = new Map(
     array(
@@ -42,12 +44,12 @@ $keyValue = new Map(
         $lexical['SPACE'],
         $lexical['ARROW'],
         $lexical['SPACE'],
-        'value' => $value,
+        'value' => new Symbol($value, 'value'),
         $lexical['NEWLINE'],
     ),
-    function ($key, $value) {
-        return array(array($key => $value));
-    }
+    '
+        array(array($key => $value))
+    '
 );
 
 $array = new Map(
@@ -57,23 +59,19 @@ $array = new Map(
         $lexical['TAB'],
         $lexical['PAREN_OPEN'],
         $lexical['NEWLINE'],
-        'elements' => new Any($keyValue),
+        'elements' => new Any(new Symbol($keyValue, 'keyValue')),
         $lexical['TAB'],
         $lexical['PAREN_CLOSE'],
         $lexical['NEWLINE'],
     ),
-    function ($elements) {
-        if ($elements === null) {
-            return array();
-        }
-
-        return array_reduce($elements, 'array_merge', array());
-    }
+    '
+        $elements === null ? array() : array_reduce($elements, \'array_merge\', array())
+    '
 );
 
 $parser = $array;
 
-$input = new Input($input);
+$input = new Input($string);
 $output = $parser->parse($input);
 
 if ($output instanceof Failure) {
@@ -84,19 +82,35 @@ if ($output instanceof Failure) {
     var_dump($output->getValue());
 }
 
-$compiler = new Any(new Choice(new Literal('a'), new Literal('b')));
-$source = $compiler->compile();
+//class ArrayParser
+//{
+//    function parse_array(Input $input)
+//    {
+//        global $source_array;
+//
+//        eval($source_array);
+//
+//        return $result;
+//    }
+//
+//    function parse(Input $input)
+//    {
+//        return $this->parse_array($input);
+//    }
+//}
+
+$grammar = new Grammar('ArrayParser', 'array', array(
+    new Symbol($value, 'value'),
+    new Symbol($keyValue, 'keyValue'),
+    new Symbol($array, 'array'),
+));
+
+$source = $grammar->compile();
+
+eval($source);
 
 echo "\n$source\n\n";
 
-function test(Input $input)
-{
-    global $source;
+$arrayParser = new ArrayParser();
 
-    eval($source);
-
-    return $result;
-}
-
-var_dump(test(new Input('ababab')));
-var_dump(test(new Input('abcabc')));
+var_dump($arrayParser->parse(new Input($string)));
