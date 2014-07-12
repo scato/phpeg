@@ -2,7 +2,7 @@
 
 require_once 'Parser.php';
 
-class Concat implements Parser
+class Concat implements Parser, Compiler
 {
     public function __construct($left, $right)
     {
@@ -25,6 +25,26 @@ class Concat implements Parser
         }
 
         return $left->concat($right);
+    }
+
+    static private $id = 0;
+
+    public function compile()
+    {
+        $id = self::$id++;
+
+        return '
+            ' . $this->left->compile() . '
+
+            if ($result instanceof Success) {
+                $concat_left_' . $id . ' = $result;
+                ' . $this->right->compile() . '
+
+                if ($result instanceof Success) {
+                    $result = $concat_left_' . $id . '->concat($result);
+                }
+            }
+        ';
     }
 
     public static function all()
