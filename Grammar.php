@@ -25,7 +25,13 @@ class Grammar implements Compiler
         $source .= '
                 public function parse(Input $input)
                 {
-                    return $this->parse_' . $this->start . '($input);
+                    $output = $this->parse_' . $this->start . '($input);
+
+                    if ($input->hasNext()) {
+                        return new Failure("Unexpected \'" . $input->next() . "\' at " . $input->at());
+                    }
+
+                    return $output;
                 }
             }
         ';
