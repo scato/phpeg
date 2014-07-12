@@ -28,7 +28,7 @@ EOS;
 
 //echo $string;
 
-$grammar = new Grammar('Generator', 'start', array(
+$grammar = new Grammar('DefinitionParser', 'start', array(
     new Symbol($start, 'start'),
     new Symbol($_, '_'),
     new Symbol($map, 'map'),
@@ -65,7 +65,7 @@ $map = new Map(array(
     'expr' => new Symbol($expr, 'expr'),
     new Symbol($_, '_'),
     new Literal('}'),
-), 'array("Map", $parts, $expr)');
+), 'new Map($parts, $expr)');
 
 $labelParser = new Map(array(
     'label' => new RegExp('[\\w_]+'),
@@ -94,15 +94,15 @@ $sequences = new Map(array(
     'rest' => new Any(new Map(array(
         new Symbol($_, '_'),
         'predicate' => new Symbol($notPredicate, 'notPredicate'),
-    ), '$predicate')),
-), 'array("Sequence", $first, $rest)');
+    ), 'array($predicate)')),
+), 'array_reduce($rest, function ($left, $right) { return new Sequence($left, $right); }, $first)');
 
 $notPredicate = new Choice(
     new Map(array(
         new Literal('!'),
         new Symbol($_, '_'),
         'repetition' => new Symbol($repetition, 'repetition'),
-    ), 'array("NotPredicate", $repetition)'),
+    ), 'new NotPredicate($repetition)'),
     new Symbol($repetition, 'repetition')
 );
 
@@ -112,12 +112,12 @@ $repetition = new Choice(
             'terminal' => new Symbol($terminal, 'terminal'),
             new Symbol($_, '_'),
             new Literal('?'),
-        ), 'array("Optional", $terminal)'),
+        ), 'new Optional($terminal)'),
         new Map(array(
             'terminal' => new Symbol($terminal, 'terminal'),
             new Symbol($_, '_'),
             new Literal('*'),
-        ), 'array("Any", $terminal)')
+        ), 'new Any($terminal)')
     ),
     new Symbol($terminal, 'terminal')
 );
@@ -134,29 +134,27 @@ $terminal = new Choice(
             ), '$parser'),
             new Map(array(
                 'type' => new RegExp('T_[A-Z]+'),
-            ), 'array("Type", $type)')
+            ), 'new Type(constant($type))')
         ),
         new Map(array(
             'literal' => new RegExp('"(?:[^\\\\"]|\\\\.)*"'),
-        ), 'array("Literal", $literal)')
+        ), 'new Literal($literal)')
     ),
     new Map(array(
         new Literal('.'),
-    ), 'array("One")')
+    ), 'new Match(".*")')
 );
 
-$output = $start->parse(new Input($string));
-
+//$output = $start->parse(new Input($string));
 //print_r($output);
 
 $source = $grammar->compile();
+echo "<?php\n";
+echo $source;
 
-//echo $source;
+//eval($source);
+//$generator = new Generator();
 
-eval($source);
-
-$generator = new Generator();
-
-$output2 = $generator->parse(new Input($string));
-print_r($output2);
+//$output2 = $generator->parse(new Input($string));
+//print_r($output2);
 
