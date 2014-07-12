@@ -28,7 +28,7 @@ EOS;
 
 //echo $string;
 
-$grammar = new Grammar('DefinitionParser', 'start', array(
+$grammar = new Grammar('Parser', 'start', array(
     new Symbol($start, 'start'),
     new Symbol($_, '_'),
     new Symbol($map, 'map'),
@@ -138,7 +138,7 @@ $terminal = new Choice(
         ),
         new Map(array(
             'literal' => new RegExp('"(?:[^\\\\"]|\\\\.)*"'),
-        ), 'new Literal($literal)')
+        ), 'new Literal(eval("return {$literal};"))')
     ),
     new Map(array(
         new Literal('.'),
@@ -149,7 +149,21 @@ $terminal = new Choice(
 //print_r($output);
 
 $source = $grammar->compile();
-echo "<?php\n";
+echo <<<EOS
+<?php
+
+namespace PHPatch\Peg\Definition;
+
+use PHPatch\Peg\Any;
+use PHPatch\Peg\Literal;
+use PHPatch\Peg\Map;
+use PHPatch\Peg\Match;
+use PHPatch\Peg\NotPredicate;
+use PHPatch\Peg\Optional;
+use PHPatch\Peg\Sequence;
+use PHPatch\Peg\Type;
+
+EOS;
 echo $source;
 
 //eval($source);

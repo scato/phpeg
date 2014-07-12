@@ -1,6 +1,17 @@
 <?php
 
-class DefinitionParser
+namespace PHPatch\Peg\Definition;
+
+use PHPatch\Peg\Any;
+use PHPatch\Peg\Literal;
+use PHPatch\Peg\Map;
+use PHPatch\Peg\Match;
+use PHPatch\Peg\NotPredicate;
+use PHPatch\Peg\Optional;
+use PHPatch\Peg\Sequence;
+use PHPatch\Peg\Type;
+
+class Parser
 {
 
     protected function parse_start(Input $input)
@@ -844,7 +855,7 @@ class DefinitionParser
             }
 
             if (!$failed_map_12) {
-                $result = new Success(new Literal($literal));
+                $result = new Success(new Literal(eval("return {$literal};")));
             }
 
         }
