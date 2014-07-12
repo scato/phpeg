@@ -168,7 +168,7 @@ $terminal = new Choice(
                 ), '$parser')
             ),
             new Map(array(
-                'type' => new RegExp('T_[A-Z]+'),
+                'type' => new RegExp('T_[A-Z_]+'),
             ), 'new Type(constant($type))')
         ),
         new Map(array(

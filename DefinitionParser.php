@@ -1105,12 +1105,12 @@ class Parser
 
             if (!$failed_map_16) {
 
-                if (preg_match('/^T_[A-Z]+/', $input->restStr(), $matches)) {
+                if (preg_match('/^T_[A-Z_]+/', $input->restStr(), $matches)) {
                     $input->skip(strlen($matches[0]));
 
                     $result = new Success($matches[0]);
                 } else {
-                    $result = new Failure("Expected: /" . 'T_[A-Z]+' . "/ at " . $input->at());
+                    $result = new Failure("Expected: /" . 'T_[A-Z_]+' . "/ at " . $input->at());
                 }
 
 
