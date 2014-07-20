@@ -2,7 +2,9 @@
 
 namespace PHPeg\Combinator;
 
+use PHPeg\ContextInterface;
 use PHPeg\ExpressionInterface;
+use PHPeg\ResultInterface;
 
 class Literal implements ExpressionInterface
 {
@@ -15,9 +17,10 @@ class Literal implements ExpressionInterface
 
     /**
      * @param string $string
-     * @return \PHPeg\ResultInterface
+     * @param ContextInterface $context
+     * @return ResultInterface
      */
-    public function parse($string)
+    public function parse($string, ContextInterface $context)
     {
         $strlen = strlen($this->string);
         $result = substr($string, 0, $strlen);
