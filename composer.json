@@ -1,0 +1,10 @@
+{
+    "require-dev": {
+        "phpspec/phpspec": "~2.0",
+        "behat/behat": "2.4.*@stable"
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "autoload": {"psr-0": {"": "src"}}
+}
