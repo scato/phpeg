@@ -3,29 +3,11 @@
 namespace PHPeg\Combinator;
 
 use PHPeg\ExpressionInterface;
-use PHPeg\ResultInterface;
 
-class Optional implements ExpressionInterface
+class Optional extends Proxy
 {
-    private $expression;
-
     public function __construct(ExpressionInterface $expression)
     {
-        $this->expression = $expression;
-    }
-
-    /**
-     * @param string $string
-     * @return ResultInterface
-     */
-    public function parse($string)
-    {
-        $result = $this->expression->parse($string);
-
-        if ($result->isSuccess()) {
-            return $result;
-        }
-
-        return new Success('', $string);
+        parent::__construct(new Choice($expression, new Literal('')));
     }
 }
