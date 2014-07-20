@@ -8,7 +8,8 @@ interface ExpressionInterface
 {
     /**
      * @param string $string
+     * @param ContextInterface $context
      * @return ResultInterface
      */
-    public function parse($string);
+    public function parse($string, ContextInterface $context);
 } 

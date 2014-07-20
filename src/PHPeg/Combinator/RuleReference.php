@@ -2,6 +2,7 @@
 
 namespace PHPeg\Combinator;
 
+use PHPeg\ContextInterface;
 use PHPeg\ExpressionInterface;
 use PHPeg\GrammarInterface;
 use PHPeg\ResultInterface;
@@ -23,10 +24,11 @@ class RuleReference implements ExpressionInterface
 
     /**
      * @param string $string
+     * @param ContextInterface $context
      * @return ResultInterface
      */
-    public function parse($string)
+    public function parse($string, ContextInterface $context)
     {
-        return $this->grammar->getRule($this->name)->parse($string);
+        return $this->grammar->getRule($this->name)->parse($string, $context);
     }
 }

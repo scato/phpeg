@@ -4,6 +4,7 @@ namespace spec\PHPeg\Combinator;
 
 use PHPeg\Combinator\Failure;
 use PHPeg\Combinator\Success;
+use PHPeg\ContextInterface;
 use PHPeg\ExpressionInterface;
 use PHPeg\GrammarInterface;
 use PhpSpec\ObjectBehavior;
@@ -23,17 +24,17 @@ class RuleReferenceSpec extends ObjectBehavior
         $this->shouldHaveType('PHPeg\ExpressionInterface');
     }
 
-    function it_should_succeed_if_the_rule_succeeds(ExpressionInterface $expression)
+    function it_should_succeed_if_the_rule_succeeds(ExpressionInterface $expression, ContextInterface $context)
     {
-        $expression->parse('foo')->willReturn(new Success('foo', 'bar'));
+        $expression->parse('foo', $context)->willReturn(new Success('foo', 'bar'));
 
-        $this->parse('foo')->isSuccess()->shouldBe(true);
+        $this->parse('foo', $context)->isSuccess()->shouldBe(true);
     }
 
-    function it_should_fail_if_the_rule_fails(ExpressionInterface $expression)
+    function it_should_fail_if_the_rule_fails(ExpressionInterface $expression, ContextInterface $context)
     {
-        $expression->parse('foo')->willReturn(new Failure());
+        $expression->parse('foo', $context)->willReturn(new Failure());
 
-        $this->parse('foo')->isSuccess()->shouldBe(false);
+        $this->parse('foo', $context)->isSuccess()->shouldBe(false);
     }
 }

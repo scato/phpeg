@@ -5,8 +5,14 @@ namespace PHPeg;
 interface GrammarInterface
 {
     /**
-     * @param $name
+     * @param string $name
      * @return ExpressionInterface
      */
     public function getRule($name);
+
+    /**
+     * @param string $string
+     * @return mixed
+     */
+    public function parse($string);
 } 

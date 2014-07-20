@@ -2,6 +2,7 @@
 
 namespace PHPeg\Combinator;
 
+use PHPeg\ContextInterface;
 use PHPeg\ExpressionInterface;
 use PHPeg\ResultInterface;
 
@@ -16,14 +17,15 @@ class ZeroOrMore implements ExpressionInterface
 
     /**
      * @param string $string
+     * @param ContextInterface $context
      * @return ResultInterface
      */
-    public function parse($string)
+    public function parse($string, ContextInterface $context)
     {
         $result = new Success('', $string);
 
         while (true) {
-            $attempt = $this->expression->parse($string);
+            $attempt = $this->expression->parse($string, $context);
 
             if (!$attempt->isSuccess()) {
                 break;

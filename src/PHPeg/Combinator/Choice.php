@@ -2,7 +2,9 @@
 
 namespace PHPeg\Combinator;
 
+use PHPeg\ContextInterface;
 use PHPeg\ExpressionInterface;
+use PHPeg\ResultInterface;
 
 class Choice implements ExpressionInterface
 {
@@ -17,17 +19,18 @@ class Choice implements ExpressionInterface
 
     /**
      * @param string $string
-     * @return \PHPeg\ResultInterface
+     * @param ContextInterface $context
+     * @return ResultInterface
      */
-    public function parse($string)
+    public function parse($string, ContextInterface $context)
     {
-        $left = $this->left->parse($string);
+        $left = $this->left->parse($string, $context);
 
         if ($left->isSuccess()) {
             return $left;
         }
 
-        $right = $this->right->parse($string);
+        $right = $this->right->parse($string, $context);
 
         if ($right->isSuccess()) {
             return $right;
