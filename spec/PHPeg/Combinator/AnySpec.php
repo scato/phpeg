@@ -24,4 +24,9 @@ class AnySpec extends ObjectBehavior
     {
         $this->parse('', $context)->isSuccess()->shouldBe(false);
     }
+
+    function it_should_leave_the_rest_empty(ContextInterface $context)
+    {
+        $this->parse('f', $context)->getRest()->shouldBe('');
+    }
 }

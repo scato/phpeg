@@ -26,4 +26,23 @@ class Context implements ContextInterface
     {
         $this->values[$name] = $value;
     }
+
+    /**
+     * @param string $code
+     * @return mixed
+     */
+    public function evaluate($code)
+    {
+        $args = array();
+        $params = array();
+
+        foreach($this->values as $key => $value) {
+            $args[] = "\$$key";
+            $params[] = $value;
+        }
+
+        $callable = create_function(implode(', ', $args), $code);
+
+        return call_user_func_array($callable, $params);
+    }
 }

@@ -17,4 +17,10 @@ class ContextSpec extends ObjectBehavior
         $this->set('name', 'foo');
         $this->get('name')->shouldBe('foo');
     }
+
+    function it_should_evaluate_code()
+    {
+        $this->set('foo', 'bar');
+        $this->evaluate('return array($foo);')->shouldBe(array('bar'));
+    }
 }

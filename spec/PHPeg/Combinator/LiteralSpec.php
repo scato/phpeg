@@ -29,4 +29,9 @@ class LiteralSpec extends ObjectBehavior
     {
         $this->parse('bar', $context)->isSuccess()->shouldBe(false);
     }
+
+    function it_should_leave_the_rest_empty(ContextInterface $context)
+    {
+        $this->parse('foo', $context)->getRest()->shouldBe('');
+    }
 }
