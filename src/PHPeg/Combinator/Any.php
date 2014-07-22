@@ -22,6 +22,10 @@ class Any implements ExpressionInterface
             return new Failure();
         }
 
+        if ($rest === false) {
+            $rest = '';
+        }
+
         return new Success($result, $rest);
     }
 }

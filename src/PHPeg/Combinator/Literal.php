@@ -28,6 +28,10 @@ class Literal implements ExpressionInterface
         if ($result === $this->string) {
             $rest = substr($string, $strlen);
 
+            if ($rest === false) {
+                $rest = '';
+            }
+
             return new Success($result, $rest);
         }
 

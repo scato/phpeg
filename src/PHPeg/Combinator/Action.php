@@ -6,13 +6,15 @@ use PHPeg\ContextInterface;
 use PHPeg\ExpressionInterface;
 use PHPeg\ResultInterface;
 
-class CharacterClass implements ExpressionInterface
+class Action implements ExpressionInterface
 {
     private $expression;
+    private $code;
 
-    public function __construct($expression)
+    public function __construct(ExpressionInterface $expression, $code)
     {
         $this->expression = $expression;
+        $this->code = $code;
     }
 
     /**
@@ -22,17 +24,12 @@ class CharacterClass implements ExpressionInterface
      */
     public function parse($string, ContextInterface $context)
     {
-        $result = substr($string, 0, 1);
-        $rest = substr($string, 1);
+        $result = $this->expression->parse($string, $context);
 
-        if (preg_match('/[' . $this->expression . ']/', $result)) {
-            if ($rest === false) {
-                $rest = '';
-            }
-
-            return new Success($result, $rest);
+        if (!$result->isSuccess()) {
+            return $result;
         }
 
-        return new Failure();
+        return new Success($context->evaluate($this->code), $result->getRest());
     }
 }

@@ -18,4 +18,10 @@ interface ContextInterface
      * @return void
      */
     public function set($name, $value);
+
+    /**
+     * @param string $code
+     * @return mixed
+     */
+    public function evaluate($code);
 } 
