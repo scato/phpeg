@@ -36,6 +36,10 @@ class Sequence implements ExpressionInterface
             return $right;
         }
 
-        return new Success($left->getResult() . $right->getResult(), $right->getRest());
+        if (is_string($left->getResult()) && is_string($right->getResult())) {
+            return new Success($left->getResult() . $right->getResult(), $right->getRest());
+        }
+
+        return new Success(array($left->getResult(), $right->getResult()), $right->getRest());
     }
 }
