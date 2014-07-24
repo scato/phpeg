@@ -79,4 +79,39 @@ class TerminalRuleFactorySpec extends ObjectBehavior
         $this->createRuleReference()->parse('1foo', $context)->isSuccess()->shouldBe(false);
         $this->createRuleReference()->parse('_foo1', $context)->isSuccess()->shouldBe(true);
     }
+
+    function it_should_create_a_sub_expression_rule(GrammarInterface $grammar)
+    {
+        $context = new Context();
+
+        $grammar->getRule('_')->willReturn($this->createWhitespace());
+        $grammar->getRule('Expression')->willReturn($this->createRuleReference());
+
+        $this->createSubExpression($grammar)->parse('( foo )', $context)->isSuccess()->shouldBe(true);
+        $this->createSubExpression($grammar)->parse('( foo )', $context)->getResult()->shouldBeLike(new RuleReferenceNode('foo'));
+        $this->createSubExpression($grammar)->parse('( foo )', $context)->getRest()->shouldBe('');
+
+        $this->createSubExpression($grammar)->parse('foo', $context)->isSuccess()->shouldBe(false);
+
+        $this->createSubExpression($grammar)->parse('(foo)', $context)->getResult()->shouldBeLike(new RuleReferenceNode('foo'));
+    }
+
+    function it_should_create_a_terminal_rule(GrammarInterface $grammar)
+    {
+        $context = new Context();
+
+        $grammar->getRule('_')->willReturn($this->createWhitespace());
+        $grammar->getRule('Literal')->willReturn($this->createLiteral());
+        $grammar->getRule('Any')->willReturn($this->createAny());
+        $grammar->getRule('CharacterClass')->willReturn($this->createCharacterClass());
+        $grammar->getRule('RuleReference')->willReturn($this->createRuleReference());
+        $grammar->getRule('SubExpression')->willReturn($this->createSubExpression($grammar));
+        $grammar->getRule('Expression')->willReturn($this->createTerminal($grammar));
+
+        $this->createTerminal($grammar)->parse('"foo"', $context)->getResult()->shouldBeLike(new LiteralNode('foo'));
+        $this->createTerminal($grammar)->parse('.', $context)->getResult()->shouldBeLike(new AnyNode());
+        $this->createTerminal($grammar)->parse('[a-z]', $context)->getResult()->shouldBeLike(new CharacterClassNode('a-z'));
+        $this->createTerminal($grammar)->parse('foo', $context)->getResult()->shouldBeLike(new RuleReferenceNode('foo'));
+        $this->createTerminal($grammar)->parse('( foo )', $context)->getResult()->shouldBeLike(new RuleReferenceNode('foo'));
+    }
 }

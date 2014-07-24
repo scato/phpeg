@@ -45,4 +45,12 @@ class SequenceSpec extends ObjectBehavior
 
         $this->parse('foofoo', $context)->isSuccess()->shouldBe(false);
     }
+
+    function it_should_result_in_an_array_if_one_of_the_results_is_not_a_string(ExpressionInterface $left, ExpressionInterface $right, ContextInterface $context)
+    {
+        $left->parse('foobar', $context)->willReturn(new Success('foo', 'bar'));
+        $right->parse('bar', $context)->willReturn(new Success(null, ''));
+
+        $this->parse('foobar', $context)->getResult()->shouldBe(array('foo', null));
+    }
 }
