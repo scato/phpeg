@@ -29,6 +29,6 @@ class RuleReference implements ExpressionInterface
      */
     public function parse($string, ContextInterface $context)
     {
-        return $this->grammar->getRule($this->name)->parse($string, $context);
+        return $this->grammar->getRule($this->name)->parse($string, new Context());
     }
 }
