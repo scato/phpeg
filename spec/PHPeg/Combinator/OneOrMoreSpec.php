@@ -43,4 +43,13 @@ class OneOrMoreSpec extends ObjectBehavior
     {
         $this->parse('bar', $context)->isSuccess()->shouldBe(false);
     }
+
+    function it_should_result_in_an_array_the_results_are_not_strings(ExpressionInterface $expression, ContextInterface $context)
+    {
+        $expression->parse('foofoobar', $context)->willReturn(new Success(null, 'foobar'));
+        $expression->parse('foobar', $context)->willReturn(new Success(null, 'bar'));
+        $expression->parse('bar', $context)->willReturn(new Failure());
+
+        $this->parse('foofoobar', $context)->getResult()->shouldBe(array(null, null));
+    }
 }

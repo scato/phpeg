@@ -26,15 +26,23 @@ class RuleReferenceSpec extends ObjectBehavior
 
     function it_should_succeed_if_the_rule_succeeds(ExpressionInterface $expression, ContextInterface $context)
     {
-        $expression->parse('foo', $context)->willReturn(new Success('foo', 'bar'));
+        $expression->parse('foo', Argument::type('\PHPeg\ContextInterface'))->willReturn(new Success('foo', 'bar'));
 
         $this->parse('foo', $context)->isSuccess()->shouldBe(true);
     }
 
     function it_should_fail_if_the_rule_fails(ExpressionInterface $expression, ContextInterface $context)
     {
-        $expression->parse('foo', $context)->willReturn(new Failure());
+        $expression->parse('foo', Argument::type('\PHPeg\ContextInterface'))->willReturn(new Failure());
 
         $this->parse('foo', $context)->isSuccess()->shouldBe(false);
+    }
+
+    function it_should_use_its_own_context(ExpressionInterface $expression, ContextInterface $context)
+    {
+        $expression->parse('foo', $context)->shouldNotBeCalled();
+        $expression->parse('foo', Argument::type('\PHPeg\ContextInterface'))->willReturn(new Success('foo', 'bar'));
+
+        $this->parse('foo', $context);
     }
 }
