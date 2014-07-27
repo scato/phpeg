@@ -35,7 +35,7 @@ class OptionalSpec extends ObjectBehavior
     function it_should_succeed_if_the_expression_fails_but_without_consuming_anything(ContextInterface $context)
     {
         $this->parse('bar', $context)->isSuccess()->shouldBe(true);
-        $this->parse('bar', $context)->getResult()->shouldBe('');
+        $this->parse('bar', $context)->getResult()->shouldBe(null);
         $this->parse('bar', $context)->getRest()->shouldBe('bar');
     }
 }

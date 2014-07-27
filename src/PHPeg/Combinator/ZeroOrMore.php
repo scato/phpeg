@@ -22,8 +22,7 @@ class ZeroOrMore implements ExpressionInterface
      */
     public function parse($string, ContextInterface $context)
     {
-        $hasResult = false;
-        $result = '';
+        $result = array();
 
         while (true) {
             $attempt = $this->expression->parse($string, $context);
@@ -32,16 +31,8 @@ class ZeroOrMore implements ExpressionInterface
                 break;
             }
 
-            if (!$hasResult) {
-                $result = $attempt->getResult();
-            } elseif (is_string($result) && is_string($attempt->getResult())) {
-                $result = $result . $attempt->getResult();
-            } else {
-                $result = array($result, $attempt->getResult());
-            }
-
+            $result[] = $attempt->getResult();
             $string = $attempt->getRest();
-            $hasResult = true;
         }
 
         return new Success($result, $string);

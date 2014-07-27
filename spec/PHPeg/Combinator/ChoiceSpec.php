@@ -11,9 +11,9 @@ use Prophecy\Argument;
 
 class ChoiceSpec extends ObjectBehavior
 {
-    function let(ExpressionInterface $left, ExpressionInterface $right)
+    function let(ExpressionInterface $foo, ExpressionInterface $the, ExpressionInterface $bar)
     {
-        $this->beConstructedWith($left, $right);
+        $this->beConstructedWith(array($foo, $the, $bar));
     }
 
     function it_is_an_expression()
@@ -21,29 +21,30 @@ class ChoiceSpec extends ObjectBehavior
         $this->shouldHaveType('PHPeg\ExpressionInterface');
     }
 
-    function it_should_succeed_if_the_left_expression_succeeds(ExpressionInterface $left, ContextInterface $context)
+    function it_should_succeed_if_the_first_expression_succeeds(ExpressionInterface $foo, ContextInterface $context)
     {
-        $left->parse('foo', $context)->willReturn(new Success('foo', ''));
+        $foo->parse('foo', $context)->willReturn(new Success('foo', ''));
 
         $this->parse('foo', $context)->isSuccess()->shouldBe(true);
         $this->parse('foo', $context)->getResult()->shouldBe('foo');
         $this->parse('foo', $context)->getRest()->shouldBe('');
     }
 
-    function it_should_succeed_if_the_right_expression_succeeds(ExpressionInterface $left, ExpressionInterface $right, ContextInterface $context)
+    function it_should_succeed_if_the_second_expression_succeeds(ExpressionInterface $foo, ExpressionInterface $the, ContextInterface $context)
     {
-        $left->parse('bar', $context)->willReturn(new Failure());
-        $right->parse('bar', $context)->willReturn(new Success('bar', ''));
+        $foo->parse('the', $context)->willReturn(new Failure());
+        $the->parse('the', $context)->willReturn(new Success('the', ''));
 
-        $this->parse('bar', $context)->isSuccess()->shouldBe(true);
-        $this->parse('bar', $context)->getResult()->shouldBe('bar');
-        $this->parse('bar', $context)->getRest()->shouldBe('');
+        $this->parse('the', $context)->isSuccess()->shouldBe(true);
+        $this->parse('the', $context)->getResult()->shouldBe('the');
+        $this->parse('the', $context)->getRest()->shouldBe('');
     }
 
-    function it_should_fail_if_both_expressions_fail(ExpressionInterface $left, ExpressionInterface $right, ContextInterface $context)
+    function it_should_fail_if_all_expressions_fail(ExpressionInterface $foo, ExpressionInterface $the, ExpressionInterface $bar, ContextInterface $context)
     {
-        $left->parse('boo', $context)->willReturn(new Failure());
-        $right->parse('boo', $context)->willReturn(new Failure());
+        $foo->parse('boo', $context)->willReturn(new Failure());
+        $the->parse('boo', $context)->willReturn(new Failure());
+        $bar->parse('boo', $context)->willReturn(new Failure());
 
         $this->parse('boo', $context)->isSuccess()->shouldBe(false);
     }
