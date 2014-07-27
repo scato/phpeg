@@ -17,9 +17,14 @@ class Grammar implements GrammarInterface
     /**
      * @param string $name
      * @return ExpressionInterface
+     * @throws \InvalidArgumentException
      */
     public function getRule($name)
     {
+        if (!isset($this->rules[$name])) {
+            throw new \InvalidArgumentException("No rule with name '$name' found");
+        }
+
         return $this->rules[$name];
     }
 
