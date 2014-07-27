@@ -6,7 +6,6 @@ use PHPeg\Combinator\Context;
 use PHPeg\Combinator\Failure;
 use PHPeg\Combinator\Success;
 use PHPeg\ExpressionInterface;
-use PHPeg\Grammar\TerminalRuleFactory;
 use PHPeg\Grammar\Tree\ActionNode;
 use PHPeg\Grammar\Tree\ChoiceNode;
 use PHPeg\Grammar\Tree\LabelNode;
@@ -18,7 +17,7 @@ use Prophecy\Argument;
 
 class BinaryRuleFactorySpec extends ObjectBehavior
 {
-    function let(GrammarInterface $grammar, ExpressionInterface $whitespace, ExpressionInterface $ruleReference, ExpressionInterface $identifier)
+    function let(GrammarInterface $grammar, ExpressionInterface $whitespace, ExpressionInterface $predicate, ExpressionInterface $identifier)
     {
         $whitespace->parse(Argument::that(function ($string) {
             return preg_match('/^ /', $string);
@@ -30,25 +29,25 @@ class BinaryRuleFactorySpec extends ObjectBehavior
             return new Success('', $args[0]);
         });
 
-        $ruleReference->parse(Argument::that(function ($string) {
+        $predicate->parse(Argument::that(function ($string) {
             return preg_match('/^foo/', $string);
         }), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
             return new Success(new RuleReferenceNode('foo'), strval(substr($args[0], 3)));
         });
 
-        $ruleReference->parse(Argument::that(function ($string) {
+        $predicate->parse(Argument::that(function ($string) {
             return preg_match('/^the/', $string);
         }), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
             return new Success(new RuleReferenceNode('the'), strval(substr($args[0], 3)));
         });
 
-        $ruleReference->parse(Argument::that(function ($string) {
+        $predicate->parse(Argument::that(function ($string) {
             return preg_match('/^bar/', $string);
         }), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
             return new Success(new RuleReferenceNode('bar'), strval(substr($args[0], 3)));
         });
 
-        $ruleReference->parse(Argument::any(), Argument::type('\PHPeg\ContextInterface'))->will(function () {
+        $predicate->parse(Argument::any(), Argument::type('\PHPeg\ContextInterface'))->will(function () {
             return new Failure();
         });
 
@@ -75,7 +74,7 @@ class BinaryRuleFactorySpec extends ObjectBehavior
         });
 
         $grammar->getRule('_')->willReturn($whitespace);
-        $grammar->getRule('Predicate')->willReturn($ruleReference);
+        $grammar->getRule('Predicate')->willReturn($predicate);
         $grammar->getRule('Identifier')->willReturn($identifier);
 
         $grammar->getRule('Label')->willReturn($this->createLabel($grammar));
