@@ -28,30 +28,21 @@ class ZeroOrMoreSpec extends ObjectBehavior
     function it_should_succeed_if_the_expression_succeeds(ContextInterface $context)
     {
         $this->parse('foobar', $context)->isSuccess()->shouldBe(true);
-        $this->parse('foobar', $context)->getResult()->shouldBe('foo');
+        $this->parse('foobar', $context)->getResult()->shouldBe(array('foo'));
         $this->parse('foobar', $context)->getRest()->shouldBe('bar');
     }
 
     function it_should_succeed_if_the_expression_succeeds_twice(ContextInterface $context)
     {
         $this->parse('foofoobar', $context)->isSuccess()->shouldBe(true);
-        $this->parse('foofoobar', $context)->getResult()->shouldBe('foofoo');
+        $this->parse('foofoobar', $context)->getResult()->shouldBe(array('foo', 'foo'));
         $this->parse('foofoobar', $context)->getRest()->shouldBe('bar');
     }
 
     function it_should_succeed_if_the_expression_fails_but_without_consuming_anything(ContextInterface $context)
     {
         $this->parse('bar', $context)->isSuccess()->shouldBe(true);
-        $this->parse('bar', $context)->getResult()->shouldBe('');
+        $this->parse('bar', $context)->getResult()->shouldBe(array());
         $this->parse('bar', $context)->getRest()->shouldBe('bar');
-    }
-
-    function it_should_result_in_an_array_the_results_are_not_strings(ExpressionInterface $expression, ContextInterface $context)
-    {
-        $expression->parse('foofoobar', $context)->willReturn(new Success(null, 'foobar'));
-        $expression->parse('foobar', $context)->willReturn(new Success(null, 'bar'));
-        $expression->parse('bar', $context)->willReturn(new Failure());
-
-        $this->parse('foofoobar', $context)->getResult()->shouldBe(array(null, null));
     }
 }

@@ -8,13 +8,14 @@ use PHPeg\ResultInterface;
 
 class Sequence implements ExpressionInterface
 {
-    private $left;
-    private $right;
+    /**
+     * @var ExpressionInterface[]
+     */
+    private $expressions;
 
-    public function __construct(ExpressionInterface $left, ExpressionInterface $right)
+    public function __construct(array $expressions)
     {
-        $this->left = $left;
-        $this->right = $right;
+        $this->expressions = $expressions;
     }
 
     /**
@@ -24,22 +25,19 @@ class Sequence implements ExpressionInterface
      */
     public function parse($string, ContextInterface $context)
     {
-        $left = $this->left->parse($string, $context);
+        $result = array();
 
-        if (!$left->isSuccess()) {
-            return $left;
+        foreach ($this->expressions as $expression) {
+            $attempt = $expression->parse($string, $context);
+
+            if (!$attempt->isSuccess()) {
+                return $attempt;
+            }
+
+            $result[] = $attempt->getResult();
+            $string = $attempt->getRest();
         }
 
-        $right = $this->right->parse($left->getRest(), $context);
-
-        if (!$right->isSuccess()) {
-            return $right;
-        }
-
-        if (is_string($left->getResult()) && is_string($right->getResult())) {
-            return new Success($left->getResult() . $right->getResult(), $right->getRest());
-        }
-
-        return new Success(array($left->getResult(), $right->getResult()), $right->getRest());
+        return new Success($result, $string);
     }
 }

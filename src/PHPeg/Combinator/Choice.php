@@ -8,13 +8,14 @@ use PHPeg\ResultInterface;
 
 class Choice implements ExpressionInterface
 {
-    private $left;
-    private $right;
+    /**
+     * @var ExpressionInterface[]
+     */
+    private $expressions;
 
-    public function __construct(ExpressionInterface $left, ExpressionInterface $right)
+    public function __construct(array $expressions)
     {
-        $this->left = $left;
-        $this->right = $right;
+        $this->expressions = $expressions;
     }
 
     /**
@@ -24,16 +25,12 @@ class Choice implements ExpressionInterface
      */
     public function parse($string, ContextInterface $context)
     {
-        $left = $this->left->parse($string, $context);
+        foreach ($this->expressions as $expression) {
+            $attempt = $expression->parse($string, $context);
 
-        if ($left->isSuccess()) {
-            return $left;
-        }
-
-        $right = $this->right->parse($string, $context);
-
-        if ($right->isSuccess()) {
-            return $right;
+            if ($attempt->isSuccess()) {
+                return $attempt;
+            }
         }
 
         return new Failure();
