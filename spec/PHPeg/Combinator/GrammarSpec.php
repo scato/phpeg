@@ -23,6 +23,11 @@ class GrammarSpec extends ObjectBehavior
         $this->getRule('name')->shouldBe($name);
     }
 
+    function it_should_fail_on_non_existent_rules()
+    {
+        $this->shouldThrow('\InvalidArgumentException')->duringGetRule('foo');
+    }
+
     function it_should_start_parsing_at_the_start_symbol(ExpressionInterface $start, ContextInterface $context)
     {
         $start->parse('foo', Argument::type('\PHPeg\ContextInterface'))->shouldBeCalled()->willReturn(new Success('foo', ''));
