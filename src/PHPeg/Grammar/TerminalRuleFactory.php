@@ -66,13 +66,17 @@ class TerminalRuleFactory
         );
     }
 
-    public function createRuleReference()
+    public function createIdentifier()
     {
-        // RuleReference = name:([A-Za-z_] [A-Za-z0-9_]*) { new RuleReferenceNode($name); };
+        // Identifier = [A-Za-z_] [A-Za-z0-9_]*;
+        return new Sequence(new CharacterClass('A-Za-z_'), new ZeroOrMore(new CharacterClass('A-Za-z0-9_')));
+    }
+
+    public function createRuleReference(GrammarInterface $grammar)
+    {
+        // RuleReference = name:Identifier { new RuleReferenceNode($name); };
         return new Action(
-            new Label(
-                'name',
-                new Sequence(new CharacterClass('A-Za-z_'), new ZeroOrMore(new CharacterClass('A-Za-z0-9_')))
+            new Label('name', new RuleReference($grammar, 'Identifier')
             ),
             'return new \PHPeg\Grammar\Tree\RuleReferenceNode($name);'
         );

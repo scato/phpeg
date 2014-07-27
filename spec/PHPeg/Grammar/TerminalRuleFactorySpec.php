@@ -68,16 +68,27 @@ class TerminalRuleFactorySpec extends ObjectBehavior
         $this->createCharacterClass()->parse('[^\\]]', $context)->getResult()->shouldBeLike(new CharacterClassNode('^\\]'));
     }
 
-    function it_should_create_a_rule_reference_rule()
+    function it_should_create_an_identifier_rule()
     {
         $context = new Context();
 
-        $this->createRuleReference()->parse('foo', $context)->isSuccess()->shouldBe(true);
-        $this->createRuleReference()->parse('foo', $context)->getResult()->shouldBeLike(new RuleReferenceNode('foo'));
-        $this->createRuleReference()->parse('foo', $context)->getRest()->shouldBe('');
+        $this->createIdentifier()->parse('foo', $context)->isSuccess()->shouldBe(true);
+        $this->createIdentifier()->parse('foo', $context)->getResult()->shouldBeLike('foo');
+        $this->createIdentifier()->parse('foo', $context)->getRest()->shouldBe('');
 
-        $this->createRuleReference()->parse('1foo', $context)->isSuccess()->shouldBe(false);
-        $this->createRuleReference()->parse('_foo1', $context)->isSuccess()->shouldBe(true);
+        $this->createIdentifier()->parse('1foo', $context)->isSuccess()->shouldBe(false);
+        $this->createIdentifier()->parse('_foo1', $context)->isSuccess()->shouldBe(true);
+    }
+
+    function it_should_create_a_rule_reference_rule(GrammarInterface $grammar)
+    {
+        $context = new Context();
+
+        $grammar->getRule('Identifier')->willReturn($this->createIdentifier());
+
+        $this->createRuleReference($grammar)->parse('foo', $context)->isSuccess()->shouldBe(true);
+        $this->createRuleReference($grammar)->parse('foo', $context)->getResult()->shouldBeLike(new RuleReferenceNode('foo'));
+        $this->createRuleReference($grammar)->parse('foo', $context)->getRest()->shouldBe('');
     }
 
     function it_should_create_a_sub_expression_rule(GrammarInterface $grammar)
@@ -85,7 +96,8 @@ class TerminalRuleFactorySpec extends ObjectBehavior
         $context = new Context();
 
         $grammar->getRule('_')->willReturn($this->createWhitespace());
-        $grammar->getRule('Expression')->willReturn($this->createRuleReference());
+        $grammar->getRule('Identifier')->willReturn($this->createIdentifier());
+        $grammar->getRule('Expression')->willReturn($this->createRuleReference($grammar));
 
         $this->createSubExpression($grammar)->parse('( foo )', $context)->isSuccess()->shouldBe(true);
         $this->createSubExpression($grammar)->parse('( foo )', $context)->getResult()->shouldBeLike(new RuleReferenceNode('foo'));
@@ -104,7 +116,8 @@ class TerminalRuleFactorySpec extends ObjectBehavior
         $grammar->getRule('Literal')->willReturn($this->createLiteral());
         $grammar->getRule('Any')->willReturn($this->createAny());
         $grammar->getRule('CharacterClass')->willReturn($this->createCharacterClass());
-        $grammar->getRule('RuleReference')->willReturn($this->createRuleReference());
+        $grammar->getRule('Identifier')->willReturn($this->createIdentifier($grammar));
+        $grammar->getRule('RuleReference')->willReturn($this->createRuleReference($grammar));
         $grammar->getRule('SubExpression')->willReturn($this->createSubExpression($grammar));
         $grammar->getRule('Expression')->willReturn($this->createTerminal($grammar));
 
