@@ -19,12 +19,30 @@ use Prophecy\Argument;
 
 class UnaryRuleFactorySpec extends ObjectBehavior
 {
-    function let(GrammarInterface $grammar)
+    function let(GrammarInterface $grammar, ExpressionInterface $whitespace, ExpressionInterface $ruleReference)
     {
-        $terminalRuleFactory = new TerminalRuleFactory();
+        $whitespace->parse(Argument::that(function ($string) {
+            return preg_match('/^ /', $string);
+        }), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
+            return new Success(' ', strval(substr($args[0], 1)));
+        });
 
-        $grammar->getRule('_')->willReturn($terminalRuleFactory->createWhitespace());
-        $grammar->getRule('Terminal')->willReturn($terminalRuleFactory->createRuleReference());
+        $whitespace->parse(Argument::any(), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
+            return new Success('', $args[0]);
+        });
+
+        $ruleReference->parse(Argument::that(function ($string) {
+            return preg_match('/^foo/', $string);
+        }), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
+                return new Success(new RuleReferenceNode('foo'), strval(substr($args[0], 3)));
+        });
+
+        $ruleReference->parse(Argument::any(), Argument::type('\PHPeg\ContextInterface'))->will(function () {
+            return new Failure();
+        });
+
+        $grammar->getRule('_')->willReturn($whitespace);
+        $grammar->getRule('Terminal')->willReturn($ruleReference);
 
         $grammar->getRule('AndPredicate')->willReturn($this->createAndPredicate($grammar));
         $grammar->getRule('NotPredicate')->willReturn($this->createNotPredicate($grammar));
