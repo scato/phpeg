@@ -2,6 +2,6 @@
 
 namespace PHPeg\Grammar\Tree;
 
-class LabelNode extends NamedNode
+class RuleNode extends NamedNode
 {
 }
