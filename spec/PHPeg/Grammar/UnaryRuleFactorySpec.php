@@ -6,7 +6,6 @@ use PHPeg\Combinator\Context;
 use PHPeg\Combinator\Failure;
 use PHPeg\Combinator\Success;
 use PHPeg\ExpressionInterface;
-use PHPeg\Grammar\TerminalRuleFactory;
 use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\NotPredicateNode;
 use PHPeg\Grammar\Tree\OneOrMoreNode;
@@ -19,7 +18,7 @@ use Prophecy\Argument;
 
 class UnaryRuleFactorySpec extends ObjectBehavior
 {
-    function let(GrammarInterface $grammar, ExpressionInterface $whitespace, ExpressionInterface $ruleReference)
+    function let(GrammarInterface $grammar, ExpressionInterface $whitespace, ExpressionInterface $terminal)
     {
         $whitespace->parse(Argument::that(function ($string) {
             return preg_match('/^ /', $string);
@@ -31,18 +30,18 @@ class UnaryRuleFactorySpec extends ObjectBehavior
             return new Success('', $args[0]);
         });
 
-        $ruleReference->parse(Argument::that(function ($string) {
+        $terminal->parse(Argument::that(function ($string) {
             return preg_match('/^foo/', $string);
         }), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
-                return new Success(new RuleReferenceNode('foo'), strval(substr($args[0], 3)));
+            return new Success(new RuleReferenceNode('foo'), strval(substr($args[0], 3)));
         });
 
-        $ruleReference->parse(Argument::any(), Argument::type('\PHPeg\ContextInterface'))->will(function () {
+        $terminal->parse(Argument::any(), Argument::type('\PHPeg\ContextInterface'))->will(function () {
             return new Failure();
         });
 
         $grammar->getRule('_')->willReturn($whitespace);
-        $grammar->getRule('Terminal')->willReturn($ruleReference);
+        $grammar->getRule('Terminal')->willReturn($terminal);
 
         $grammar->getRule('AndPredicate')->willReturn($this->createAndPredicate($grammar));
         $grammar->getRule('NotPredicate')->willReturn($this->createNotPredicate($grammar));
