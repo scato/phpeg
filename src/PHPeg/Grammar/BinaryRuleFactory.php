@@ -16,17 +16,14 @@ class BinaryRuleFactory
 {
     public function createLabel(GrammarInterface $grammar)
     {
-        // Label = name:([A-Za-z_] [A-Za-z0-9_]*) _ ":" _ expression:Predicate { new LabelNode($name, $expression); } / Predicate;
+        // Label = name:Identifier _ ":" _ expression:Predicate { new LabelNode($name, $expression); } / Predicate;
         return new Choice(
             new Action(
                 new Sequence(
                     new Sequence(
                         new Sequence(
                             new Sequence(
-                                new Label(
-                                    'name',
-                                    new Sequence(new CharacterClass('A-Za-z_'), new ZeroOrMore(new CharacterClass('A-Za-z0-9_')))
-                                ),
+                                new Label('name', new RuleReference($grammar, 'Identifier')),
                                 new RuleReference($grammar, '_')
                             ),
                             new Literal(':')
