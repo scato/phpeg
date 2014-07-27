@@ -10,12 +10,17 @@ class GrammarNodeSpec extends ObjectBehavior
 {
     function let(RuleNode $rule)
     {
-        $this->beConstructedWith('foo', array($rule));
+        $this->beConstructedWith('foo', 'bar', array($rule));
     }
 
     function it_has_a_name()
     {
         $this->getName()->shouldBe('foo');
+    }
+
+    function it_has_a_start_symbol()
+    {
+        $this->getStartSymbol()->shouldBe('bar');
     }
 
     function it_has_rules(RuleNode $rule)
