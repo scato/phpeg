@@ -18,7 +18,7 @@ use Prophecy\Argument;
 
 class BinaryRuleFactorySpec extends ObjectBehavior
 {
-    function let(GrammarInterface $grammar, ExpressionInterface $whitespace, ExpressionInterface $ruleReference)
+    function let(GrammarInterface $grammar, ExpressionInterface $whitespace, ExpressionInterface $ruleReference, ExpressionInterface $identifier)
     {
         $whitespace->parse(Argument::that(function ($string) {
             return preg_match('/^ /', $string);
@@ -33,27 +33,50 @@ class BinaryRuleFactorySpec extends ObjectBehavior
         $ruleReference->parse(Argument::that(function ($string) {
             return preg_match('/^foo/', $string);
         }), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
-                return new Success(new RuleReferenceNode('foo'), strval(substr($args[0], 3)));
-            });
+            return new Success(new RuleReferenceNode('foo'), strval(substr($args[0], 3)));
+        });
 
         $ruleReference->parse(Argument::that(function ($string) {
             return preg_match('/^the/', $string);
         }), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
-                return new Success(new RuleReferenceNode('the'), strval(substr($args[0], 3)));
-            });
+            return new Success(new RuleReferenceNode('the'), strval(substr($args[0], 3)));
+        });
 
         $ruleReference->parse(Argument::that(function ($string) {
             return preg_match('/^bar/', $string);
         }), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
-                return new Success(new RuleReferenceNode('bar'), strval(substr($args[0], 3)));
-            });
+            return new Success(new RuleReferenceNode('bar'), strval(substr($args[0], 3)));
+        });
 
-        $ruleReference->parse(Argument::any(), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
+        $ruleReference->parse(Argument::any(), Argument::type('\PHPeg\ContextInterface'))->will(function () {
+            return new Failure();
+        });
+
+        $identifier->parse(Argument::that(function ($string) {
+            return preg_match('/^name/', $string);
+        }), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
+            return new Success('name', strval(substr($args[0], 4)));
+        });
+
+        $identifier->parse(Argument::that(function ($string) {
+            return preg_match('/^left/', $string);
+        }), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
+            return new Success('left', strval(substr($args[0], 4)));
+        });
+
+        $identifier->parse(Argument::that(function ($string) {
+            return preg_match('/^right/', $string);
+        }), Argument::type('\PHPeg\ContextInterface'))->will(function ($args) {
+            return new Success('right', strval(substr($args[0], 5)));
+        });
+
+        $identifier->parse(Argument::any(), Argument::type('\PHPeg\ContextInterface'))->will(function () {
             return new Failure();
         });
 
         $grammar->getRule('_')->willReturn($whitespace);
         $grammar->getRule('Predicate')->willReturn($ruleReference);
+        $grammar->getRule('Identifier')->willReturn($identifier);
 
         $grammar->getRule('Label')->willReturn($this->createLabel($grammar));
         $grammar->getRule('Sequence')->willReturn($this->createSequence($grammar));
