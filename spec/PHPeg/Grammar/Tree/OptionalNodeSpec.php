@@ -13,6 +13,11 @@ class OptionalNodeSpec extends ObjectBehavior
         $this->beConstructedWith($expression);
     }
 
+    function it_is_a_node()
+    {
+        $this->shouldHaveType('PHPeg\Grammar\Tree\NodeInterface');
+    }
+
     function it_has_an_expression(ExpressionInterface $expression)
     {
         $this->getExpression()->shouldBe($expression);

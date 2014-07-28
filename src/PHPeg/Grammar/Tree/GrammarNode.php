@@ -2,7 +2,7 @@
 
 namespace PHPeg\Grammar\Tree;
 
-class GrammarNode
+class GrammarNode implements NodeInterface
 {
     private $name;
     private $startSymbol;
@@ -28,5 +28,10 @@ class GrammarNode
     public function getRules()
     {
         return $this->rules;
+    }
+
+    public function accept(VisitorInterface $visitor)
+    {
+        // TODO: Implement accept() method.
     }
 }

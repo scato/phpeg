@@ -11,4 +11,9 @@ class AnyNodeSpec extends ObjectBehavior
     {
         $this->shouldHaveType('PHPeg\Grammar\Tree\AnyNode');
     }
+
+    function it_is_a_node()
+    {
+        $this->shouldHaveType('PHPeg\Grammar\Tree\NodeInterface');
+    }
 }

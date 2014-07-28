@@ -13,6 +13,11 @@ class ChoiceNodeSpec extends ObjectBehavior
         $this->beConstructedWith(array($left, $right));
     }
 
+    function it_is_a_node()
+    {
+        $this->shouldHaveType('PHPeg\Grammar\Tree\NodeInterface');
+    }
+
     function it_has_expressions(ExpressionInterface $left, ExpressionInterface $right)
     {
         $this->getExpressions()->shouldBe(array($left, $right));
