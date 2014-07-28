@@ -12,10 +12,8 @@ class GrammarSpec extends ObjectBehavior
 {
     function let(ExpressionInterface $start, ExpressionInterface $name)
     {
-        $this->beConstructedWith(array(
-            'start' => $start,
-            'name' => $name,
-        ));
+        $this->addRule('start', $start);
+        $this->addRule('name', $name);
     }
 
     function it_should_contain_rules(ExpressionInterface $name)
