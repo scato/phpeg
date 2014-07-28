@@ -16,13 +16,11 @@ class UnaryRuleFactory
     {
         // ZeroOrMore = expression:Terminal _ "*" { return new ZeroOrMoreNode($expression); };
         return new Action(
-            new Sequence(
-                new Sequence(
-                    new Label('expression', new RuleReference($grammar, 'Terminal')),
-                    new RuleReference($grammar, '_')
-                ),
+            new Sequence(array(
+                new Label('expression', new RuleReference($grammar, 'Terminal')),
+                new RuleReference($grammar, '_'),
                 new Literal('*')
-            ),
+            )),
             'return new \PHPeg\Grammar\Tree\ZeroOrMoreNode($expression);'
         );
     }
@@ -31,13 +29,11 @@ class UnaryRuleFactory
     {
         // OneOrMore = expression:Terminal _ "+" { return new OneOrMoreNode($expression); };
         return new Action(
-            new Sequence(
-                new Sequence(
-                    new Label('expression', new RuleReference($grammar, 'Terminal')),
-                    new RuleReference($grammar, '_')
-                ),
+            new Sequence(array(
+                new Label('expression', new RuleReference($grammar, 'Terminal')),
+                new RuleReference($grammar, '_'),
                 new Literal('+')
-            ),
+            )),
             'return new \PHPeg\Grammar\Tree\OneOrMoreNode($expression);'
         );
     }
@@ -46,13 +42,11 @@ class UnaryRuleFactory
     {
         // Optional = expression:Terminal _ "?" { return new OptionalNode($expression); };
         return new Action(
-            new Sequence(
-                new Sequence(
-                    new Label('expression', new RuleReference($grammar, 'Terminal')),
-                    new RuleReference($grammar, '_')
-                ),
+            new Sequence(array(
+                new Label('expression', new RuleReference($grammar, 'Terminal')),
+                new RuleReference($grammar, '_'),
                 new Literal('?')
-            ),
+            )),
             'return new \PHPeg\Grammar\Tree\OptionalNode($expression);'
         );
     }
@@ -60,29 +54,23 @@ class UnaryRuleFactory
     public function createRepetition(GrammarInterface $grammar)
     {
         // Repetition = ZeroOrMore / OneOrMore / Optional / Terminal;
-        return new Choice(
-            new Choice(
-                new Choice(
-                    new RuleReference($grammar, 'ZeroOrMore'),
-                    new RuleReference($grammar, 'OneOrMore')
-                ),
-                new RuleReference($grammar, 'Optional')
-            ),
+        return new Choice(array(
+            new RuleReference($grammar, 'ZeroOrMore'),
+            new RuleReference($grammar, 'OneOrMore'),
+            new RuleReference($grammar, 'Optional'),
             new RuleReference($grammar, 'Terminal')
-        );
+        ));
     }
 
     public function createAndPredicate(GrammarInterface $grammar)
     {
         // AndPredicate = "&" _ expression:Repetition { return new AndPredicateNode($expression); };
         return new Action(
-            new Sequence(
-                new Sequence(
-                    new Literal('&'),
-                    new RuleReference($grammar, '_')
-                ),
+            new Sequence(array(
+                new Literal('&'),
+                new RuleReference($grammar, '_'),
                 new Label('expression', new RuleReference($grammar, 'Repetition'))
-            ),
+            )),
             'return new \PHPeg\Grammar\Tree\AndPredicateNode($expression);'
         );
     }
@@ -91,13 +79,11 @@ class UnaryRuleFactory
     {
         // NotPredicate = "!" _ expression:Repetition { return new NotPredicateNode($expression); };
         return new Action(
-            new Sequence(
-                new Sequence(
-                    new Literal('!'),
-                    new RuleReference($grammar, '_')
-                ),
+            new Sequence(array(
+                new Literal('!'),
+                new RuleReference($grammar, '_'),
                 new Label('expression', new RuleReference($grammar, 'Repetition'))
-            ),
+            )),
             'return new \PHPeg\Grammar\Tree\NotPredicateNode($expression);'
         );
     }
@@ -105,12 +91,10 @@ class UnaryRuleFactory
     public function createPredicate(GrammarInterface $grammar)
     {
         // Predicate = AndPredicate / NotPredicate / Repetition;
-        return new Choice(
-            new Choice(
-                new RuleReference($grammar, 'AndPredicate'),
-                new RuleReference($grammar, 'NotPredicate')
-            ),
+        return new Choice(array(
+            new RuleReference($grammar, 'AndPredicate'),
+            new RuleReference($grammar, 'NotPredicate'),
             new RuleReference($grammar, 'Repetition')
-        );
+        ));
     }
 }

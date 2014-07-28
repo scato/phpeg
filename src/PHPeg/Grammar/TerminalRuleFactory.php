@@ -8,6 +8,7 @@ use PHPeg\Combinator\CharacterClass;
 use PHPeg\Combinator\Choice;
 use PHPeg\Combinator\Label;
 use PHPeg\Combinator\Literal;
+use PHPeg\Combinator\MatchedString;
 use PHPeg\Combinator\RuleReference;
 use PHPeg\Combinator\Sequence;
 use PHPeg\Combinator\ZeroOrMore;
@@ -26,18 +27,16 @@ class TerminalRuleFactory
 
     public function createLiteral()
     {
-        // Literal = "\"" string:([^\\"] / "\\" .)* "\"" { return new LiteralNode(stripslashes($string)); };
+        // Literal = "\"" string:$([^\\"] / "\\" .)* "\"" { return new LiteralNode(stripslashes($string)); };
         return new Action(
-            new Sequence(
-                new Sequence(
-                    new Literal('"'),
-                    new Label(
-                        'string',
-                        new ZeroOrMore(new Choice(new CharacterClass('^\\\\"'), new Sequence(new Literal('\\'), new Any())))
-                    )
+            new Sequence(array(
+                new Literal('"'),
+                new Label(
+                    'string',
+                    new MatchedString(new ZeroOrMore(new Choice(array(new CharacterClass('^\\\\"'), new Sequence(array(new Literal('\\'), new Any()))))))
                 ),
                 new Literal('"')
-            ),
+            )),
             'return new \PHPeg\Grammar\Tree\LiteralNode(stripslashes($string));'
         );
     }
@@ -50,26 +49,24 @@ class TerminalRuleFactory
 
     public function createCharacterClass()
     {
-        // CharacterClass = "[" string:([^\\\]] / "\\" .)* "]" { return new CharacterClassNode($string); };
+        // CharacterClass = "[" string:$([^\\\]] / "\\" .)* "]" { return new CharacterClassNode($string); };
         return new Action(
-            new Sequence(
-                new Sequence(
-                    new Literal('['),
-                    new Label(
-                        'string',
-                        new ZeroOrMore(new Choice(new CharacterClass('^\\\\\\]'), new Sequence(new Literal('\\'), new Any())))
-                    )
+            new Sequence(array(
+                new Literal('['),
+                new Label(
+                    'string',
+                    new MatchedString(new ZeroOrMore(new Choice(array(new CharacterClass('^\\\\\\]'), new Sequence(array(new Literal('\\'), new Any()))))))
                 ),
                 new Literal(']')
-            ),
+            )),
             'return new \PHPeg\Grammar\Tree\CharacterClassNode($string);'
         );
     }
 
     public function createIdentifier()
     {
-        // Identifier = [A-Za-z_] [A-Za-z0-9_]*;
-        return new Sequence(new CharacterClass('A-Za-z_'), new ZeroOrMore(new CharacterClass('A-Za-z0-9_')));
+        // Identifier = $([A-Za-z_] [A-Za-z0-9_]*);
+        return new MatchedString(new Sequence(array(new CharacterClass('A-Za-z_'), new ZeroOrMore(new CharacterClass('A-Za-z0-9_')))));
     }
 
     public function createRuleReference(GrammarInterface $grammar)
@@ -86,19 +83,13 @@ class TerminalRuleFactory
     {
         // SubExpression = "(" _ expression:Expression _ ")" { return $expression; };
         return new Action(
-            new Sequence(
-                new Sequence(
-                    new Sequence(
-                        new Sequence(
-                            new Literal('('),
-                            new RuleReference($grammar, '_')
-                        ),
-                        new Label('expression', new RuleReference($grammar, 'Expression'))
-                    ),
-                    new RuleReference($grammar, '_')
-                ),
+            new Sequence(array(
+                new Literal('('),
+                new RuleReference($grammar, '_'),
+                new Label('expression', new RuleReference($grammar, 'Expression')),
+                new RuleReference($grammar, '_'),
                 new Literal(')')
-            ),
+            )),
             'return $expression;'
         );
     }
@@ -106,18 +97,12 @@ class TerminalRuleFactory
     public function createTerminal(GrammarInterface $grammar)
     {
         // Terminal = Literal / Any / CharacterClass / RuleReference / SubExpression;
-        return new Choice(
-            new Choice(
-                new Choice(
-                    new Choice(
-                        new RuleReference($grammar, 'Literal'),
-                        new RuleReference($grammar, 'Any')
-                    ),
-                    new RuleReference($grammar, 'CharacterClass')
-                ),
-                new RuleReference($grammar, 'RuleReference')
-            ),
+        return new Choice(array(
+            new RuleReference($grammar, 'Literal'),
+            new RuleReference($grammar, 'Any'),
+            new RuleReference($grammar, 'CharacterClass'),
+            new RuleReference($grammar, 'RuleReference'),
             new RuleReference($grammar, 'SubExpression')
-        );
+        ));
     }
 }

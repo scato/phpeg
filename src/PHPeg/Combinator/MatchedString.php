@@ -28,7 +28,7 @@ class MatchedString implements ExpressionInterface
             return $result;
         }
 
-        $matched = substr($string, 0, -strlen($result->getRest()));
+        $matched = substr($string, 0, strlen($string) - strlen($result->getRest()));
 
         return new Success($matched, $result->getRest());
     }
