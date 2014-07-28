@@ -4,7 +4,7 @@
 namespace PHPeg\Grammar\Tree;
 
 
-class RuleReferenceNode
+class RuleReferenceNode implements NodeInterface
 {
     private $name;
 
@@ -16,5 +16,10 @@ class RuleReferenceNode
     public function getName()
     {
         return $this->name;
+    }
+
+    public function accept(VisitorInterface $visitor)
+    {
+        $visitor->visitRuleReference($this);
     }
 }

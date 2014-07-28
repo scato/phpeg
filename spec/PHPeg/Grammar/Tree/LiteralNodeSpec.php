@@ -12,6 +12,11 @@ class LiteralNodeSpec extends ObjectBehavior
         $this->beConstructedWith('foo');
     }
 
+    function it_is_a_node()
+    {
+        $this->shouldHaveType('PHPeg\Grammar\Tree\NodeInterface');
+    }
+
     function it_has_a_string()
     {
         $this->getString()->shouldBe('foo');

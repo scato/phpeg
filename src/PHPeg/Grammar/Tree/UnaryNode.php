@@ -4,7 +4,7 @@
 namespace PHPeg\Grammar\Tree;
 
 
-abstract class UnaryNode
+abstract class UnaryNode implements NodeInterface
 {
     private $expression;
 
@@ -16,5 +16,10 @@ abstract class UnaryNode
     public function getExpression()
     {
         return $this->expression;
+    }
+
+    public function accept(VisitorInterface $visitor)
+    {
+        // TODO: Implement accept() method.
     }
 }

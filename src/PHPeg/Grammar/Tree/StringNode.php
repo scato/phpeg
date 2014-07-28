@@ -4,7 +4,7 @@
 namespace PHPeg\Grammar\Tree;
 
 
-abstract class StringNode
+abstract class StringNode implements NodeInterface
 {
     private $string;
 
@@ -16,5 +16,10 @@ abstract class StringNode
     public function getString()
     {
         return $this->string;
+    }
+
+    public function accept(VisitorInterface $visitor)
+    {
+        // TODO: Implement accept() method.
     }
 }

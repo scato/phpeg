@@ -13,6 +13,11 @@ class GrammarNodeSpec extends ObjectBehavior
         $this->beConstructedWith('foo', 'bar', array($rule));
     }
 
+    function it_is_a_node()
+    {
+        $this->shouldHaveType('PHPeg\Grammar\Tree\NodeInterface');
+    }
+
     function it_has_a_name()
     {
         $this->getName()->shouldBe('foo');

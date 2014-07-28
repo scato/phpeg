@@ -2,7 +2,7 @@
 
 namespace PHPeg\Grammar\Tree;
 
-class ActionNode extends UnaryNode
+class ActionNode extends UnaryNode implements NodeInterface
 {
     private $code;
 
@@ -17,5 +17,10 @@ class ActionNode extends UnaryNode
     public function getCode()
     {
         return $this->code;
+    }
+
+    public function accept(VisitorInterface $visitor)
+    {
+        $visitor->visitAction($this);
     }
 }
