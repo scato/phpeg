@@ -6,22 +6,15 @@ namespace PHPeg\Grammar\Tree;
 
 abstract class BinaryNode
 {
-    private $left;
-    private $right;
+    private $expressions;
 
-    function __construct($left, $right)
+    function __construct(array $expressions)
     {
-        $this->left = $left;
-        $this->right = $right;
+        $this->expressions = $expressions;
     }
 
-    public function getLeft()
+    public function getExpressions()
     {
-        return $this->left;
-    }
-
-    public function getRight()
-    {
-        return $this->right;
+        return $this->expressions;
     }
 }

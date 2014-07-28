@@ -98,11 +98,11 @@ class BinaryRuleFactorySpec extends ObjectBehavior
         $context = new Context();
 
         $this->createSequence($grammar)->parse('foo bar', $context)->isSuccess()->shouldBe(true);
-        $this->createSequence($grammar)->parse('foo bar', $context)->getResult()->shouldBeLike(new SequenceNode(new RuleReferenceNode('foo'), new RuleReferenceNode('bar')));
+        $this->createSequence($grammar)->parse('foo bar', $context)->getResult()->shouldBeLike(new SequenceNode(array(new RuleReferenceNode('foo'), new RuleReferenceNode('bar'))));
         $this->createSequence($grammar)->parse('foo bar', $context)->getRest()->shouldBe('');
 
         $this->createSequence($grammar)->parse('foo the bar', $context)->isSuccess()->shouldBe(true);
-        $this->createSequence($grammar)->parse('foo the bar', $context)->getResult()->shouldBeLike(new SequenceNode(new SequenceNode(new RuleReferenceNode('foo'), new RuleReferenceNode('the')), new RuleReferenceNode('bar')));
+        $this->createSequence($grammar)->parse('foo the bar', $context)->getResult()->shouldBeLike(new SequenceNode(array(new RuleReferenceNode('foo'), new RuleReferenceNode('the'), new RuleReferenceNode('bar'))));
         $this->createSequence($grammar)->parse('foo the bar', $context)->getRest()->shouldBe('');
     }
 
@@ -135,11 +135,11 @@ class BinaryRuleFactorySpec extends ObjectBehavior
         $context = new Context();
 
         $this->createChoice($grammar)->parse('foo / bar', $context)->isSuccess()->shouldBe(true);
-        $this->createChoice($grammar)->parse('foo / bar', $context)->getResult()->shouldBeLike(new ChoiceNode(new RuleReferenceNode('foo'), new RuleReferenceNode('bar')));
+        $this->createChoice($grammar)->parse('foo / bar', $context)->getResult()->shouldBeLike(new ChoiceNode(array(new RuleReferenceNode('foo'), new RuleReferenceNode('bar'))));
         $this->createChoice($grammar)->parse('foo / bar', $context)->getRest()->shouldBe('');
 
         $this->createChoice($grammar)->parse('foo / the / bar', $context)->isSuccess()->shouldBe(true);
-        $this->createChoice($grammar)->parse('foo / the / bar', $context)->getResult()->shouldBeLike(new ChoiceNode(new ChoiceNode(new RuleReferenceNode('foo'), new RuleReferenceNode('the')), new RuleReferenceNode('bar')));
+        $this->createChoice($grammar)->parse('foo / the / bar', $context)->getResult()->shouldBeLike(new ChoiceNode(array(new RuleReferenceNode('foo'), new RuleReferenceNode('the'), new RuleReferenceNode('bar'))));
         $this->createChoice($grammar)->parse('foo / the / bar', $context)->getRest()->shouldBe('');
     }
 

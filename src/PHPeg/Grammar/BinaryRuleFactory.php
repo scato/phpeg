@@ -7,6 +7,7 @@ use PHPeg\Combinator\CharacterClass;
 use PHPeg\Combinator\Choice;
 use PHPeg\Combinator\Label;
 use PHPeg\Combinator\Literal;
+use PHPeg\Combinator\MatchedString;
 use PHPeg\Combinator\RuleReference;
 use PHPeg\Combinator\Sequence;
 use PHPeg\Combinator\ZeroOrMore;
@@ -17,109 +18,93 @@ class BinaryRuleFactory
     public function createLabel(GrammarInterface $grammar)
     {
         // Label = name:Identifier _ ":" _ expression:Predicate { new LabelNode($name, $expression); } / Predicate;
-        return new Choice(
+        return new Choice(array(
             new Action(
-                new Sequence(
-                    new Sequence(
-                        new Sequence(
-                            new Sequence(
-                                new Label('name', new RuleReference($grammar, 'Identifier')),
-                                new RuleReference($grammar, '_')
-                            ),
-                            new Literal(':')
-                        ),
-                        new RuleReference($grammar, '_')
-                    ),
+                new Sequence(array(
+                    new Label('name', new RuleReference($grammar, 'Identifier')),
+                    new RuleReference($grammar, '_'),
+                    new Literal(':'),
+                    new RuleReference($grammar, '_'),
                     new Label('expression', new RuleReference($grammar, 'Predicate'))
-                ),
+                )),
                 'return new \PHPeg\Grammar\Tree\LabelNode($name, $expression);'
             ),
             new RuleReference($grammar, 'Predicate')
-        );
+        ));
     }
 
     public function createSequence(GrammarInterface $grammar)
     {
-        // Sequence = left:Label (left:(_ right:Label { new SequenceNode($left, $right); }))* { return $left; };
+        // Sequence = first:Label rest:(_ next:Label { return $next; })* { return empty($rest) ? $first : new SequenceNode(array_merge(array($first), $rest)); };
         return new Action(
-            new Sequence(
-                new Label('left', new RuleReference($grammar, 'Label')),
-                new ZeroOrMore(
-                    new Label(
-                        'left',
+            new Sequence(array(
+                new Label('first', new RuleReference($grammar, 'Label')),
+                new Label(
+                    'rest',
+                    new ZeroOrMore(
                         new Action(
-                            new Sequence(
+                            new Sequence(array(
                                 new RuleReference($grammar, '_'),
-                                new Label('right', new RuleReference($grammar, 'Label'))
-                            ),
-                            'return new \PHPeg\Grammar\Tree\SequenceNode($left, $right);'
+                                new Label('next', new RuleReference($grammar, 'Label'))
+                            )),
+                            'return $next;'
                         )
                     )
                 )
-            ),
-            'return $left;'
+            )),
+            'return empty($rest) ? $first : new \PHPeg\Grammar\Tree\SequenceNode(array_merge(array($first), $rest));'
         );
     }
 
     public function createCode(GrammarInterface $grammar)
     {
-        // Code = ([^{}] / "{" Code "}")*;
-        return new ZeroOrMore(new Choice(
+        // Code = $([^{}] / "{" Code "}")*;
+        return new MatchedString(new ZeroOrMore(new Choice(array(
             new CharacterClass('^{}'),
-            new Sequence(new Sequence(new Literal('{'), new RuleReference($grammar, 'Code')), new Literal('}'))
-        ));
+            new Sequence(array(new Literal('{'), new RuleReference($grammar, 'Code'), new Literal('}')))
+        ))));
     }
 
     public function createAction(GrammarInterface $grammar)
     {
         // Action = expression:Sequence _ "{" code:Code "}" { new ActionNode($expression, trim($code)); } / Sequence;
-        return new Choice(
+        return new Choice(array(
             new Action(
-                new Sequence(
-                    new Sequence(
-                        new Sequence(
-                            new Sequence(
-                                new Label('expression', new RuleReference($grammar, 'Sequence')),
-                                new RuleReference($grammar, '_')
-                            ),
-                            new Literal('{')
-                        ),
-                        new Label('code', new RuleReference($grammar, 'Code'))
-                    ),
+                new Sequence(array(
+                    new Label('expression', new RuleReference($grammar, 'Sequence')),
+                    new RuleReference($grammar, '_'),
+                    new Literal('{'),
+                    new Label('code', new RuleReference($grammar, 'Code')),
                     new Literal('}')
-                ),
+                )),
                 'return new \PHPeg\Grammar\Tree\ActionNode($expression, trim($code));'
             ),
             new RuleReference($grammar, 'Sequence')
-        );
+        ));
     }
 
     public function createChoice(GrammarInterface $grammar)
     {
-        // Choice = left:Action (left:(_ "/" _ right:Action { new ChoiceNode($left, $right); }))* { return $left; };
+        // Choice = first:Action rest:(_ "/" _ next:Action { return $next; })* { return empty($rest) ? $first : new ChoiceNode(array_merge(array($first), $rest)); };
         return new Action(
-            new Sequence(
-                new Label('left', new RuleReference($grammar, 'Action')),
-                new ZeroOrMore(
-                    new Label(
-                        'left',
+            new Sequence(array(
+                new Label('first', new RuleReference($grammar, 'Action')),
+                new Label(
+                    'rest',
+                    new ZeroOrMore(
                         new Action(
-                            new Sequence(
-                                new Sequence(
-                                    new Sequence(
-                                        new RuleReference($grammar, '_'),
-                                        new Literal("/")
-                                    ),
-                                    new RuleReference($grammar, '_')
-                                ),
-                                new Label('right', new RuleReference($grammar, 'Action'))
-                            ),
-                            'return new \PHPeg\Grammar\Tree\ChoiceNode($left, $right);'
+                            new Sequence(array(
+                                new RuleReference($grammar, '_'),
+                                new Literal("/"),
+                                new RuleReference($grammar, '_'),
+                                new Label('next', new RuleReference($grammar, 'Action'))
+                            )),
+                            'return $next;'
                         )
                     )
                 )
-            ),
-            'return $left;'
+            )),
+            'return empty($rest) ? $first : new \PHPeg\Grammar\Tree\ChoiceNode(array_merge(array($first), $rest));'
         );
     }
 

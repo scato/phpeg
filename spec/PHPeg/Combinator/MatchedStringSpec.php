@@ -30,7 +30,7 @@ class MatchedStringSpec extends ObjectBehavior
         $this->parse('foobar', $context)->getRest()->shouldBe('bar');
     }
 
-    function it_should_result_in_the_string_that_was_matched(ExpressionInterface $expression, ContextInterface $context)
+    function it_should_result_in_the_string_that_was_matched(ContextInterface $context)
     {
         $this->parse('foobar', $context)->getResult()->shouldBe('foo');
     }
