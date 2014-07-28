@@ -10,16 +10,11 @@ class SequenceNodeSpec extends ObjectBehavior
 {
     function let(ExpressionInterface $left, ExpressionInterface $right)
     {
-        $this->beConstructedWith($left, $right);
+        $this->beConstructedWith(array($left, $right));
     }
 
-    function it_has_a_left_operand(ExpressionInterface $left)
+    function it_has_expressions(ExpressionInterface $left, ExpressionInterface $right)
     {
-        $this->getLeft()->shouldBe($left);
-    }
-
-    function it_has_a_right_operand(ExpressionInterface $right)
-    {
-        $this->getRight()->shouldBe($right);
+        $this->getExpressions()->shouldBe(array($left, $right));
     }
 }
