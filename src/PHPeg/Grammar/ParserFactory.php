@@ -25,7 +25,7 @@ class ParserFactory
 
     public function createParser()
     {
-        $grammar = new Grammar();
+        $grammar = new Grammar('Grammar');
 
         $grammar->addRule('_',              $this->terminalRuleFactory->createWhitespace());
         $grammar->addRule('Literal',        $this->terminalRuleFactory->createLiteral());
@@ -51,8 +51,6 @@ class ParserFactory
         $grammar->addRule('Rule',           $this->grammarRuleFactory->createRule($grammar));
         $grammar->addRule('Grammar',        $this->grammarRuleFactory->createGrammar($grammar));
 
-        $start = $grammar->getRule('Grammar');
-
-        return new Parser($start);
+        return new Parser($grammar);
     }
 }

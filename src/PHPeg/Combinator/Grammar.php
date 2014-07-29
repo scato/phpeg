@@ -7,7 +7,13 @@ use PHPeg\GrammarInterface;
 
 class Grammar implements GrammarInterface
 {
+    private $start;
     private $rules = array();
+
+    public function __construct($start)
+    {
+        $this->start = $start;
+    }
 
     /**
      * @param string $name
@@ -31,7 +37,7 @@ class Grammar implements GrammarInterface
     {
         $context = new Context();
 
-        return $this->getRule('start')->parse($string, $context);
+        return $this->getRule($this->start)->parse($string, $context);
     }
 
     public function addRule($name, ExpressionInterface $rule)
