@@ -12,10 +12,9 @@ class GrammarSpec extends ObjectBehavior
 {
     function let(ExpressionInterface $start, ExpressionInterface $name)
     {
-        $this->beConstructedWith('start');
-
         $this->addRule('start', $start);
         $this->addRule('name', $name);
+        $this->setStartSymbol('start');
     }
 
     function it_should_contain_rules(ExpressionInterface $name)
@@ -26,6 +25,11 @@ class GrammarSpec extends ObjectBehavior
     function it_should_fail_on_non_existent_rules()
     {
         $this->shouldThrow('\InvalidArgumentException')->duringGetRule('foo');
+    }
+
+    function it_should_fail_on_non_existent_start_symbol()
+    {
+        $this->shouldThrow('\InvalidArgumentException')->duringSetStartSymbol('foo');
     }
 
     function it_should_start_parsing_at_the_start_symbol(ExpressionInterface $start, ContextInterface $context)

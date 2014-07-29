@@ -7,13 +7,8 @@ use PHPeg\GrammarInterface;
 
 class Grammar implements GrammarInterface
 {
-    private $start;
+    private $startSymbol;
     private $rules = array();
-
-    public function __construct($start)
-    {
-        $this->start = $start;
-    }
 
     /**
      * @param string $name
@@ -37,11 +32,20 @@ class Grammar implements GrammarInterface
     {
         $context = new Context();
 
-        return $this->getRule($this->start)->parse($string, $context);
+        return $this->getRule($this->startSymbol)->parse($string, $context);
     }
 
     public function addRule($name, ExpressionInterface $rule)
     {
         $this->rules[$name] = $rule;
+    }
+
+    public function setStartSymbol($startSymbol)
+    {
+        if (!isset($this->rules[$startSymbol])) {
+            throw new \InvalidArgumentException("No rule with name '$startSymbol' found");
+        }
+
+        $this->startSymbol = $startSymbol;
     }
 }
