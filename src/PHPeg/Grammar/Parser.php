@@ -4,21 +4,22 @@ namespace PHPeg\Grammar;
 
 use PHPeg\Combinator\Context;
 use PHPeg\ExpressionInterface;
+use PHPeg\GrammarInterface;
 
 class Parser
 {
-    private $start;
+    private $grammar;
 
-    public function __construct(ExpressionInterface $start)
+    public function __construct(GrammarInterface $grammar)
     {
-        $this->start = $start;
+        $this->grammar = $grammar;
     }
 
     public function parse($string)
     {
         $context = new Context();
 
-        $result = $this->start->parse($string, $context);
+        $result = $this->grammar->parse($string, $context);
 
         if (!$result->isSuccess()) {
             throw new \InvalidArgumentException("Could not parse '$string'");
