@@ -12,6 +12,8 @@ class GrammarSpec extends ObjectBehavior
 {
     function let(ExpressionInterface $start, ExpressionInterface $name)
     {
+        $this->beConstructedWith('start');
+
         $this->addRule('start', $start);
         $this->addRule('name', $name);
     }
