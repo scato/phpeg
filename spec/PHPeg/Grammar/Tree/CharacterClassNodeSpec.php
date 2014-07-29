@@ -2,6 +2,7 @@
 
 namespace spec\PHPeg\Grammar\Tree;
 
+use PHPeg\Grammar\Tree\VisitorInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -20,5 +21,12 @@ class CharacterClassNodeSpec extends ObjectBehavior
     function it_has_a_string()
     {
         $this->getString()->shouldBe('a-z');
+    }
+
+    function it_should_accept_a_visitor(VisitorInterface $visitor)
+    {
+        $visitor->visitCharacterClass($this)->shouldBeCalled();
+
+        $this->accept($visitor);
     }
 }

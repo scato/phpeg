@@ -17,9 +17,4 @@ abstract class StringNode implements NodeInterface
     {
         return $this->string;
     }
-
-    public function accept(VisitorInterface $visitor)
-    {
-        // TODO: Implement accept() method.
-    }
 }

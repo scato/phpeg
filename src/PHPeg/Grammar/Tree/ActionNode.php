@@ -6,7 +6,7 @@ class ActionNode extends UnaryNode implements NodeInterface
 {
     private $code;
 
-    function __construct($expression, $code)
+    function __construct(NodeInterface $expression, $code)
     {
         parent::__construct($expression);
 
@@ -21,6 +21,8 @@ class ActionNode extends UnaryNode implements NodeInterface
 
     public function accept(VisitorInterface $visitor)
     {
+        parent::accept($visitor);
+
         $visitor->visitAction($this);
     }
 }

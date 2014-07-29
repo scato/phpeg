@@ -3,6 +3,7 @@
 namespace spec\PHPeg\Grammar\Tree;
 
 use PHPeg\Grammar\Tree\RuleNode;
+use PHPeg\Grammar\Tree\VisitorInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -31,5 +32,13 @@ class GrammarNodeSpec extends ObjectBehavior
     function it_has_rules(RuleNode $rule)
     {
         $this->getRules()->shouldBe(array($rule));
+    }
+
+    function it_should_accept_a_visitor(RuleNode $rule, VisitorInterface $visitor)
+    {
+        $rule->accept($visitor)->shouldBeCalled();
+        $visitor->visitGrammar($this)->shouldBeCalled();
+
+        $this->accept($visitor);
     }
 }

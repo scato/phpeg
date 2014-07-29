@@ -2,13 +2,14 @@
 
 namespace spec\PHPeg\Grammar\Tree;
 
-use PHPeg\ExpressionInterface;
+use PHPeg\Grammar\Tree\NodeInterface;
+use PHPeg\Grammar\Tree\VisitorInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class RuleNodeSpec extends ObjectBehavior
 {
-    function let(ExpressionInterface $expression)
+    function let(NodeInterface $expression)
     {
         $this->beConstructedWith('foo', $expression);
     }
@@ -23,8 +24,16 @@ class RuleNodeSpec extends ObjectBehavior
         $this->getName()->shouldBe('foo');
     }
 
-    function it_has_an_expression(ExpressionInterface $expression)
+    function it_has_an_expression(NodeInterface $expression)
     {
         $this->getExpression()->shouldBe($expression);
+    }
+
+    function it_should_accept_a_visitor(NodeInterface $expression, VisitorInterface $visitor)
+    {
+        $expression->accept($visitor)->shouldBeCalled();
+        $visitor->visitRule($this)->shouldBeCalled();
+
+        $this->accept($visitor);
     }
 }

@@ -8,6 +8,6 @@ class AnyNode implements NodeInterface
 {
     public function accept(VisitorInterface $visitor)
     {
-        // TODO: Implement accept() method.
+        $visitor->visitAny($this);
     }
 }

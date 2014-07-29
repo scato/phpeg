@@ -32,6 +32,10 @@ class GrammarNode implements NodeInterface
 
     public function accept(VisitorInterface $visitor)
     {
-        // TODO: Implement accept() method.
+        foreach ($this->rules as $rule) {
+            $rule->accept($visitor);
+        }
+
+        $visitor->visitGrammar($this);
     }
 }
