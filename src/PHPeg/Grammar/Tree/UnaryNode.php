@@ -8,7 +8,7 @@ abstract class UnaryNode implements NodeInterface
 {
     private $expression;
 
-    public function __construct($expression)
+    public function __construct(NodeInterface $expression)
     {
         $this->expression = $expression;
     }
@@ -20,6 +20,6 @@ abstract class UnaryNode implements NodeInterface
 
     public function accept(VisitorInterface $visitor)
     {
-        // TODO: Implement accept() method.
+        $this->expression->accept($visitor);
     }
 }

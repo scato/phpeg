@@ -6,6 +6,8 @@ class ZeroOrMoreNode extends UnaryNode implements NodeInterface
 {
     public function accept(VisitorInterface $visitor)
     {
-        // TODO: Implement accept() method.
+        parent::accept($visitor);
+
+        $visitor->visitZeroOrMore($this);
     }
 }
