@@ -24,6 +24,11 @@ class SequenceNodeSpec extends ObjectBehavior
         $this->getExpressions()->shouldBe(array($left, $right));
     }
 
+    function it_has_a_length()
+    {
+        $this->getLength()->shouldBe(2);
+    }
+
     function it_should_accept_a_visitor(NodeInterface $left, NodeInterface $right, VisitorInterface $visitor)
     {
         $left->accept($visitor)->shouldBeCalled();

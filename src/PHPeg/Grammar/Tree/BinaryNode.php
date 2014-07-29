@@ -18,6 +18,11 @@ abstract class BinaryNode implements NodeInterface
         return $this->expressions;
     }
 
+    public function getLength()
+    {
+        return count($this->expressions);
+    }
+
     public function accept(VisitorInterface $visitor)
     {
         foreach ($this->expressions as $expression) {
