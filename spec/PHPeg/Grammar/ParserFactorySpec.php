@@ -26,7 +26,7 @@ class ParserFactorySpec extends ObjectBehavior
 
     function it_should_parse_a_grammar()
     {
-        $definition = 'grammar Foo { start foo = the; the = bar; }';
+        $definition = ' grammar Foo { start foo = the; the = bar; } ';
 
         $tree = new GrammarNode('Foo', 'foo', array(
             new RuleNode('foo', new RuleReferenceNode('the')),

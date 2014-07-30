@@ -12,6 +12,7 @@ interface VisitorInterface
     public function visitGrammar(GrammarNode $node);
     public function visitLabel(LabelNode $node);
     public function visitLiteral(LiteralNode $node);
+    public function visitMatchedString(MatchedStringNode $node);
     public function visitNotPredicate(NotPredicateNode $node);
     public function visitOneOrMore(OneOrMoreNode $node);
     public function visitOptional(OptionalNode $node);

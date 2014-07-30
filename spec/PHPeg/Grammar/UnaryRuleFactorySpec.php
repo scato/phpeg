@@ -7,6 +7,7 @@ use PHPeg\Combinator\Failure;
 use PHPeg\Combinator\Success;
 use PHPeg\ExpressionInterface;
 use PHPeg\Grammar\Tree\AndPredicateNode;
+use PHPeg\Grammar\Tree\MatchedStringNode;
 use PHPeg\Grammar\Tree\NotPredicateNode;
 use PHPeg\Grammar\Tree\OneOrMoreNode;
 use PHPeg\Grammar\Tree\OptionalNode;
@@ -48,6 +49,7 @@ class UnaryRuleFactorySpec extends ObjectBehavior
         $grammar->getRule('ZeroOrMore')->willReturn($this->createZeroOrMore($grammar));
         $grammar->getRule('OneOrMore')->willReturn($this->createOneOrMore($grammar));
         $grammar->getRule('Optional')->willReturn($this->createOptional($grammar));
+        $grammar->getRule('MatchedString')->willReturn($this->createMatchedString($grammar));
         $grammar->getRule('Repetition')->willReturn($this->createRepetition($grammar));
     }
 
@@ -118,7 +120,18 @@ class UnaryRuleFactorySpec extends ObjectBehavior
         $this->createNotPredicate($grammar)->parse('! foo', $context)->getResult()->shouldBeLike(new NotPredicateNode(new RuleReferenceNode('foo')));
         $this->createNotPredicate($grammar)->parse('! foo', $context)->getRest()->shouldBe('');
 
-        $this->createNotPredicate($grammar)->parse('& foo', $context)->isSuccess()->shouldBe(false);
+        $this->createNotPredicate($grammar)->parse('$ foo', $context)->isSuccess()->shouldBe(false);
+    }
+
+    function it_should_create_a_matched_string_rule(GrammarInterface $grammar)
+    {
+        $context = new Context();
+
+        $this->createMatchedString($grammar)->parse('$ foo', $context)->isSuccess()->shouldBe(true);
+        $this->createMatchedString($grammar)->parse('$ foo', $context)->getResult()->shouldBeLike(new MatchedStringNode(new RuleReferenceNode('foo')));
+        $this->createMatchedString($grammar)->parse('$ foo', $context)->getRest()->shouldBe('');
+
+        $this->createMatchedString($grammar)->parse('& foo', $context)->isSuccess()->shouldBe(false);
     }
 
     function it_should_create_a_predicate_rule(GrammarInterface $grammar)

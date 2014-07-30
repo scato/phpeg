@@ -33,7 +33,7 @@ class GrammarRuleFactory
         // Grammar = "grammar" _ name:Identifier _ "{"
         //     _ "start" _ start:Rule
         //     rules:(_ rule:Rule { return $rule; })*
-        //     "}" { return new GrammarNode($name, $start->getName(), array_merge(array($start), $rules)); };
+        //     _ "}" { return new GrammarNode($name, $start->getName(), array_merge(array($start), $rules)); };
         return new Action(
             new Sequence(array(
                 new Literal('grammar'),
@@ -55,6 +55,19 @@ class GrammarRuleFactory
                 new Literal('}')
             )),
             'return new \PHPeg\Grammar\Tree\GrammarNode($name, $start->getName(), array_merge(array($start), $rules));'
+        );
+    }
+
+    public function createPegFile(GrammarInterface $grammar)
+    {
+        // PegFile = _ grammar:Grammar _ { return $grammar; };
+        return new Action(
+            new Sequence(array(
+                new RuleReference($grammar, '_'),
+                new Label('grammar', new RuleReference($grammar, 'Grammar')),
+                new RuleReference($grammar, '_')
+            )),
+            'return $grammar;'
         );
     }
 }

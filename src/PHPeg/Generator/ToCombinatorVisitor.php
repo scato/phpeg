@@ -10,6 +10,7 @@ use PHPeg\Combinator\Choice;
 use PHPeg\Combinator\Grammar;
 use PHPeg\Combinator\Label;
 use PHPeg\Combinator\Literal;
+use PHPeg\Combinator\MatchedString;
 use PHPeg\Combinator\NotPredicate;
 use PHPeg\Combinator\OneOrMore;
 use PHPeg\Combinator\Optional;
@@ -24,6 +25,7 @@ use PHPeg\Grammar\Tree\ChoiceNode;
 use PHPeg\Grammar\Tree\GrammarNode;
 use PHPeg\Grammar\Tree\LabelNode;
 use PHPeg\Grammar\Tree\LiteralNode;
+use PHPeg\Grammar\Tree\MatchedStringNode;
 use PHPeg\Grammar\Tree\NotPredicateNode;
 use PHPeg\Grammar\Tree\OneOrMoreNode;
 use PHPeg\Grammar\Tree\OptionalNode;
@@ -106,6 +108,11 @@ class ToCombinatorVisitor implements VisitorInterface
     public function visitLiteral(LiteralNode $node)
     {
         $this->results[] = new Literal($node->getString());
+    }
+
+    public function visitMatchedString(MatchedStringNode $node)
+    {
+        $this->results[] = new MatchedString($this->getResult());
     }
 
     public function visitNotPredicate(NotPredicateNode $node)

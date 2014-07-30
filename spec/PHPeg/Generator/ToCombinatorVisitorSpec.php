@@ -10,6 +10,7 @@ use PHPeg\Combinator\Choice;
 use PHPeg\Combinator\Grammar;
 use PHPeg\Combinator\Label;
 use PHPeg\Combinator\Literal;
+use PHPeg\Combinator\MatchedString;
 use PHPeg\Combinator\NotPredicate;
 use PHPeg\Combinator\OneOrMore;
 use PHPeg\Combinator\Optional;
@@ -24,6 +25,7 @@ use PHPeg\Grammar\Tree\ChoiceNode;
 use PHPeg\Grammar\Tree\GrammarNode;
 use PHPeg\Grammar\Tree\LabelNode;
 use PHPeg\Grammar\Tree\LiteralNode;
+use PHPeg\Grammar\Tree\MatchedStringNode;
 use PHPeg\Grammar\Tree\NotPredicateNode;
 use PHPeg\Grammar\Tree\OneOrMoreNode;
 use PHPeg\Grammar\Tree\OptionalNode;
@@ -112,6 +114,15 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
         $literalNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($literal);
+    }
+
+    function it_should_create_a_matched_string_from_a_node(Grammar $grammar)
+    {
+        $matchedStringNode = new MatchedStringNode(new RuleReferenceNode('foo'));
+        $matchedString = new MatchedString(new RuleReference($grammar->getWrappedObject(), 'foo'));
+
+        $matchedStringNode->accept($this->getWrappedObject());
+        $this->getResult()->shouldBeLike($matchedString);
     }
 
     function it_should_create_a_not_predicate_from_a_node(Grammar $grammar)
