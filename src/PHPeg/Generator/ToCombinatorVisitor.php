@@ -8,7 +8,14 @@ use PHPeg\Combinator\Any;
 use PHPeg\Combinator\CharacterClass;
 use PHPeg\Combinator\Choice;
 use PHPeg\Combinator\Grammar;
+use PHPeg\Combinator\Label;
+use PHPeg\Combinator\Literal;
+use PHPeg\Combinator\NotPredicate;
+use PHPeg\Combinator\OneOrMore;
+use PHPeg\Combinator\Optional;
 use PHPeg\Combinator\RuleReference;
+use PHPeg\Combinator\Sequence;
+use PHPeg\Combinator\ZeroOrMore;
 use PHPeg\Grammar\Tree\ActionNode;
 use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\AnyNode;
@@ -52,12 +59,6 @@ class ToCombinatorVisitor implements VisitorInterface
 
     private function getResults($count)
     {
-        // TODO: check whether the code below is actually working better than this trivial implementation
-
-        $results = $this->results;
-        $this->results = array();
-        return $results;
-
         $results = array();
 
         for ($i = 0; $i < $count; $i++) {
@@ -99,27 +100,27 @@ class ToCombinatorVisitor implements VisitorInterface
 
     public function visitLabel(LabelNode $node)
     {
-        // TODO: Implement visitLabel() method.
+        $this->results[] = new Label($node->getName(), $this->getResult());
     }
 
     public function visitLiteral(LiteralNode $node)
     {
-        // TODO: Implement visitLiteral() method.
+        $this->results[] = new Literal($node->getString());
     }
 
     public function visitNotPredicate(NotPredicateNode $node)
     {
-        // TODO: Implement visitNotPredicate() method.
+        $this->results[] = new NotPredicate($this->getResult());
     }
 
     public function visitOneOrMore(OneOrMoreNode $node)
     {
-        // TODO: Implement visitOneOrMore() method.
+        $this->results[] = new OneOrMore($this->getResult());
     }
 
     public function visitOptional(OptionalNode $node)
     {
-        // TODO: Implement visitOptional() method.
+        $this->results[] = new Optional($this->getResult());
     }
 
     public function visitRule(RuleNode $node)
@@ -134,11 +135,11 @@ class ToCombinatorVisitor implements VisitorInterface
 
     public function visitSequence(SequenceNode $node)
     {
-        // TODO: Implement visitSequence() method.
+        $this->results[] = new Sequence($this->getResults($node->getLength()));
     }
 
     public function visitZeroOrMore(ZeroOrMoreNode $node)
     {
-        // TODO: Implement visitZeroOrMore() method.
+        $this->results[] = new ZeroOrMore($this->getResult());
     }
 }
