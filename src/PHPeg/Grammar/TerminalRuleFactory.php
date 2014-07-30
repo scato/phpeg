@@ -18,7 +18,7 @@ class TerminalRuleFactory
 {
     public function createWhitespace()
     {
-        // Whitespace = [ \n\r\t]* { return null; };
+        // _ = [ \n\r\t]* { return null; };
         return new Action(
             new ZeroOrMore(new CharacterClass(' \\n\\r\\t')),
             'return null;'
@@ -71,7 +71,7 @@ class TerminalRuleFactory
 
     public function createRuleReference(GrammarInterface $grammar)
     {
-        // RuleReference = name:Identifier { new RuleReferenceNode($name); };
+        // RuleReference = name:Identifier { return new RuleReferenceNode($name); };
         return new Action(
             new Label('name', new RuleReference($grammar, 'Identifier')
             ),

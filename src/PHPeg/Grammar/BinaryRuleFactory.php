@@ -17,7 +17,7 @@ class BinaryRuleFactory
 {
     public function createLabel(GrammarInterface $grammar)
     {
-        // Label = name:Identifier _ ":" _ expression:Predicate { new LabelNode($name, $expression); } / Predicate;
+        // Label = name:Identifier _ ":" _ expression:Predicate { return new LabelNode($name, $expression); } / Predicate;
         return new Choice(array(
             new Action(
                 new Sequence(array(
@@ -67,7 +67,7 @@ class BinaryRuleFactory
 
     public function createAction(GrammarInterface $grammar)
     {
-        // Action = expression:Sequence _ "{" code:Code "}" { new ActionNode($expression, trim($code)); } / Sequence;
+        // Action = expression:Sequence _ "{" code:Code "}" { return new ActionNode($expression, trim($code)); } / Sequence;
         return new Choice(array(
             new Action(
                 new Sequence(array(
