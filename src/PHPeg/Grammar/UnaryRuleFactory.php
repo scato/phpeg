@@ -88,12 +88,26 @@ class UnaryRuleFactory
         );
     }
 
+    public function createMatchedString(GrammarInterface $grammar)
+    {
+        // MatchedString = "$" _ expression:Repetition { return new MatchedStringNode($expression); };
+        return new Action(
+            new Sequence(array(
+                new Literal('$'),
+                new RuleReference($grammar, '_'),
+                new Label('expression', new RuleReference($grammar, 'Repetition'))
+            )),
+            'return new \PHPeg\Grammar\Tree\MatchedStringNode($expression);'
+        );
+    }
+
     public function createPredicate(GrammarInterface $grammar)
     {
-        // Predicate = AndPredicate / NotPredicate / Repetition;
+        // Predicate = AndPredicate / NotPredicate / MatchedString / Repetition;
         return new Choice(array(
             new RuleReference($grammar, 'AndPredicate'),
             new RuleReference($grammar, 'NotPredicate'),
+            new RuleReference($grammar, 'MatchedString'),
             new RuleReference($grammar, 'Repetition')
         ));
     }

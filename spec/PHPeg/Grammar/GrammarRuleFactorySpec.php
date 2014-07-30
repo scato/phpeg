@@ -62,7 +62,9 @@ class GrammarRuleFactorySpec extends ObjectBehavior
         $grammar->getRule('_')->willReturn($whitespace);
         $grammar->getRule('Identifier')->willReturn($identifier);
         $grammar->getRule('Expression')->willReturn($expression);
+
         $grammar->getRule('Rule')->willReturn($this->createRule($grammar));
+        $grammar->getRule('Grammar')->willReturn($this->createGrammar($grammar));
     }
 
     function it_should_create_a_rule_rule(GrammarInterface $grammar)
@@ -91,5 +93,20 @@ class GrammarRuleFactorySpec extends ObjectBehavior
         $this->createGrammar($grammar)->parse($definition, $context)->isSuccess()->shouldBe(true);
         $this->createGrammar($grammar)->parse($definition, $context)->getResult()->shouldBeLike($tree);
         $this->createGrammar($grammar)->parse($definition, $context)->getRest()->shouldBe('');
+    }
+
+    function it_should_create_a_peg_file_rule(GrammarInterface $grammar)
+    {
+        $context = new Context();
+
+        $definition = ' grammar foo { start foo = the; } ';
+
+        $tree = new GrammarNode('foo', 'foo', array(
+            new RuleNode('foo', new RuleReferenceNode('the')),
+        ));
+
+        $this->createPegFile($grammar)->parse($definition, $context)->isSuccess()->shouldBe(true);
+        $this->createPegFile($grammar)->parse($definition, $context)->getResult()->shouldBeLike($tree);
+        $this->createPegFile($grammar)->parse($definition, $context)->getRest()->shouldBe('');
     }
 }

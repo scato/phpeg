@@ -27,7 +27,23 @@ class ParserFactory
     {
         $grammar = new Grammar();
 
-        $grammar->addRule('_',              $this->terminalRuleFactory->createWhitespace());
+        $grammar->addRule('PegFile',        $this->grammarRuleFactory->createPegFile($grammar));
+        $grammar->addRule('Grammar',        $this->grammarRuleFactory->createGrammar($grammar));
+        $grammar->addRule('Rule',           $this->grammarRuleFactory->createRule($grammar));
+        $grammar->addRule('Label',          $this->binaryRuleFactory->createLabel($grammar));
+        $grammar->addRule('Sequence',       $this->binaryRuleFactory->createSequence($grammar));
+        $grammar->addRule('Code',           $this->binaryRuleFactory->createCode($grammar));
+        $grammar->addRule('Action',         $this->binaryRuleFactory->createAction($grammar));
+        $grammar->addRule('Choice',         $this->binaryRuleFactory->createChoice($grammar));
+        $grammar->addRule('Expression',     $this->binaryRuleFactory->createExpression($grammar));
+        $grammar->addRule('ZeroOrMore',     $this->unaryRuleFactory->createZeroOrMore($grammar));
+        $grammar->addRule('OneOrMore',      $this->unaryRuleFactory->createOneOrMore($grammar));
+        $grammar->addRule('Optional',       $this->unaryRuleFactory->createOptional($grammar));
+        $grammar->addRule('Repetition',     $this->unaryRuleFactory->createRepetition($grammar));
+        $grammar->addRule('AndPredicate',   $this->unaryRuleFactory->createAndPredicate($grammar));
+        $grammar->addRule('NotPredicate',   $this->unaryRuleFactory->createNotPredicate($grammar));
+        $grammar->addRule('MatchedString',  $this->unaryRuleFactory->createMatchedString($grammar));
+        $grammar->addRule('Predicate',      $this->unaryRuleFactory->createPredicate($grammar));
         $grammar->addRule('Literal',        $this->terminalRuleFactory->createLiteral());
         $grammar->addRule('Any',            $this->terminalRuleFactory->createAny());
         $grammar->addRule('CharacterClass', $this->terminalRuleFactory->createCharacterClass());
@@ -35,23 +51,9 @@ class ParserFactory
         $grammar->addRule('RuleReference',  $this->terminalRuleFactory->createRuleReference($grammar));
         $grammar->addRule('SubExpression',  $this->terminalRuleFactory->createSubExpression($grammar));
         $grammar->addRule('Terminal',       $this->terminalRuleFactory->createTerminal($grammar));
-        $grammar->addRule('ZeroOrMore',     $this->unaryRuleFactory->createZeroOrMore($grammar));
-        $grammar->addRule('OneOrMore',      $this->unaryRuleFactory->createOneOrMore($grammar));
-        $grammar->addRule('Optional',       $this->unaryRuleFactory->createOptional($grammar));
-        $grammar->addRule('Repetition',     $this->unaryRuleFactory->createRepetition($grammar));
-        $grammar->addRule('AndPredicate',   $this->unaryRuleFactory->createAndPredicate($grammar));
-        $grammar->addRule('NotPredicate',   $this->unaryRuleFactory->createNotPredicate($grammar));
-        $grammar->addRule('Predicate',      $this->unaryRuleFactory->createPredicate($grammar));
-        $grammar->addRule('Label',          $this->binaryRuleFactory->createLabel($grammar));
-        $grammar->addRule('Sequence',       $this->binaryRuleFactory->createSequence($grammar));
-        $grammar->addRule('Code',           $this->binaryRuleFactory->createCode($grammar));
-        $grammar->addRule('Action',         $this->binaryRuleFactory->createAction($grammar));
-        $grammar->addRule('Choice',         $this->binaryRuleFactory->createChoice($grammar));
-        $grammar->addRule('Expression',     $this->binaryRuleFactory->createExpression($grammar));
-        $grammar->addRule('Rule',           $this->grammarRuleFactory->createRule($grammar));
-        $grammar->addRule('Grammar',        $this->grammarRuleFactory->createGrammar($grammar));
+        $grammar->addRule('_',              $this->terminalRuleFactory->createWhitespace());
 
-        $grammar->setStartSymbol('Grammar');
+        $grammar->setStartSymbol('PegFile');
 
         return new Parser($grammar);
     }
