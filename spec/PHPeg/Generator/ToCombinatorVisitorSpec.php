@@ -8,15 +8,29 @@ use PHPeg\Combinator\Any;
 use PHPeg\Combinator\CharacterClass;
 use PHPeg\Combinator\Choice;
 use PHPeg\Combinator\Grammar;
+use PHPeg\Combinator\Label;
+use PHPeg\Combinator\Literal;
+use PHPeg\Combinator\NotPredicate;
+use PHPeg\Combinator\OneOrMore;
+use PHPeg\Combinator\Optional;
 use PHPeg\Combinator\RuleReference;
+use PHPeg\Combinator\Sequence;
+use PHPeg\Combinator\ZeroOrMore;
 use PHPeg\Grammar\Tree\ActionNode;
 use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\AnyNode;
 use PHPeg\Grammar\Tree\CharacterClassNode;
 use PHPeg\Grammar\Tree\ChoiceNode;
 use PHPeg\Grammar\Tree\GrammarNode;
+use PHPeg\Grammar\Tree\LabelNode;
+use PHPeg\Grammar\Tree\LiteralNode;
+use PHPeg\Grammar\Tree\NotPredicateNode;
+use PHPeg\Grammar\Tree\OneOrMoreNode;
+use PHPeg\Grammar\Tree\OptionalNode;
 use PHPeg\Grammar\Tree\RuleNode;
 use PHPeg\Grammar\Tree\RuleReferenceNode;
+use PHPeg\Grammar\Tree\SequenceNode;
+use PHPeg\Grammar\Tree\ZeroOrMoreNode;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -82,11 +96,10 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
         $grammarNode->accept($this->getWrappedObject());
     }
 
-    /*
     function it_should_create_a_label_from_a_node(Grammar $grammar)
     {
-        $labelNode = new LabelNode();
-        $label = new Label();
+        $labelNode = new LabelNode('name', new RuleReferenceNode('foo'));
+        $label = new Label('name', new RuleReference($grammar->getWrappedObject(), 'foo'));
 
         $labelNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($label);
@@ -94,8 +107,8 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_a_literal_from_a_node(Grammar $grammar)
     {
-        $literalNode = new LiteralNode();
-        $literal = new Literal();
+        $literalNode = new LiteralNode('foo');
+        $literal = new Literal('foo');
 
         $literalNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($literal);
@@ -103,38 +116,29 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_a_not_predicate_from_a_node(Grammar $grammar)
     {
-        $notpredicateNode = new NotpredicateNode();
-        $notpredicate = new Notpredicate();
+        $notPredicateNode = new NotPredicateNode(new RuleReferenceNode('foo'));
+        $notPredicate = new NotPredicate(new RuleReference($grammar->getWrappedObject(), 'foo'));
 
-        $notpredicateNode->accept($this->getWrappedObject());
-        $this->getResult()->shouldBeLike($notpredicate);
+        $notPredicateNode->accept($this->getWrappedObject());
+        $this->getResult()->shouldBeLike($notPredicate);
     }
 
     function it_should_create_a_one_or_more_from_a_node(Grammar $grammar)
     {
-        $oneormoreNode = new OneormoreNode();
-        $oneormore = new Oneormore();
+        $oneOrMoreNode = new OneOrMoreNode(new RuleReferenceNode('foo'));
+        $oneOrMore = new OneOrMore(new RuleReference($grammar->getWrappedObject(), 'foo'));
 
-        $oneormoreNode->accept($this->getWrappedObject());
-        $this->getResult()->shouldBeLike($oneormore);
+        $oneOrMoreNode->accept($this->getWrappedObject());
+        $this->getResult()->shouldBeLike($oneOrMore);
     }
 
     function it_should_create_an_optional_from_a_node(Grammar $grammar)
     {
-        $optionalNode = new OptionalNode();
-        $optional = new Optional();
+        $optionalNode = new OptionalNode(new RuleReferenceNode('foo'));
+        $optional = new Optional(new RuleReference($grammar->getWrappedObject(), 'foo'));
 
         $optionalNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($optional);
-    }
-
-    function it_should_create_a_rule_from_a_node(Grammar $grammar)
-    {
-        $ruleNode = new RuleNode();
-        $rule = new Rule();
-
-        $ruleNode->accept($this->getWrappedObject());
-        $this->getResult()->shouldBeLike($rule);
     }
 
     function it_should_create_a_rule_reference_from_a_node(Grammar $grammar)
@@ -148,8 +152,8 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_a_sequence_from_a_node(Grammar $grammar)
     {
-        $sequenceNode = new SequenceNode();
-        $sequence = new Sequence();
+        $sequenceNode = new SequenceNode(array(new RuleReferenceNode('foo'), new RuleReferenceNode('bar')));
+        $sequence = new Sequence(array(new RuleReference($grammar->getWrappedObject(), 'foo'), new RuleReference($grammar->getWrappedObject(), 'bar')));
 
         $sequenceNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($sequence);
@@ -157,11 +161,28 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_a_zero_or_more_from_a_node(Grammar $grammar)
     {
-        $zeroormoreNode = new ZeroormoreNode();
-        $zeroormore = new Zeroormore();
+        $zeroOrMoreNode = new ZeroOrMoreNode(new RuleReferenceNode('foo'));
+        $zeroOrMore = new ZeroOrMore(new RuleReference($grammar->getWrappedObject(), 'foo'));
 
-        $zeroormoreNode->accept($this->getWrappedObject());
-        $this->getResult()->shouldBeLike($zeroormore);
+        $zeroOrMoreNode->accept($this->getWrappedObject());
+        $this->getResult()->shouldBeLike($zeroOrMore);
     }
-    */
+
+    function it_should_create_entire_expressions(Grammar $grammar)
+    {
+        $expressionNode = new ChoiceNode(array(
+            new RuleReferenceNode('foo'),
+            new SequenceNode(array(new RuleReferenceNode('to'), new RuleReferenceNode('the'))),
+            new RuleReferenceNode('bar')
+        ));
+
+        $expression = new Choice(array(
+            new RuleReference($grammar->getWrappedObject(), 'foo'),
+            new Sequence(array(new RuleReference($grammar->getWrappedObject(), 'to'), new RuleReference($grammar->getWrappedObject(), 'the'))),
+            new RuleReference($grammar->getWrappedObject(), 'bar')
+        ));
+
+        $expressionNode->accept($this->getWrappedObject());
+        $this->getResult()->shouldBeLike($expression);
+    }
 }
