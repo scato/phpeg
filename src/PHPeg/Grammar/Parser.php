@@ -5,8 +5,9 @@ namespace PHPeg\Grammar;
 use PHPeg\Combinator\Context;
 use PHPeg\ExpressionInterface;
 use PHPeg\GrammarInterface;
+use PHPeg\ParserInterface;
 
-class Parser
+class Parser implements ParserInterface
 {
     private $grammar;
 
@@ -17,9 +18,7 @@ class Parser
 
     public function parse($string)
     {
-        $context = new Context();
-
-        $result = $this->grammar->parse($string, $context);
+        $result = $this->grammar->parse($string);
 
         if (!$result->isSuccess()) {
             throw new \InvalidArgumentException("Could not parse '$string'");
