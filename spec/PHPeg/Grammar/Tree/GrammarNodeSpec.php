@@ -34,6 +34,11 @@ class GrammarNodeSpec extends ObjectBehavior
         $this->getRules()->shouldBe(array($rule));
     }
 
+    function it_has_a_length()
+    {
+        $this->getLength()->shouldBe(1);
+    }
+
     function it_should_accept_a_visitor(RuleNode $rule, VisitorInterface $visitor)
     {
         $rule->accept($visitor)->shouldBeCalled();
