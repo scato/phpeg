@@ -30,6 +30,11 @@ class GrammarNode implements NodeInterface
         return $this->rules;
     }
 
+    public function getLength()
+    {
+        return count($this->rules);
+    }
+
     public function accept(VisitorInterface $visitor)
     {
         foreach ($this->rules as $rule) {
