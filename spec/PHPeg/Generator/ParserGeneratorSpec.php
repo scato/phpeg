@@ -32,10 +32,11 @@ class ParserGeneratorSpec extends ObjectBehavior
 
     function it_should_generate_a_parser_that_parses_its_own_definition()
     {
+        $parser = $this->createParser(__DIR__ . '/PHPeg.peg');
         $contents = file_get_contents(__DIR__ . '/PHPeg.peg');
 
-        for ($i = 0; $i < 10; $i++) {
-            $this->createParser(__DIR__ . '/PHPeg.peg')->parse($contents)->shouldHaveType('PHPeg\Grammar\Tree\GrammarNode');
+        for ($i = 0; $i < 100; $i++) {
+            $parser->parse($contents)->shouldHaveType('PHPeg\Grammar\Tree\GrammarNode');
         }
     }
 
