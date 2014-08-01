@@ -32,42 +32,15 @@ use PHPeg\Grammar\Tree\OptionalNode;
 use PHPeg\Grammar\Tree\RuleNode;
 use PHPeg\Grammar\Tree\RuleReferenceNode;
 use PHPeg\Grammar\Tree\SequenceNode;
-use PHPeg\Grammar\Tree\VisitorInterface;
 use PHPeg\Grammar\Tree\ZeroOrMoreNode;
 
-class ToCombinatorVisitor implements VisitorInterface
+class ToCombinatorVisitor extends AbstractVisitor
 {
     private $grammar;
-    private $results = array();
 
     public function __construct(Grammar $grammar)
     {
         $this->grammar = $grammar;
-    }
-
-    public function getResult()
-    {
-        return array_pop($this->results);
-    }
-
-    private function currentResult()
-    {
-        if (empty($this->results)) {
-            return null;
-        }
-
-        return $this->results[count($this->results) - 1];
-    }
-
-    private function getResults($count)
-    {
-        $results = array();
-
-        for ($i = 0; $i < $count; $i++) {
-            array_unshift($results, array_pop($this->results));
-        }
-
-        return $results;
     }
 
     public function visitAction(ActionNode $node)

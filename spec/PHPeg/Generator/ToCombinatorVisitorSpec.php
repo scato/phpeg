@@ -45,8 +45,8 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_an_action_from_a_node(Grammar $grammar)
     {
-        $actionNode = new ActionNode(new RuleReferenceNode('foo'), 'return null;');
-        $action = new Action(new RuleReference($grammar->getWrappedObject(), 'foo'), 'return null;');
+        $actionNode = new ActionNode(new RuleReferenceNode('Foo'), 'return null;');
+        $action = new Action(new RuleReference($grammar->getWrappedObject(), 'Foo'), 'return null;');
 
         $actionNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($action);
@@ -54,8 +54,8 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_an_and_predicate_from_a_node(Grammar $grammar)
     {
-        $andPredicateNode = new AndPredicateNode(new RuleReferenceNode('foo'));
-        $andPredicate = new AndPredicate(new RuleReference($grammar->getWrappedObject(), 'foo'));
+        $andPredicateNode = new AndPredicateNode(new RuleReferenceNode('Foo'));
+        $andPredicate = new AndPredicate(new RuleReference($grammar->getWrappedObject(), 'Foo'));
 
         $andPredicateNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($andPredicate);
@@ -81,8 +81,8 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_a_choice_from_a_node(Grammar $grammar)
     {
-        $choiceNode = new ChoiceNode(array(new RuleReferenceNode('foo'), new RuleReferenceNode('bar')));
-        $choice = new Choice(array(new RuleReference($grammar->getWrappedObject(), 'foo'), new RuleReference($grammar->getWrappedObject(), 'bar')));
+        $choiceNode = new ChoiceNode(array(new RuleReferenceNode('Foo'), new RuleReferenceNode('Bar')));
+        $choice = new Choice(array(new RuleReference($grammar->getWrappedObject(), 'Foo'), new RuleReference($grammar->getWrappedObject(), 'Bar')));
 
         $choiceNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($choice);
@@ -90,24 +90,24 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_a_grammar_from_a_node(Grammar $grammar)
     {
-        $grammarNode = new GrammarNode('Foo', 'foo', array(new RuleNode('foo', new RuleReferenceNode('bar'))));
+        $grammarNode = new GrammarNode('FooFile', 'Foo', array(new RuleNode('Foo', new RuleReferenceNode('Bar'))));
 
-        $grammar->addRule('foo', new RuleReference($grammar->getWrappedObject(), 'bar'))->shouldBeCalled();
-        $grammar->setStartSymbol('foo')->shouldBeCalled();
+        $grammar->addRule('Foo', new RuleReference($grammar->getWrappedObject(), 'Bar'))->shouldBeCalled();
+        $grammar->setStartSymbol('Foo')->shouldBeCalled();
 
         $grammarNode->accept($this->getWrappedObject());
     }
 
     function it_should_create_a_label_from_a_node(Grammar $grammar)
     {
-        $labelNode = new LabelNode('name', new RuleReferenceNode('foo'));
-        $label = new Label('name', new RuleReference($grammar->getWrappedObject(), 'foo'));
+        $labelNode = new LabelNode('name', new RuleReferenceNode('Foo'));
+        $label = new Label('name', new RuleReference($grammar->getWrappedObject(), 'Foo'));
 
         $labelNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($label);
     }
 
-    function it_should_create_a_literal_from_a_node(Grammar $grammar)
+    function it_should_create_a_literal_from_a_node()
     {
         $literalNode = new LiteralNode('foo');
         $literal = new Literal('foo');
@@ -118,8 +118,8 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_a_matched_string_from_a_node(Grammar $grammar)
     {
-        $matchedStringNode = new MatchedStringNode(new RuleReferenceNode('foo'));
-        $matchedString = new MatchedString(new RuleReference($grammar->getWrappedObject(), 'foo'));
+        $matchedStringNode = new MatchedStringNode(new RuleReferenceNode('Foo'));
+        $matchedString = new MatchedString(new RuleReference($grammar->getWrappedObject(), 'Foo'));
 
         $matchedStringNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($matchedString);
@@ -127,8 +127,8 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_a_not_predicate_from_a_node(Grammar $grammar)
     {
-        $notPredicateNode = new NotPredicateNode(new RuleReferenceNode('foo'));
-        $notPredicate = new NotPredicate(new RuleReference($grammar->getWrappedObject(), 'foo'));
+        $notPredicateNode = new NotPredicateNode(new RuleReferenceNode('Foo'));
+        $notPredicate = new NotPredicate(new RuleReference($grammar->getWrappedObject(), 'Foo'));
 
         $notPredicateNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($notPredicate);
@@ -136,8 +136,8 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_a_one_or_more_from_a_node(Grammar $grammar)
     {
-        $oneOrMoreNode = new OneOrMoreNode(new RuleReferenceNode('foo'));
-        $oneOrMore = new OneOrMore(new RuleReference($grammar->getWrappedObject(), 'foo'));
+        $oneOrMoreNode = new OneOrMoreNode(new RuleReferenceNode('Foo'));
+        $oneOrMore = new OneOrMore(new RuleReference($grammar->getWrappedObject(), 'Foo'));
 
         $oneOrMoreNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($oneOrMore);
@@ -145,8 +145,8 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_an_optional_from_a_node(Grammar $grammar)
     {
-        $optionalNode = new OptionalNode(new RuleReferenceNode('foo'));
-        $optional = new Optional(new RuleReference($grammar->getWrappedObject(), 'foo'));
+        $optionalNode = new OptionalNode(new RuleReferenceNode('Foo'));
+        $optional = new Optional(new RuleReference($grammar->getWrappedObject(), 'Foo'));
 
         $optionalNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($optional);
@@ -154,8 +154,8 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_a_rule_reference_from_a_node(Grammar $grammar)
     {
-        $ruleReferenceNode = new RuleReferenceNode('foo');
-        $ruleReference = new RuleReference($grammar->getWrappedObject(), 'foo');
+        $ruleReferenceNode = new RuleReferenceNode('Foo');
+        $ruleReference = new RuleReference($grammar->getWrappedObject(), 'Foo');
 
         $ruleReferenceNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($ruleReference);
@@ -163,8 +163,8 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_a_sequence_from_a_node(Grammar $grammar)
     {
-        $sequenceNode = new SequenceNode(array(new RuleReferenceNode('foo'), new RuleReferenceNode('bar')));
-        $sequence = new Sequence(array(new RuleReference($grammar->getWrappedObject(), 'foo'), new RuleReference($grammar->getWrappedObject(), 'bar')));
+        $sequenceNode = new SequenceNode(array(new RuleReferenceNode('Foo'), new RuleReferenceNode('Bar')));
+        $sequence = new Sequence(array(new RuleReference($grammar->getWrappedObject(), 'Foo'), new RuleReference($grammar->getWrappedObject(), 'Bar')));
 
         $sequenceNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($sequence);
@@ -172,8 +172,8 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
 
     function it_should_create_a_zero_or_more_from_a_node(Grammar $grammar)
     {
-        $zeroOrMoreNode = new ZeroOrMoreNode(new RuleReferenceNode('foo'));
-        $zeroOrMore = new ZeroOrMore(new RuleReference($grammar->getWrappedObject(), 'foo'));
+        $zeroOrMoreNode = new ZeroOrMoreNode(new RuleReferenceNode('Foo'));
+        $zeroOrMore = new ZeroOrMore(new RuleReference($grammar->getWrappedObject(), 'Foo'));
 
         $zeroOrMoreNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBeLike($zeroOrMore);
@@ -182,15 +182,15 @@ class ToCombinatorVisitorSpec extends ObjectBehavior
     function it_should_create_entire_expressions(Grammar $grammar)
     {
         $expressionNode = new ChoiceNode(array(
-            new RuleReferenceNode('foo'),
-            new SequenceNode(array(new RuleReferenceNode('to'), new RuleReferenceNode('the'))),
-            new RuleReferenceNode('bar')
+            new RuleReferenceNode('Foo'),
+            new SequenceNode(array(new RuleReferenceNode('To'), new RuleReferenceNode('The'))),
+            new RuleReferenceNode('Bar')
         ));
 
         $expression = new Choice(array(
-            new RuleReference($grammar->getWrappedObject(), 'foo'),
-            new Sequence(array(new RuleReference($grammar->getWrappedObject(), 'to'), new RuleReference($grammar->getWrappedObject(), 'the'))),
-            new RuleReference($grammar->getWrappedObject(), 'bar')
+            new RuleReference($grammar->getWrappedObject(), 'Foo'),
+            new Sequence(array(new RuleReference($grammar->getWrappedObject(), 'To'), new RuleReference($grammar->getWrappedObject(), 'The'))),
+            new RuleReference($grammar->getWrappedObject(), 'Bar')
         ));
 
         $expressionNode->accept($this->getWrappedObject());
