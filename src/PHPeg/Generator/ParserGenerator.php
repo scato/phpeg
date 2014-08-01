@@ -19,9 +19,14 @@ class ParserGenerator
         $contents = file_get_contents($filename);
         $parser = $this->parserFactory->createParser();
         $tree = $parser->parse($contents);
+        $class = $tree->getName();
 
-        $grammar = new Grammar();
-        $tree->accept(new ToCombinatorVisitor($grammar));
-        return new Parser($grammar);
+        if (!class_exists($class)) {
+            $visitor = new ToClassVisitor();
+            $tree->accept($visitor);
+            eval($visitor->getResult());
+        }
+
+        return new $class();
     }
 }
