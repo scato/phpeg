@@ -51,7 +51,6 @@ EOS;
 
 if (\$_result['success']) {
     \$_result['value'] = null;
-    \$_result['rest'] = \$_string;
 }
 EOS;
 
@@ -64,7 +63,8 @@ EOS;
         $anyNode = new AnyNode();
         $anyCode = <<<EOS
 if (\$_string !== '') {
-    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 1), 'rest' => strval(substr(\$_string, 1)));
+    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 1));
+    \$_string = strval(substr(\$_string, 1));
 } else {
     \$_result = array('success' => false);
 }
@@ -79,7 +79,8 @@ EOS;
         $characterClassNode = new CharacterClassNode('a-z');
         $characterClassCode = <<<EOS
 if (preg_match('/^[a-z]/', \$_string)) {
-    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 1), 'rest' => strval(substr(\$_string, 1)));
+    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 1));
+    \$_string = strval(substr(\$_string, 1));
 } else {
     \$_result = array('success' => false);
 }
@@ -118,7 +119,7 @@ class FooFile implements \PHPeg\ParserInterface
     protected \$strings = array();
     protected \$values = array();
 
-    protected function parseFoo(\$_string)
+    protected function parseFoo(&\$_string)
     {
         \$_result = \$this->parseBar(\$_string);
 
@@ -133,8 +134,8 @@ class FooFile implements \PHPeg\ParserInterface
             throw new \InvalidArgumentException("Could not parse '\$_string'");
         }
 
-        if (\$_result['rest'] !== '') {
-            throw new \InvalidArgumentException("Unexpected input: '{\$_result['rest']}'");
+        if (\$_string !== '') {
+            throw new \InvalidArgumentException("Unexpected input: '{\$_string}'");
         }
 
         return \$_result['value'];
@@ -166,7 +167,8 @@ EOS;
         $literalNode = new LiteralNode('foo');
         $literalCode = <<<EOS
 if (substr(\$_string, 0, 3) === 'foo') {
-    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 3), 'rest' => strval(substr(\$_string, 3)));
+    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 3));
+    \$_string = strval(substr(\$_string, 3));
 } else {
     \$_result = array('success' => false);
 }
@@ -184,7 +186,7 @@ EOS;
 \$_result = \$this->parseFoo(\$_string);
 
 if (\$_result['success']) {
-    \$_result['value'] = strval(substr(end(\$this->strings), 0, strlen(end(\$this->strings)) - strlen(\$_result['rest'])));
+    \$_result['value'] = strval(substr(end(\$this->strings), 0, strlen(end(\$this->strings)) - strlen(\$_string)));
 }
 
 array_pop(\$this->strings);
@@ -203,7 +205,6 @@ EOS;
 if (!\$_result['success']) {
     \$_result['success'] = true;
     \$_result['value'] = null;
-    \$_result['rest'] = \$_string;
 } else {
     \$_result['success'] = false;
 }
@@ -230,12 +231,10 @@ if (\$_result['success']) {
         }
 
         \$this->values[] = array_merge(array_pop(\$this->values), array(\$_result['value']));
-        \$_string = \$_result['rest'];
     }
 
     \$_result['success'] = true;
     \$_result['value'] = array_pop(\$this->values);
-    \$_result['rest'] = \$_string;
 }
 EOS;
 
@@ -252,7 +251,6 @@ EOS;
 if (!\$_result['success']) {
     \$_result['success'] = true;
     \$_result['value'] = null;
-    \$_result['rest'] = \$_string;
 }
 EOS;
 
@@ -264,7 +262,7 @@ EOS;
     {
         $ruleNode = new RuleNode('Foo', new RuleReferenceNode('Bar'));
         $ruleCode = <<<EOS
-protected function parseFoo(\$_string)
+protected function parseFoo(&\$_string)
 {
     \$_result = \$this->parseBar(\$_string);
 
@@ -297,7 +295,6 @@ EOS;
 
 if (\$_result['success']) {
     \$this->values[] = array_merge(array_pop(\$this->values), array(\$_result['value']));
-    \$_string = \$_result['rest'];
 
     \$_result = \$this->parseBar(\$_string);
 }
@@ -327,12 +324,10 @@ while (true) {
     }
 
     \$this->values[] = array_merge(array_pop(\$this->values), array(\$_result['value']));
-    \$_string = \$_result['rest'];
 }
 
 \$_result['success'] = true;
 \$_result['value'] = array_pop(\$this->values);
-\$_result['rest'] = \$_string;
 EOS;
 
         $zeroOrMoreNode->accept($this->getWrappedObject());
