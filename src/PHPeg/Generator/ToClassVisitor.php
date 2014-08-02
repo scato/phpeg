@@ -56,7 +56,6 @@ EOS;
 
 if (\$_result['success']) {
     \$_result['value'] = null;
-    \$_result['rest'] = \$_string;
 }
 EOS;
     }
@@ -65,7 +64,8 @@ EOS;
     {
         $this->results[] = <<<EOS
 if (\$_string !== '') {
-    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 1), 'rest' => strval(substr(\$_string, 1)));
+    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 1));
+    \$_string = strval(substr(\$_string, 1));
 } else {
     \$_result = array('success' => false);
 }
@@ -78,7 +78,8 @@ EOS;
 
         $this->results[] = <<<EOS
 if (preg_match({$pattern}, \$_string)) {
-    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 1), 'rest' => strval(substr(\$_string, 1)));
+    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 1));
+    \$_string = strval(substr(\$_string, 1));
 } else {
     \$_result = array('success' => false);
 }
@@ -145,8 +146,8 @@ EOS;
             throw new \InvalidArgumentException("Could not parse '\$_string'");
         }
 
-        if (\$_result['rest'] !== '') {
-            throw new \InvalidArgumentException("Unexpected input: '{\$_result['rest']}'");
+        if (\$_string !== '') {
+            throw new \InvalidArgumentException("Unexpected input: '{\$_string}'");
         }
 
         return \$_result['value'];
@@ -177,7 +178,8 @@ EOS;
 
         $this->results[] = <<<EOS
 if (substr(\$_string, 0, {$strlen}) === {$var_export}) {
-    \$_result = array('success' => true, 'value' => substr(\$_string, 0, {$strlen}), 'rest' => strval(substr(\$_string, {$strlen})));
+    \$_result = array('success' => true, 'value' => substr(\$_string, 0, {$strlen}));
+    \$_string = strval(substr(\$_string, {$strlen}));
 } else {
     \$_result = array('success' => false);
 }
@@ -191,7 +193,7 @@ EOS;
 {$this->getResult()}
 
 if (\$_result['success']) {
-    \$_result['value'] = strval(substr(end(\$this->strings), 0, strlen(end(\$this->strings)) - strlen(\$_result['rest'])));
+    \$_result['value'] = strval(substr(end(\$this->strings), 0, strlen(end(\$this->strings)) - strlen(\$_string)));
 }
 
 array_pop(\$this->strings);
@@ -206,7 +208,6 @@ EOS;
 if (!\$_result['success']) {
     \$_result['success'] = true;
     \$_result['value'] = null;
-    \$_result['rest'] = \$_string;
 } else {
     \$_result['success'] = false;
 }
@@ -231,12 +232,10 @@ if (\$_result['success']) {
         }
 
         \$this->values[] = array_merge(array_pop(\$this->values), array(\$_result['value']));
-        \$_string = \$_result['rest'];
     }
 
     \$_result['success'] = true;
     \$_result['value'] = array_pop(\$this->values);
-    \$_result['rest'] = \$_string;
 }
 EOS;
     }
@@ -249,7 +248,6 @@ EOS;
 if (!\$_result['success']) {
     \$_result['success'] = true;
     \$_result['value'] = null;
-    \$_result['rest'] = \$_string;
 }
 EOS;
     }
@@ -259,7 +257,7 @@ EOS;
         $this->scope = array();
 
         $this->results[] = <<<EOS
-protected function parse{$node->getName()}(\$_string)
+protected function parse{$node->getName()}(&\$_string)
 {
     {$this->indent($this->getResult())}
 
@@ -291,7 +289,6 @@ EOS;
 
 if (\$_result['success']) {
     \$this->values[] = array_merge(array_pop(\$this->values), array(\$_result['value']));
-    \$_string = \$_result['rest'];
 
     {$this->indent($piece)}
 }
@@ -324,12 +321,10 @@ while (true) {
     }
 
     \$this->values[] = array_merge(array_pop(\$this->values), array(\$_result['value']));
-    \$_string = \$_result['rest'];
 }
 
 \$_result['success'] = true;
 \$_result['value'] = array_pop(\$this->values);
-\$_result['rest'] = \$_string;
 EOS;
     }
 }
