@@ -27,14 +27,14 @@ class ToClassVisitorSpec extends ObjectBehavior
     {
         $actionNode = new ActionNode(new LabelNode('name', new RuleReferenceNode('Foo')), 'return $name;');
         $actionCode = <<<EOS
-\$_result = \$this->parseFoo(\$_string);
+\$_success = \$this->parseFoo(\$_string, \$_value);
 
-if (\$_result['success']) {
-    \$name = \$_result['value'];
+if (\$_success) {
+    \$name = \$_value;
 }
 
-if (\$_result['success']) {
-    \$_result['value'] = call_user_func(function () use (&\$name) {
+if (\$_success) {
+    \$_value = call_user_func(function () use (&\$name) {
         return \$name;
     });
 }
@@ -47,11 +47,15 @@ EOS;
     {
         $andPredicateNode = new AndPredicateNode(new RuleReferenceNode('Foo'));
         $andPredicateCode = <<<EOS
-\$_result = \$this->parseFoo(\$_string);
+\$this->strings[] = \$_string;
 
-if (\$_result['success']) {
-    \$_result['value'] = null;
+\$_success = \$this->parseFoo(\$_string, \$_value);
+
+if (\$_success) {
+    \$_value = null;
 }
+
+\$_string = array_pop(\$this->strings);
 EOS;
 
         $andPredicateNode->accept($this->getWrappedObject());
@@ -63,10 +67,11 @@ EOS;
         $anyNode = new AnyNode();
         $anyCode = <<<EOS
 if (\$_string !== '') {
-    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 1));
+    \$_success = true;
+    \$_value = substr(\$_string, 0, 1);
     \$_string = strval(substr(\$_string, 1));
 } else {
-    \$_result = array('success' => false);
+    \$_success = false;
 }
 EOS;
 
@@ -79,10 +84,11 @@ EOS;
         $characterClassNode = new CharacterClassNode('a-z');
         $characterClassCode = <<<EOS
 if (preg_match('/^[a-z]/', \$_string)) {
-    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 1));
+    \$_success = true;
+    \$_value = substr(\$_string, 0, 1);
     \$_string = strval(substr(\$_string, 1));
 } else {
-    \$_result = array('success' => false);
+    \$_success = false;
 }
 EOS;
 
@@ -96,11 +102,11 @@ EOS;
         $choiceCode = <<<EOS
 \$this->strings[] = \$_string;
 
-\$_result = \$this->parseFoo(\$_string);
+\$_success = \$this->parseFoo(\$_string, \$_value);
 
-if (!\$_result['success']) {
+if (!\$_success) {
     \$_string = end(\$this->strings);
-    \$_result = \$this->parseBar(\$_string);
+    \$_success = \$this->parseBar(\$_string, \$_value);
 }
 
 array_pop(\$this->strings);
@@ -119,26 +125,26 @@ class FooFile implements \PHPeg\ParserInterface
     protected \$strings = array();
     protected \$values = array();
 
-    protected function parseFoo(&\$_string)
+    protected function parseFoo(&\$_string, &\$_value)
     {
-        \$_result = \$this->parseBar(\$_string);
+        \$_success = \$this->parseBar(\$_string, \$_value);
 
-        return \$_result;
+        return \$_success;
     }
 
     public function parse(\$_string)
     {
-        \$_result = \$this->parseFoo(\$_string);
+        \$_success = \$this->parseFoo(\$_string, \$_value);
 
-        if (!\$_result['success']) {
-            throw new \InvalidArgumentException("Could not parse '\$_string'");
+        if (!\$_success) {
+            throw new \InvalidArgumentException("Could not parse '{\$_string}'");
         }
 
         if (\$_string !== '') {
             throw new \InvalidArgumentException("Unexpected input: '{\$_string}'");
         }
 
-        return \$_result['value'];
+        return \$_value;
     }
 }
 EOS;
@@ -151,10 +157,10 @@ EOS;
     {
         $labelNode = new LabelNode('name', new RuleReferenceNode('Foo'));
         $labelCode = <<<EOS
-\$_result = \$this->parseFoo(\$_string);
+\$_success = \$this->parseFoo(\$_string, \$_value);
 
-if (\$_result['success']) {
-    \$name = \$_result['value'];
+if (\$_success) {
+    \$name = \$_value;
 }
 EOS;
 
@@ -167,10 +173,11 @@ EOS;
         $literalNode = new LiteralNode('foo');
         $literalCode = <<<EOS
 if (substr(\$_string, 0, 3) === 'foo') {
-    \$_result = array('success' => true, 'value' => substr(\$_string, 0, 3));
+    \$_success = true;
+    \$_value = substr(\$_string, 0, 3);
     \$_string = strval(substr(\$_string, 3));
 } else {
-    \$_result = array('success' => false);
+    \$_success = false;
 }
 EOS;
 
@@ -183,10 +190,10 @@ EOS;
         $matchedStringNode = new MatchedStringNode(new RuleReferenceNode('Foo'));
         $matchedStringCode = <<<EOS
 \$this->strings[] = \$_string;
-\$_result = \$this->parseFoo(\$_string);
+\$_success = \$this->parseFoo(\$_string, \$_value);
 
-if (\$_result['success']) {
-    \$_result['value'] = strval(substr(end(\$this->strings), 0, strlen(end(\$this->strings)) - strlen(\$_string)));
+if (\$_success) {
+    \$_value = strval(substr(end(\$this->strings), 0, strlen(end(\$this->strings)) - strlen(\$_string)));
 }
 
 array_pop(\$this->strings);
@@ -200,14 +207,18 @@ EOS;
     {
         $notPredicateNode = new NotPredicateNode(new RuleReferenceNode('Foo'));
         $notPredicateCode = <<<EOS
-\$_result = \$this->parseFoo(\$_string);
+\$this->strings[] = \$_string;
 
-if (!\$_result['success']) {
-    \$_result['success'] = true;
-    \$_result['value'] = null;
+\$_success = \$this->parseFoo(\$_string, \$_value);
+
+if (!\$_success) {
+    \$_success = true;
+    \$_value = null;
 } else {
-    \$_result['success'] = false;
+    \$_success = false;
 }
+
+\$_string = array_pop(\$this->strings);
 EOS;
 
         $notPredicateNode->accept($this->getWrappedObject());
@@ -218,23 +229,23 @@ EOS;
     {
         $oneOrMoreNode = new OneOrMoreNode(new RuleReferenceNode('Foo'));
         $oneOrMoreCode = <<<EOS
-\$_result = \$this->parseFoo(\$_string);
+\$_success = \$this->parseFoo(\$_string, \$_value);
 
-if (\$_result['success']) {
-    \$this->values[] = array(\$_result['value']);
+if (\$_success) {
+    \$this->values[] = array(\$_value);
 
     while (true) {
-        \$_result = \$this->parseFoo(\$_string);
+        \$_success = \$this->parseFoo(\$_string, \$_value);
 
-        if (!\$_result['success']) {
+        if (!\$_success) {
             break;
         }
 
-        \$this->values[] = array_merge(array_pop(\$this->values), array(\$_result['value']));
+        \$this->values[] = array_merge(array_pop(\$this->values), array(\$_value));
     }
 
-    \$_result['success'] = true;
-    \$_result['value'] = array_pop(\$this->values);
+    \$_success = true;
+    \$_value = array_pop(\$this->values);
 }
 EOS;
 
@@ -246,11 +257,11 @@ EOS;
     {
         $optionalNode = new OptionalNode(new RuleReferenceNode('Foo'));
         $optionalCode = <<<EOS
-\$_result = \$this->parseFoo(\$_string);
+\$_success = \$this->parseFoo(\$_string, \$_value);
 
-if (!\$_result['success']) {
-    \$_result['success'] = true;
-    \$_result['value'] = null;
+if (!\$_success) {
+    \$_success = true;
+    \$_value = null;
 }
 EOS;
 
@@ -262,11 +273,11 @@ EOS;
     {
         $ruleNode = new RuleNode('Foo', new RuleReferenceNode('Bar'));
         $ruleCode = <<<EOS
-protected function parseFoo(&\$_string)
+protected function parseFoo(&\$_string, &\$_value)
 {
-    \$_result = \$this->parseBar(\$_string);
+    \$_success = \$this->parseBar(\$_string, \$_value);
 
-    return \$_result;
+    return \$_success;
 }
 EOS;
 
@@ -278,7 +289,7 @@ EOS;
     {
         $ruleReferenceNode = new RuleReferenceNode('Foo');
         $ruleReferenceCode = <<<EOS
-\$_result = \$this->parseFoo(\$_string);
+\$_success = \$this->parseFoo(\$_string, \$_value);
 EOS;
 
         $ruleReferenceNode->accept($this->getWrappedObject());
@@ -291,16 +302,16 @@ EOS;
         $sequenceCode = <<<EOS
 \$this->values[] = array();
 
-\$_result = \$this->parseFoo(\$_string);
+\$_success = \$this->parseFoo(\$_string, \$_value);
 
-if (\$_result['success']) {
-    \$this->values[] = array_merge(array_pop(\$this->values), array(\$_result['value']));
+if (\$_success) {
+    \$this->values[] = array_merge(array_pop(\$this->values), array(\$_value));
 
-    \$_result = \$this->parseBar(\$_string);
+    \$_success = \$this->parseBar(\$_string, \$_value);
 }
 
-if (\$_result['success']) {
-    \$_result['value'] = array_pop(\$this->values);
+if (\$_success) {
+    \$_value = array_pop(\$this->values);
 } else {
     array_pop(\$this->values);
 }
@@ -317,17 +328,17 @@ EOS;
 \$this->values[] = array();
 
 while (true) {
-    \$_result = \$this->parseFoo(\$_string);
+    \$_success = \$this->parseFoo(\$_string, \$_value);
 
-    if (!\$_result['success']) {
+    if (!\$_success) {
         break;
     }
 
-    \$this->values[] = array_merge(array_pop(\$this->values), array(\$_result['value']));
+    \$this->values[] = array_merge(array_pop(\$this->values), array(\$_value));
 }
 
-\$_result['success'] = true;
-\$_result['value'] = array_pop(\$this->values);
+\$_success = true;
+\$_value = array_pop(\$this->values);
 EOS;
 
         $zeroOrMoreNode->accept($this->getWrappedObject());
