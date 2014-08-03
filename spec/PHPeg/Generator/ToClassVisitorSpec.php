@@ -83,7 +83,7 @@ EOS;
     {
         $characterClassNode = new CharacterClassNode('a-z');
         $characterClassCode = <<<EOS
-if (preg_match('/^[a-z]/', substr(\$this->string, \$this->position))) {
+if (preg_match('/^[a-z]$/', substr(\$this->string, \$this->position, 1))) {
     \$_success = true;
     \$this->value = substr(\$this->string, \$this->position, 1);
     \$this->position += 1;

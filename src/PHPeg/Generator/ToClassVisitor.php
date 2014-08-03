@@ -79,10 +79,10 @@ EOS;
 
     public function visitCharacterClass(CharacterClassNode $node)
     {
-        $pattern = var_export("/^[{$node->getString()}]/", true);
+        $pattern = var_export("/^[{$node->getString()}]$/", true);
 
         $this->results[] = <<<EOS
-if (preg_match({$pattern}, substr(\$this->string, \$this->position))) {
+if (preg_match({$pattern}, substr(\$this->string, \$this->position, 1))) {
     \$_success = true;
     \$this->value = substr(\$this->string, \$this->position, 1);
     \$this->position += 1;
