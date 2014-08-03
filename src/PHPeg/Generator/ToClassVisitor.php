@@ -42,7 +42,7 @@ class ToClassVisitor extends AbstractVisitor
 {$this->getResult()}
 
 if (\$_success) {
-    \$_value = call_user_func(function (){$use} {
+    \$this->value = call_user_func(function (){$use} {
         {$node->getCode()}
     });
 }
@@ -52,25 +52,25 @@ EOS;
     public function visitAndPredicate(AndPredicateNode $node)
     {
         $this->results[] = <<<EOS
-\$this->strings[] = \$_string;
+\$this->strings[] = \$this->string;
 
 {$this->getResult()}
 
 if (\$_success) {
-    \$_value = null;
+    \$this->value = null;
 }
 
-\$_string = array_pop(\$this->strings);
+\$this->string = array_pop(\$this->strings);
 EOS;
     }
 
     public function visitAny(AnyNode $node)
     {
         $this->results[] = <<<EOS
-if (\$_string !== '') {
+if (\$this->string !== '') {
     \$_success = true;
-    \$_value = substr(\$_string, 0, 1);
-    \$_string = strval(substr(\$_string, 1));
+    \$this->value = substr(\$this->string, 0, 1);
+    \$this->string = strval(substr(\$this->string, 1));
 } else {
     \$_success = false;
 }
@@ -82,10 +82,10 @@ EOS;
         $pattern = var_export("/^[{$node->getString()}]/", true);
 
         $this->results[] = <<<EOS
-if (preg_match({$pattern}, \$_string)) {
+if (preg_match({$pattern}, \$this->string)) {
     \$_success = true;
-    \$_value = substr(\$_string, 0, 1);
-    \$_string = strval(substr(\$_string, 1));
+    \$this->value = substr(\$this->string, 0, 1);
+    \$this->string = strval(substr(\$this->string, 1));
 } else {
     \$_success = false;
 }
@@ -97,7 +97,7 @@ EOS;
         $pieces = $this->getResults($node->getLength());
 
         $result = <<<EOS
-\$this->strings[] = \$_string;
+\$this->strings[] = \$this->string;
 
 {$pieces[0]}
 EOS;
@@ -107,7 +107,7 @@ EOS;
 
 
 if (!\$_success) {
-    \$_string = end(\$this->strings);
+    \$this->string = end(\$this->strings);
     {$this->indent($piece)}
 }
 EOS;
@@ -127,7 +127,9 @@ EOS;
         $result = <<<EOS
 class {$node->getName()} implements \PHPeg\ParserInterface
 {
+    protected \$string;
     protected \$strings = array();
+    protected \$value;
     protected \$values = array();
 
 EOS;
@@ -146,17 +148,18 @@ EOS;
 
     public function parse(\$_string)
     {
-        \$_success = \$this->parse{$node->getStartSymbol()}(\$_string, \$_value);
+        \$this->string = \$_string;
+        \$_success = \$this->parse{$node->getStartSymbol()}();
 
         if (!\$_success) {
-            throw new \InvalidArgumentException("Could not parse '{\$_string}'");
+            throw new \InvalidArgumentException("Could not parse '{\$this->string}'");
         }
 
-        if (\$_string !== '') {
-            throw new \InvalidArgumentException("Unexpected input: '{\$_string}'");
+        if (\$this->string !== '') {
+            throw new \InvalidArgumentException("Unexpected input: '{\$this->string}'");
         }
 
-        return \$_value;
+        return \$this->value;
     }
 }
 EOS;
@@ -172,7 +175,7 @@ EOS;
 {$this->getResult()}
 
 if (\$_success) {
-    \${$node->getName()} = \$_value;
+    \${$node->getName()} = \$this->value;
 }
 EOS;
     }
@@ -183,10 +186,10 @@ EOS;
         $var_export = var_export($node->getString(), true);
 
         $this->results[] = <<<EOS
-if (substr(\$_string, 0, {$strlen}) === {$var_export}) {
+if (substr(\$this->string, 0, {$strlen}) === {$var_export}) {
     \$_success = true;
-    \$_value = substr(\$_string, 0, {$strlen});
-    \$_string = strval(substr(\$_string, {$strlen}));
+    \$this->value = substr(\$this->string, 0, {$strlen});
+    \$this->string = strval(substr(\$this->string, {$strlen}));
 } else {
     \$_success = false;
 }
@@ -196,11 +199,11 @@ EOS;
     public function visitMatchedString(MatchedStringNode $node)
     {
         $this->results[] = <<<EOS
-\$this->strings[] = \$_string;
+\$this->strings[] = \$this->string;
 {$this->getResult()}
 
 if (\$_success) {
-    \$_value = strval(substr(end(\$this->strings), 0, strlen(end(\$this->strings)) - strlen(\$_string)));
+    \$this->value = strval(substr(end(\$this->strings), 0, strlen(end(\$this->strings)) - strlen(\$this->string)));
 }
 
 array_pop(\$this->strings);
@@ -210,18 +213,18 @@ EOS;
     public function visitNotPredicate(NotPredicateNode $node)
     {
         $this->results[] = <<<EOS
-\$this->strings[] = \$_string;
+\$this->strings[] = \$this->string;
 
 {$this->getResult()}
 
 if (!\$_success) {
     \$_success = true;
-    \$_value = null;
+    \$this->value = null;
 } else {
     \$_success = false;
 }
 
-\$_string = array_pop(\$this->strings);
+\$this->string = array_pop(\$this->strings);
 EOS;
     }
 
@@ -233,7 +236,7 @@ EOS;
 {$result}
 
 if (\$_success) {
-    \$this->values[] = array(\$_value);
+    \$this->values[] = array(\$this->value);
 
     while (true) {
         {$this->indent($this->indent($result))}
@@ -242,11 +245,11 @@ if (\$_success) {
             break;
         }
 
-        \$this->values[] = array_merge(array_pop(\$this->values), array(\$_value));
+        \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
     }
 
     \$_success = true;
-    \$_value = array_pop(\$this->values);
+    \$this->value = array_pop(\$this->values);
 }
 EOS;
     }
@@ -258,7 +261,7 @@ EOS;
 
 if (!\$_success) {
     \$_success = true;
-    \$_value = null;
+    \$this->value = null;
 }
 EOS;
     }
@@ -268,7 +271,7 @@ EOS;
         $this->scope = array();
 
         $this->results[] = <<<EOS
-protected function parse{$node->getName()}(&\$_string, &\$_value)
+protected function parse{$node->getName()}()
 {
     {$this->indent($this->getResult())}
 
@@ -280,7 +283,7 @@ EOS;
     public function visitRuleReference(RuleReferenceNode $node)
     {
         $this->results[] = <<<EOS
-\$_success = \$this->parse{$node->getName()}(\$_string, \$_value);
+\$_success = \$this->parse{$node->getName()}();
 EOS;
     }
 
@@ -299,7 +302,7 @@ EOS;
 
 
 if (\$_success) {
-    \$this->values[] = array_merge(array_pop(\$this->values), array(\$_value));
+    \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
 
     {$this->indent($piece)}
 }
@@ -310,7 +313,7 @@ EOS;
 
 
 if (\$_success) {
-    \$_value = array_pop(\$this->values);
+    \$this->value = array_pop(\$this->values);
 } else {
     array_pop(\$this->values);
 }
@@ -331,11 +334,11 @@ while (true) {
         break;
     }
 
-    \$this->values[] = array_merge(array_pop(\$this->values), array(\$_value));
+    \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
 }
 
 \$_success = true;
-\$_value = array_pop(\$this->values);
+\$this->value = array_pop(\$this->values);
 EOS;
     }
 }
