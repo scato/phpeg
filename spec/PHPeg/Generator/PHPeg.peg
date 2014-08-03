@@ -32,7 +32,7 @@ grammar PHPeg
     Identifier = $([A-Za-z_] [A-Za-z0-9_]*);
     RuleReference = name:Identifier                         { return new \PHPeg\Grammar\Tree\RuleReferenceNode($name); };
     SubExpression = "(" _ expression:Expression _ ")"       { return $expression; };
-    Terminal = Literal / Any / CharacterClass / RuleReference / SubExpression;
+    Terminal = RuleReference / Literal / Any / CharacterClass / SubExpression;
 
     _ = [ \n\r\t]* { return null; };
 }
