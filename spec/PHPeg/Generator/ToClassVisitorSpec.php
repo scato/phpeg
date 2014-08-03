@@ -47,7 +47,7 @@ EOS;
     {
         $andPredicateNode = new AndPredicateNode(new RuleReferenceNode('Foo'));
         $andPredicateCode = <<<EOS
-\$this->strings[] = \$this->string;
+\$this->positions[] = \$this->position;
 
 \$_success = \$this->parseFoo();
 
@@ -55,7 +55,7 @@ if (\$_success) {
     \$this->value = null;
 }
 
-\$this->string = array_pop(\$this->strings);
+\$this->position = array_pop(\$this->positions);
 EOS;
 
         $andPredicateNode->accept($this->getWrappedObject());
@@ -66,10 +66,10 @@ EOS;
     {
         $anyNode = new AnyNode();
         $anyCode = <<<EOS
-if (\$this->string !== '') {
+if (\$this->position < strlen(\$this->string)) {
     \$_success = true;
-    \$this->value = substr(\$this->string, 0, 1);
-    \$this->string = strval(substr(\$this->string, 1));
+    \$this->value = substr(\$this->string, \$this->position, 1);
+    \$this->position += 1;
 } else {
     \$_success = false;
 }
@@ -83,10 +83,10 @@ EOS;
     {
         $characterClassNode = new CharacterClassNode('a-z');
         $characterClassCode = <<<EOS
-if (preg_match('/^[a-z]/', \$this->string)) {
+if (preg_match('/^[a-z]/', substr(\$this->string, \$this->position))) {
     \$_success = true;
-    \$this->value = substr(\$this->string, 0, 1);
-    \$this->string = strval(substr(\$this->string, 1));
+    \$this->value = substr(\$this->string, \$this->position, 1);
+    \$this->position += 1;
 } else {
     \$_success = false;
 }
@@ -100,16 +100,16 @@ EOS;
     {
         $choiceNode = new ChoiceNode(array(new RuleReferenceNode('Foo'), new RuleReferenceNode('Bar')));
         $choiceCode = <<<EOS
-\$this->strings[] = \$this->string;
+\$this->positions[] = \$this->position;
 
 \$_success = \$this->parseFoo();
 
 if (!\$_success) {
-    \$this->string = end(\$this->strings);
+    \$this->position = end(\$this->positions);
     \$_success = \$this->parseBar();
 }
 
-array_pop(\$this->strings);
+array_pop(\$this->positions);
 EOS;
 
         $choiceNode->accept($this->getWrappedObject());
@@ -123,7 +123,8 @@ EOS;
 class FooFile implements \PHPeg\ParserInterface
 {
     protected \$string;
-    protected \$strings = array();
+    protected \$position;
+    protected \$positions = array();
     protected \$value;
     protected \$values = array();
 
@@ -137,14 +138,16 @@ class FooFile implements \PHPeg\ParserInterface
     public function parse(\$_string)
     {
         \$this->string = \$_string;
+        \$this->position = 0;
+
         \$_success = \$this->parseFoo();
 
         if (!\$_success) {
             throw new \InvalidArgumentException("Could not parse '{\$this->string}'");
         }
 
-        if (\$this->string !== '') {
-            throw new \InvalidArgumentException("Unexpected input: '{\$this->string}'");
+        if (\$this->position < strlen(\$this->string)) {
+            throw new \InvalidArgumentException("Unexpected input at position: {\$this->position}");
         }
 
         return \$this->value;
@@ -175,10 +178,10 @@ EOS;
     {
         $literalNode = new LiteralNode('foo');
         $literalCode = <<<EOS
-if (substr(\$this->string, 0, 3) === 'foo') {
+if (substr(\$this->string, \$this->position, 3) === 'foo') {
     \$_success = true;
-    \$this->value = substr(\$this->string, 0, 3);
-    \$this->string = strval(substr(\$this->string, 3));
+    \$this->value = substr(\$this->string, \$this->position, 3);
+    \$this->position += 3;
 } else {
     \$_success = false;
 }
@@ -192,14 +195,14 @@ EOS;
     {
         $matchedStringNode = new MatchedStringNode(new RuleReferenceNode('Foo'));
         $matchedStringCode = <<<EOS
-\$this->strings[] = \$this->string;
+\$this->positions[] = \$this->position;
 \$_success = \$this->parseFoo();
 
 if (\$_success) {
-    \$this->value = strval(substr(end(\$this->strings), 0, strlen(end(\$this->strings)) - strlen(\$this->string)));
+    \$this->value = strval(substr(\$this->string, end(\$this->positions), \$this->position - end(\$this->positions)));
 }
 
-array_pop(\$this->strings);
+array_pop(\$this->positions);
 EOS;
 
         $matchedStringNode->accept($this->getWrappedObject());
@@ -210,7 +213,7 @@ EOS;
     {
         $notPredicateNode = new NotPredicateNode(new RuleReferenceNode('Foo'));
         $notPredicateCode = <<<EOS
-\$this->strings[] = \$this->string;
+\$this->positions[] = \$this->position;
 
 \$_success = \$this->parseFoo();
 
@@ -221,7 +224,7 @@ if (!\$_success) {
     \$_success = false;
 }
 
-\$this->string = array_pop(\$this->strings);
+\$this->position = array_pop(\$this->positions);
 EOS;
 
         $notPredicateNode->accept($this->getWrappedObject());

@@ -52,7 +52,7 @@ EOS;
     public function visitAndPredicate(AndPredicateNode $node)
     {
         $this->results[] = <<<EOS
-\$this->strings[] = \$this->string;
+\$this->positions[] = \$this->position;
 
 {$this->getResult()}
 
@@ -60,17 +60,17 @@ if (\$_success) {
     \$this->value = null;
 }
 
-\$this->string = array_pop(\$this->strings);
+\$this->position = array_pop(\$this->positions);
 EOS;
     }
 
     public function visitAny(AnyNode $node)
     {
         $this->results[] = <<<EOS
-if (\$this->string !== '') {
+if (\$this->position < strlen(\$this->string)) {
     \$_success = true;
-    \$this->value = substr(\$this->string, 0, 1);
-    \$this->string = strval(substr(\$this->string, 1));
+    \$this->value = substr(\$this->string, \$this->position, 1);
+    \$this->position += 1;
 } else {
     \$_success = false;
 }
@@ -82,10 +82,10 @@ EOS;
         $pattern = var_export("/^[{$node->getString()}]/", true);
 
         $this->results[] = <<<EOS
-if (preg_match({$pattern}, \$this->string)) {
+if (preg_match({$pattern}, substr(\$this->string, \$this->position))) {
     \$_success = true;
-    \$this->value = substr(\$this->string, 0, 1);
-    \$this->string = strval(substr(\$this->string, 1));
+    \$this->value = substr(\$this->string, \$this->position, 1);
+    \$this->position += 1;
 } else {
     \$_success = false;
 }
@@ -97,7 +97,7 @@ EOS;
         $pieces = $this->getResults($node->getLength());
 
         $result = <<<EOS
-\$this->strings[] = \$this->string;
+\$this->positions[] = \$this->position;
 
 {$pieces[0]}
 EOS;
@@ -107,7 +107,7 @@ EOS;
 
 
 if (!\$_success) {
-    \$this->string = end(\$this->strings);
+    \$this->position = end(\$this->positions);
     {$this->indent($piece)}
 }
 EOS;
@@ -116,7 +116,7 @@ EOS;
         $result .= <<<EOS
 
 
-array_pop(\$this->strings);
+array_pop(\$this->positions);
 EOS;
 
         $this->results[] = $result;
@@ -128,7 +128,8 @@ EOS;
 class {$node->getName()} implements \PHPeg\ParserInterface
 {
     protected \$string;
-    protected \$strings = array();
+    protected \$position;
+    protected \$positions = array();
     protected \$value;
     protected \$values = array();
 
@@ -149,14 +150,16 @@ EOS;
     public function parse(\$_string)
     {
         \$this->string = \$_string;
+        \$this->position = 0;
+
         \$_success = \$this->parse{$node->getStartSymbol()}();
 
         if (!\$_success) {
             throw new \InvalidArgumentException("Could not parse '{\$this->string}'");
         }
 
-        if (\$this->string !== '') {
-            throw new \InvalidArgumentException("Unexpected input: '{\$this->string}'");
+        if (\$this->position < strlen(\$this->string)) {
+            throw new \InvalidArgumentException("Unexpected input at position: {\$this->position}");
         }
 
         return \$this->value;
@@ -186,10 +189,10 @@ EOS;
         $var_export = var_export($node->getString(), true);
 
         $this->results[] = <<<EOS
-if (substr(\$this->string, 0, {$strlen}) === {$var_export}) {
+if (substr(\$this->string, \$this->position, {$strlen}) === {$var_export}) {
     \$_success = true;
-    \$this->value = substr(\$this->string, 0, {$strlen});
-    \$this->string = strval(substr(\$this->string, {$strlen}));
+    \$this->value = substr(\$this->string, \$this->position, {$strlen});
+    \$this->position += {$strlen};
 } else {
     \$_success = false;
 }
@@ -199,21 +202,21 @@ EOS;
     public function visitMatchedString(MatchedStringNode $node)
     {
         $this->results[] = <<<EOS
-\$this->strings[] = \$this->string;
+\$this->positions[] = \$this->position;
 {$this->getResult()}
 
 if (\$_success) {
-    \$this->value = strval(substr(end(\$this->strings), 0, strlen(end(\$this->strings)) - strlen(\$this->string)));
+    \$this->value = strval(substr(\$this->string, end(\$this->positions), \$this->position - end(\$this->positions)));
 }
 
-array_pop(\$this->strings);
+array_pop(\$this->positions);
 EOS;
     }
 
     public function visitNotPredicate(NotPredicateNode $node)
     {
         $this->results[] = <<<EOS
-\$this->strings[] = \$this->string;
+\$this->positions[] = \$this->position;
 
 {$this->getResult()}
 
@@ -224,7 +227,7 @@ if (!\$_success) {
     \$_success = false;
 }
 
-\$this->string = array_pop(\$this->strings);
+\$this->position = array_pop(\$this->positions);
 EOS;
     }
 
