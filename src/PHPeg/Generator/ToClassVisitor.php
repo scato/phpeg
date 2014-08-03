@@ -132,6 +132,7 @@ class {$node->getName()} implements \PHPeg\ParserInterface
     protected \$positions = array();
     protected \$value;
     protected \$values = array();
+    protected \$cache;
 
 EOS;
 
@@ -149,6 +150,7 @@ EOS;
 
     public function parse(\$_string)
     {
+        \$this->cache = array();
         \$this->string = \$_string;
         \$this->position = 0;
 
@@ -276,7 +278,23 @@ EOS;
         $this->results[] = <<<EOS
 protected function parse{$node->getName()}()
 {
+    \$_position = \$this->position;
+
+    if (isset(\$this->cache['{$node->getName()}'][\$_position])) {
+        \$_success = \$this->cache['{$node->getName()}'][\$_position]['success'];
+        \$this->position = \$this->cache['{$node->getName()}'][\$_position]['position'];
+        \$this->value = \$this->cache['{$node->getName()}'][\$_position]['value'];
+
+        return \$_success;
+    }
+
     {$this->indent($this->getResult())}
+
+    \$this->cache['{$node->getName()}'][\$_position] = array(
+        'success' => \$_success,
+        'position' => \$this->position,
+        'value' => \$this->value
+    );
 
     return \$_success;
 }

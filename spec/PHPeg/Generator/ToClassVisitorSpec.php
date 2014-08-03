@@ -127,16 +127,34 @@ class FooFile implements \PHPeg\ParserInterface
     protected \$positions = array();
     protected \$value;
     protected \$values = array();
+    protected \$cache;
 
     protected function parseFoo()
     {
+        \$_position = \$this->position;
+
+        if (isset(\$this->cache['Foo'][\$_position])) {
+            \$_success = \$this->cache['Foo'][\$_position]['success'];
+            \$this->position = \$this->cache['Foo'][\$_position]['position'];
+            \$this->value = \$this->cache['Foo'][\$_position]['value'];
+
+            return \$_success;
+        }
+
         \$_success = \$this->parseBar();
+
+        \$this->cache['Foo'][\$_position] = array(
+            'success' => \$_success,
+            'position' => \$this->position,
+            'value' => \$this->value
+        );
 
         return \$_success;
     }
 
     public function parse(\$_string)
     {
+        \$this->cache = array();
         \$this->string = \$_string;
         \$this->position = 0;
 
@@ -281,7 +299,23 @@ EOS;
         $ruleCode = <<<EOS
 protected function parseFoo()
 {
+    \$_position = \$this->position;
+
+    if (isset(\$this->cache['Foo'][\$_position])) {
+        \$_success = \$this->cache['Foo'][\$_position]['success'];
+        \$this->position = \$this->cache['Foo'][\$_position]['position'];
+        \$this->value = \$this->cache['Foo'][\$_position]['value'];
+
+        return \$_success;
+    }
+
     \$_success = \$this->parseBar();
+
+    \$this->cache['Foo'][\$_position] = array(
+        'success' => \$_success,
+        'position' => \$this->position,
+        'value' => \$this->value
+    );
 
     return \$_success;
 }
