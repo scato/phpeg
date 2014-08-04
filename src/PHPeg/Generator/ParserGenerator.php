@@ -14,17 +14,36 @@ class ParserGenerator
     {
         $this->parserFactory = $parserFactory;
     }
-    public function createParser($filename)
+
+    private function createTree($filename)
     {
         $contents = file_get_contents($filename);
         $parser = $this->parserFactory->createParser();
-        $tree = $parser->parse($contents);
+        return $parser->parse($contents);
+    }
+
+    private function createClassFromTree($tree)
+    {
+        $visitor = new ToClassVisitor();
+        $tree->accept($visitor);
+
+        return $visitor->getResult();
+    }
+
+    public function createClass($filename)
+    {
+        $tree = $this->createTree($filename);
+
+        return $this->createClassFromTree($tree);
+    }
+
+    public function createParser($filename)
+    {
+        $tree = $this->createTree($filename);
         $class = $tree->getName();
 
         if (!class_exists($class)) {
-            $visitor = new ToClassVisitor();
-            $tree->accept($visitor);
-            eval($visitor->getResult());
+            eval($this->createClassFromTree($tree));
         }
 
         return new $class();

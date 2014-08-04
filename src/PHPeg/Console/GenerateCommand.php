@@ -3,6 +3,12 @@
 
 namespace PHPeg\Console;
 
+use PHPeg\Generator\ParserGenerator;
+use PHPeg\Grammar\BinaryRuleFactory;
+use PHPeg\Grammar\GrammarRuleFactory;
+use PHPeg\Grammar\ParserFactory;
+use PHPeg\Grammar\TerminalRuleFactory;
+use PHPeg\Grammar\UnaryRuleFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,6 +34,15 @@ class GenerateCommand extends Command
         $inputFile = $input->getArgument('input-file');
         $outputFile = $input->getArgument('output-file');
 
-        file_put_contents($outputFile, 'TODO');
+        $parserGenerator = new ParserGenerator(new ParserFactory(
+            new TerminalRuleFactory(),
+            new UnaryRuleFactory(),
+            new BinaryRuleFactory(),
+            new GrammarRuleFactory()
+        ));
+
+        $output = $parserGenerator->createClass($inputFile);
+
+        file_put_contents($outputFile, $output);
     }
 }
