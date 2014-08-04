@@ -11,7 +11,8 @@ class GrammarNodeSpec extends ObjectBehavior
 {
     function let(RuleNode $rule)
     {
-        $this->beConstructedWith('foo', 'bar', array($rule));
+        $this->beConstructedWith('Foo', 'Bar', array($rule));
+        $this->setNamespace('Acme\\Factory');
     }
 
     function it_is_a_node()
@@ -19,14 +20,19 @@ class GrammarNodeSpec extends ObjectBehavior
         $this->shouldHaveType('PHPeg\Grammar\Tree\NodeInterface');
     }
 
+    function it_has_a_namespace()
+    {
+        $this->getNamespace()->shouldBe('Acme\\Factory');
+    }
+
     function it_has_a_name()
     {
-        $this->getName()->shouldBe('foo');
+        $this->getName()->shouldBe('Foo');
     }
 
     function it_has_a_start_symbol()
     {
-        $this->getStartSymbol()->shouldBe('bar');
+        $this->getStartSymbol()->shouldBe('Bar');
     }
 
     function it_has_rules(RuleNode $rule)
