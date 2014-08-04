@@ -1,7 +1,8 @@
 {
     "require-dev": {
         "phpspec/phpspec": "~2.0",
-        "behat/behat": "2.4.*@stable"
+        "behat/behat": "2.4.*@stable",
+        "phpunit/phpunit": "3.7.*"
     },
     "config": {
         "bin-dir": "bin"
