@@ -28,6 +28,7 @@ class ParserFactory
         $grammar = new Grammar();
 
         $grammar->addRule('PegFile',        $this->grammarRuleFactory->createPegFile($grammar));
+        $grammar->addRule('Namespace',      $this->grammarRuleFactory->createNamespace($grammar));
         $grammar->addRule('Grammar',        $this->grammarRuleFactory->createGrammar($grammar));
         $grammar->addRule('Rule',           $this->grammarRuleFactory->createRule($grammar));
         $grammar->addRule('Label',          $this->binaryRuleFactory->createLabel($grammar));

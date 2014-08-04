@@ -5,6 +5,8 @@ namespace PHPeg\Grammar;
 use PHPeg\Combinator\Action;
 use PHPeg\Combinator\Label;
 use PHPeg\Combinator\Literal;
+use PHPeg\Combinator\MatchedString;
+use PHPeg\Combinator\Optional;
 use PHPeg\Combinator\RuleReference;
 use PHPeg\Combinator\Sequence;
 use PHPeg\Combinator\ZeroOrMore;
@@ -14,7 +16,7 @@ class GrammarRuleFactory
 {
     public function createRule(GrammarInterface $grammar)
     {
-        // Rule = name:Identifier _ "=" _ expression:Expression ";" { return new RuleNode($name, $expression); };
+        // Rule = name:Identifier _ "=" _ expression:Expression _ ";" { return new RuleNode($name, $expression); };
         return new Action(
             new Sequence(array(
                 new Label('name', new RuleReference($grammar, 'Identifier')),
@@ -22,6 +24,7 @@ class GrammarRuleFactory
                 new Literal('='),
                 new RuleReference($grammar, '_'),
                 new Label('expression', new RuleReference($grammar, 'Expression')),
+                new RuleReference($grammar, '_'),
                 new Literal(';')
             )),
             'return new \PHPeg\Grammar\Tree\RuleNode($name, $expression);'
@@ -58,16 +61,41 @@ class GrammarRuleFactory
         );
     }
 
-    public function createPegFile(GrammarInterface $grammar)
+    public function createNamespace(GrammarInterface $grammar)
     {
-        // PegFile = _ grammar:Grammar _ { return $grammar; };
+        // Namespace = "namespace" _ name:$(Identifier ("\\" Identifier)*) _ ";" { return $name; };
         return new Action(
             new Sequence(array(
+                new Literal('namespace'),
+                new RuleReference($grammar, '_'),
+                new Label('name', new MatchedString(new Sequence(array(
+                    new RuleReference($grammar, 'Identifier'),
+                    new ZeroOrMore(new Sequence(array(new Literal('\\'), new RuleReference($grammar, 'Identifier'))))
+                )))),
+                new RuleReference($grammar, '_'),
+                new Literal(';')
+            )),
+            'return $name;'
+        );
+    }
+
+    public function createPegFile(GrammarInterface $grammar)
+    {
+        // PegFile = (_ namespace:Namespace)? _ grammar:Grammar _ {
+        //     if (isset($namespace)) $grammar->setNamespace($namespace);
+        //     return $grammar;
+        // };
+        return new Action(
+            new Sequence(array(
+                new Optional(new Sequence(array(
+                    new RuleReference($grammar, '_'),
+                    new Label('namespace', new RuleReference($grammar, 'Namespace'))
+                ))),
                 new RuleReference($grammar, '_'),
                 new Label('grammar', new RuleReference($grammar, 'Grammar')),
                 new RuleReference($grammar, '_')
             )),
-            'return $grammar;'
+            'if (isset($namespace)) $grammar->setNamespace($namespace); return $grammar;'
         );
     }
 }
