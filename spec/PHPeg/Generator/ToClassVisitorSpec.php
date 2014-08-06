@@ -119,7 +119,10 @@ EOS;
     function it_should_create_a_grammar_from_a_node()
     {
         $grammarNode = new GrammarNode('FooFile', 'Foo', array(new RuleNode('Foo', new RuleReferenceNode('Bar'))));
+        $grammarNode->setNamespace('Acme\\Factory');
         $grammarCode = <<<EOS
+namespace Acme\Factory;
+
 class FooFile implements \PHPeg\ParserInterface
 {
     protected \$string;

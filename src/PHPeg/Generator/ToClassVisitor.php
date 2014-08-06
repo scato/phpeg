@@ -124,7 +124,17 @@ EOS;
 
     public function visitGrammar(GrammarNode $node)
     {
-        $result = <<<EOS
+        $result = '';
+
+        if ($node->getNamespace() !== null) {
+            $result .= <<<EOS
+namespace {$node->getNamespace()};
+
+
+EOS;
+        }
+
+        $result .= <<<EOS
 class {$node->getName()} implements \PHPeg\ParserInterface
 {
     protected \$string;
