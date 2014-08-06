@@ -14,9 +14,13 @@ Feature: Generating parsers
     When I run "generate"
     Then my class should contain:
     """
+    <?php
+    """
+    And my class should contain:
+    """
     class Test
     """
-    Then my class should contain:
+    And my class should contain:
     """
     protected function parseFoo()
     """
