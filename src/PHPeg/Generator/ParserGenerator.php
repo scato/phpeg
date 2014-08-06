@@ -2,27 +2,26 @@
 
 namespace PHPeg\Generator;
 
-use PHPeg\Combinator\Grammar;
-use PHPeg\Grammar\Parser;
-use PHPeg\Grammar\ParserFactory;
+use PHPeg\Grammar\PegFile;
+use PHPeg\Grammar\Tree\GrammarNode;
 
 class ParserGenerator
 {
-    private $parserFactory;
+    private $parser;
 
-    public function __construct(ParserFactory $parserFactory)
+    public function __construct(PegFile $parser)
     {
-        $this->parserFactory = $parserFactory;
+        $this->parser = $parser;
     }
 
-    private function createTree($filename)
+    public function createTree($filename)
     {
-        $contents = file_get_contents($filename);
-        $parser = $this->parserFactory->createParser();
-        return $parser->parse($contents);
+        $definition = file_get_contents($filename);
+
+        return $this->parser->parse($definition);
     }
 
-    private function createClassFromTree($tree)
+    private function createClassFromTree(GrammarNode $tree)
     {
         $visitor = new ToClassVisitor();
         $tree->accept($visitor);
@@ -40,7 +39,7 @@ class ParserGenerator
     public function createParser($filename)
     {
         $tree = $this->createTree($filename);
-        $class = $tree->getName();
+        $class = $tree->getQualifiedName();
 
         if (!class_exists($class)) {
             eval($this->createClassFromTree($tree));

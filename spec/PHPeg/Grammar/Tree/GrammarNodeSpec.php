@@ -36,6 +36,11 @@ class GrammarNodeSpec extends ObjectBehavior
         $this->getName()->shouldBe('Foo');
     }
 
+    function it_has_a_qualified_name()
+    {
+        $this->getQualifiedName()->shouldBe('Acme\\Factory\\Foo');
+    }
+
     function it_has_a_start_symbol()
     {
         $this->getStartSymbol()->shouldBe('Bar');

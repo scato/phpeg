@@ -2,14 +2,7 @@
 
 namespace spec\PHPeg\Generator;
 
-use PHPeg\Combinator\Grammar;
-use PHPeg\Generator\ToCombinatorVisitor;
-use PHPeg\Grammar\BinaryRuleFactory;
-use PHPeg\Grammar\GrammarRuleFactory;
-use PHPeg\Grammar\Parser;
-use PHPeg\Grammar\ParserFactory;
-use PHPeg\Grammar\TerminalRuleFactory;
-use PHPeg\Grammar\UnaryRuleFactory;
+use PHPeg\Grammar\PegFile;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -17,37 +10,40 @@ class ParserGeneratorSpec extends ObjectBehavior
 {
     function let()
     {
-        $this->beConstructedWith(new ParserFactory(
-            new TerminalRuleFactory(),
-            new UnaryRuleFactory(),
-            new BinaryRuleFactory(),
-            new GrammarRuleFactory()
-        ));
+        $this->beConstructedWith(new PegFile());
+    }
+
+    function it_should_generate_a_tree()
+    {
+        $tree = $this->createTree(__DIR__ . '/PegFile.peg');
+
+        $tree->shouldHaveType('PHPeg\Grammar\Tree\GrammarNode');
+    }
+
+    function it_should_generate_a_parser()
+    {
+        $tree = $this->createTree(__DIR__ . '/PegFile.peg');
+        $parser = $this->createParser(__DIR__ . '/PegFile.peg');
+
+        $parser->shouldHaveType($tree->getQualifiedName());
     }
 
     function it_should_generate_a_parser_that_parses_its_own_definition()
     {
-        $parser = $this->createParser(__DIR__ . '/PHPeg.peg');
-        $contents = file_get_contents(__DIR__ . '/PHPeg.peg');
+        $parser = $this->createParser(__DIR__ . '/PegFile.peg');
+        $definition = file_get_contents(__DIR__ . '/PegFile.peg');
 
-        for ($i = 0; $i < 100; $i++) {
-            $parser->parse($contents)->shouldHaveType('PHPeg\Grammar\Tree\GrammarNode');
+        $tree = $parser->parse($definition);
 
-            return;
-        }
+        $tree->shouldHaveType('PHPeg\Grammar\Tree\GrammarNode');
     }
 
-    function it_should_generate_a_parser_that_when_parsing_its_own_definition_results_in_the_same_parser()
+    function it_should_generate_a_parser_that_when_parsing_its_own_definition_results_in_the_same_tree()
     {
-        $contents = file_get_contents(__DIR__ . '/PHPeg.peg');
-        $firstGenerationParser = $this->createParser(__DIR__ . '/PHPeg.peg');
-        $firstGenerationTree = $firstGenerationParser->parse($contents);
+        $tree = $this->createTree(__DIR__ . '/PegFile.peg');
+        $parser = $this->createParser(__DIR__ . '/PegFile.peg');
+        $definition = file_get_contents(__DIR__ . '/PegFile.peg');
 
-        $secondGenerationGrammar = new Grammar();
-        $firstGenerationTree->getWrappedObject()->accept(new ToCombinatorVisitor($secondGenerationGrammar));
-        $secondGenerationParser = new Parser($secondGenerationGrammar);
-        $secondGenerationTree = $secondGenerationParser->parse($contents);
-
-        $firstGenerationTree->shouldBeLike($secondGenerationTree);
+        $parser->parse($definition)->shouldBeLike($tree);
     }
 }

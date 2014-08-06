@@ -43,6 +43,15 @@ class GrammarNode implements NodeInterface
         return $this->name;
     }
 
+    public function getQualifiedName()
+    {
+        if ($this->getNamespace() === null) {
+            return $this->name;
+        }
+
+        return $this->namespace . '\\' . $this->name;
+    }
+
     public function getStartSymbol()
     {
         return $this->startSymbol;
