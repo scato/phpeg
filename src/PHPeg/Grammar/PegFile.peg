@@ -1,0 +1,65 @@
+namespace PHPeg\Grammar;
+
+use PHPeg\Grammar\Tree\ActionNode;
+use PHPeg\Grammar\Tree\AndPredicateNode;
+use PHPeg\Grammar\Tree\AnyNode;
+use PHPeg\Grammar\Tree\CharacterClassNode;
+use PHPeg\Grammar\Tree\ChoiceNode;
+use PHPeg\Grammar\Tree\GrammarNode;
+use PHPeg\Grammar\Tree\LabelNode;
+use PHPeg\Grammar\Tree\LiteralNode;
+use PHPeg\Grammar\Tree\MatchedStringNode;
+use PHPeg\Grammar\Tree\NotPredicateNode;
+use PHPeg\Grammar\Tree\OneOrMoreNode;
+use PHPeg\Grammar\Tree\OptionalNode;
+use PHPeg\Grammar\Tree\RuleNode;
+use PHPeg\Grammar\Tree\RuleReferenceNode;
+use PHPeg\Grammar\Tree\SequenceNode;
+use PHPeg\Grammar\Tree\ZeroOrMoreNode;
+
+grammar PegFile
+{
+    start PegFile = (_ namespace:Namespace)? imports:(_ import:Import { return $import; })* _ grammar:Grammar _ {
+        if (isset($namespace)) $grammar->setNamespace($namespace);
+        $grammar->setImports($imports);
+        return $grammar;
+    };
+
+    QualifiedIdentifier = $(Identifier ("\\" Identifier)*);
+    Namespace = "namespace" _ name:QualifiedIdentifier _ ";" { return $name; };
+    Import = "use" _ name:QualifiedIdentifier _ ";" { return $name; };
+
+    Grammar = "grammar" _ name:Identifier _ "{"
+        _ "start" _ start:Rule
+        rules:(_ rule:Rule { return $rule; })*
+        _ "}" { return new GrammarNode($name, $start->getName(), array_merge(array($start), $rules)); };
+    Rule = name:Identifier _ "=" _ expression:Expression _ ";" { return new RuleNode($name, $expression); };
+
+    Label = name:Identifier _ ":" _ expression:Predicate                { return new LabelNode($name, $expression); }
+          / Predicate;
+    Sequence = first:Label rest:(_ next:Label { return $next; })*       { return empty($rest) ? $first : new SequenceNode(array_merge(array($first), $rest)); };
+    Code = $([^{}] / "{" Code "}")*;
+    Action = expression:Sequence _ "{" code:Code "}"                    { return new ActionNode($expression, trim($code)); }
+           / Sequence;
+    Choice = first:Action rest:(_ "/" _ next:Action { return $next; })* { return empty($rest) ? $first : new ChoiceNode(array_merge(array($first), $rest)); };
+    Expression = Choice;
+
+    ZeroOrMore = expression:Terminal _ "*"      { return new ZeroOrMoreNode($expression); };
+    OneOrMore = expression:Terminal _ "+"       { return new OneOrMoreNode($expression); };
+    Optional = expression:Terminal _ "?"        { return new OptionalNode($expression); };
+    Repetition = ZeroOrMore / OneOrMore / Optional / Terminal;
+    AndPredicate = "&" _ expression:Repetition  { return new AndPredicateNode($expression); };
+    NotPredicate = "!" _ expression:Repetition  { return new NotPredicateNode($expression); };
+    MatchedString = "$" _ expression:Repetition { return new MatchedStringNode($expression); };
+    Predicate = AndPredicate / NotPredicate / MatchedString / Repetition;
+
+    Literal = "\"" string:$([^\\"] / "\\" .)* "\""          { return new LiteralNode(stripslashes($string)); };
+    Any = "."                                               { return new AnyNode(); };
+    CharacterClass = "[" string:$([^\\\]] / "\\" .)* "]"    { return new CharacterClassNode($string); };
+    Identifier = $([A-Za-z_] [A-Za-z0-9_]*);
+    RuleReference = name:Identifier                         { return new RuleReferenceNode($name); };
+    SubExpression = "(" _ expression:Expression _ ")"       { return $expression; };
+    Terminal = RuleReference / Literal / Any / CharacterClass / SubExpression;
+
+    _ = [ \n\r\t]* { return null; };
+}
