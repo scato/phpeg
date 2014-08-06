@@ -135,7 +135,7 @@ EOS;
         }
 
         $result .= <<<EOS
-class {$node->getName()} implements \PHPeg\ParserInterface
+class {$node->getName()}
 {
     protected \$string;
     protected \$position;
@@ -152,11 +152,11 @@ EOS;
             $result .= <<<EOS
 
     {$this->indent($piece)}
+
 EOS;
         }
 
         $result .= <<<EOS
-
 
     public function parse(\$_string)
     {

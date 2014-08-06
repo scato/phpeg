@@ -123,7 +123,7 @@ EOS;
         $grammarCode = <<<EOS
 namespace Acme\Factory;
 
-class FooFile implements \PHPeg\ParserInterface
+class FooFile
 {
     protected \$string;
     protected \$position;

@@ -25,11 +25,6 @@ class ParserGeneratorSpec extends ObjectBehavior
         ));
     }
 
-    function it_should_generate_a_parser()
-    {
-        $this->createParser(__DIR__ . '/PHPeg.peg')->shouldHaveType('PHPeg\ParserInterface');
-    }
-
     function it_should_generate_a_parser_that_parses_its_own_definition()
     {
         $parser = $this->createParser(__DIR__ . '/PHPeg.peg');
