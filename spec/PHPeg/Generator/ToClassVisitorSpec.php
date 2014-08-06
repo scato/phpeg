@@ -120,8 +120,11 @@ EOS;
     {
         $grammarNode = new GrammarNode('FooFile', 'Foo', array(new RuleNode('Foo', new RuleReferenceNode('Bar'))));
         $grammarNode->setNamespace('Acme\\Factory');
+        $grammarNode->setImports(array('Acme\\FactoryInterface'));
         $grammarCode = <<<EOS
 namespace Acme\Factory;
+
+use Acme\FactoryInterface;
 
 class FooFile
 {

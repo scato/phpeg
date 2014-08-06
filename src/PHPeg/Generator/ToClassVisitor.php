@@ -127,11 +127,15 @@ EOS;
         $result = '';
 
         if ($node->getNamespace() !== null) {
-            $result .= <<<EOS
-namespace {$node->getNamespace()};
+            $result .= "namespace {$node->getNamespace()};\n\n";
+        }
 
+        if (count($node->getImports()) > 0) {
+            foreach ($node->getImports() as $import) {
+                $result .= "use {$import};\n";
+            }
 
-EOS;
+            $result .= "\n";
         }
 
         $result .= <<<EOS

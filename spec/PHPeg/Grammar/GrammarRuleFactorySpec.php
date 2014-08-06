@@ -77,6 +77,8 @@ class GrammarRuleFactorySpec extends ObjectBehavior
 
         $grammar->getRule('Rule')->willReturn($this->createRule($grammar));
         $grammar->getRule('Grammar')->willReturn($this->createGrammar($grammar));
+        $grammar->getRule('QualifiedIdentifier')->willReturn($this->createQualifiedIdentifier($grammar));
+        $grammar->getRule('Import')->willReturn($this->createImport($grammar));
         $grammar->getRule('Namespace')->willReturn($this->createNamespace($grammar));
     }
 
@@ -117,17 +119,27 @@ class GrammarRuleFactorySpec extends ObjectBehavior
         $this->createNamespace($grammar)->parse('namespace The\\Bar;', $context)->getRest()->shouldBe('');
     }
 
+    function it_should_create_an_import_rule(GrammarInterface $grammar)
+    {
+        $context = new Context();
+
+        $this->createImport($grammar)->parse('use The\\Foo;', $context)->isSuccess()->shouldBe(true);
+        $this->createImport($grammar)->parse('use The\\Foo;', $context)->getResult()->shouldBe('The\\Foo');
+        $this->createImport($grammar)->parse('use The\\Foo;', $context)->getRest()->shouldBe('');
+    }
+
     function it_should_create_a_peg_file_rule(GrammarInterface $grammar)
     {
         $context = new Context();
 
-        $definition = ' namespace The\\Bar; grammar Foo { start File = Bar; } ';
+        $definition = ' namespace The\\Bar; use The\\Foo; grammar Foo { start File = Bar; } ';
 
         $tree = new GrammarNode('Foo', 'File', array(
             new RuleNode('File', new RuleReferenceNode('Bar')),
         ));
 
         $tree->setNamespace('The\\Bar');
+        $tree->setImports(array('The\\Foo'));
 
         $this->createPegFile($grammar)->parse($definition, $context)->isSuccess()->shouldBe(true);
         $this->createPegFile($grammar)->parse($definition, $context)->getResult()->shouldBeLike($tree);
