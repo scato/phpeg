@@ -41,7 +41,7 @@ class GenerateCommand extends Command
             new GrammarRuleFactory()
         ));
 
-        $output = $parserGenerator->createClass($inputFile);
+        $output = "<?php\n\n" . $parserGenerator->createClass($inputFile);
 
         file_put_contents($outputFile, $output);
     }
