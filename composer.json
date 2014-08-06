@@ -1,4 +1,8 @@
 {
+    "name": "scato/phpeg",
+    "description": "PEG Parser Generator",
+    "type": "library",
+    "license": "MIT",
     "require-dev": {
         "phpspec/phpspec": "~2.0",
         "behat/behat": "2.4.*@stable",

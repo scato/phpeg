@@ -1,16 +1,30 @@
 PHPeg
 =====
 
-PEG Parser Combinator/Compiler POC
+PEG Parser Generator
 
-Waring! Serious hacking going on!
+Warning! Work in progress!
+
+Usage
+-----
+
+Install this tool as a dev requirement:
+
+```
+"require-dev": {
+    "scato/phpeg": "*"
+}
+```
+
+You can now generate (and regenerate) parsers using the command line tool:
+
+```
+$ bin/phpeg generate <input> <output>
+```
 
 About
 -----
 
-This is a PEG Parser library that contains both combinator parsing, as well as a parser generator.
-I have finished just enough to make the array parser work.
-The combinators Void, Concat and Many are not used, so they aren't finished yet.
+This is a PEG parser generator. It used to contain combinator parsing, but now it contains only code generation.
 
-Run array.php to try out the code. The result of compiling is also included in ArrayParser.php.
-
+The generated parser is a PEG parser that uses memoization. This effectively makes it a Packrat Parser, or so I'm told.
