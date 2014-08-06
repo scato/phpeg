@@ -5,6 +5,7 @@ namespace PHPeg\Grammar\Tree;
 class GrammarNode implements NodeInterface
 {
     private $namespace;
+    private $imports;
     private $name;
     private $startSymbol;
     private $rules;
@@ -25,6 +26,16 @@ class GrammarNode implements NodeInterface
     public function setNamespace($namespace)
     {
         $this->namespace = $namespace;
+    }
+
+    public function getImports()
+    {
+        return $this->imports;
+    }
+
+    public function setImports($imports)
+    {
+        $this->imports = $imports;
     }
 
     public function getName()

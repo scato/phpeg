@@ -61,6 +61,15 @@ class GrammarRuleFactory
         );
     }
 
+    public function createQualifiedIdentifier(GrammarInterface $grammar)
+    {
+        // QualifiedIdentifier = $(Identifier ("\\" Identifier)*);
+        return new MatchedString(new Sequence(array(
+            new RuleReference($grammar, 'Identifier'),
+            new ZeroOrMore(new Sequence(array(new Literal('\\'), new RuleReference($grammar, 'Identifier'))))
+        )));
+    }
+
     public function createNamespace(GrammarInterface $grammar)
     {
         // Namespace = "namespace" _ name:$(Identifier ("\\" Identifier)*) _ ";" { return $name; };
@@ -68,10 +77,22 @@ class GrammarRuleFactory
             new Sequence(array(
                 new Literal('namespace'),
                 new RuleReference($grammar, '_'),
-                new Label('name', new MatchedString(new Sequence(array(
-                    new RuleReference($grammar, 'Identifier'),
-                    new ZeroOrMore(new Sequence(array(new Literal('\\'), new RuleReference($grammar, 'Identifier'))))
-                )))),
+                new Label('name', new RuleReference($grammar, 'QualifiedIdentifier')),
+                new RuleReference($grammar, '_'),
+                new Literal(';')
+            )),
+            'return $name;'
+        );
+    }
+
+    public function createImport(GrammarInterface $grammar)
+    {
+        // Import = "use" _ name:$(Identifier ("\\" Identifier)*) _ ";" { return $name; };
+        return new Action(
+            new Sequence(array(
+                new Literal('use'),
+                new RuleReference($grammar, '_'),
+                new Label('name', new RuleReference($grammar, 'QualifiedIdentifier')),
                 new RuleReference($grammar, '_'),
                 new Literal(';')
             )),
@@ -81,8 +102,9 @@ class GrammarRuleFactory
 
     public function createPegFile(GrammarInterface $grammar)
     {
-        // PegFile = (_ namespace:Namespace)? _ grammar:Grammar _ {
+        // PegFile = (_ namespace:Namespace)? imports:(_ import:Import { return $import; })* _ grammar:Grammar _ {
         //     if (isset($namespace)) $grammar->setNamespace($namespace);
+        //     $grammar->setImports($imports);
         //     return $grammar;
         // };
         return new Action(
@@ -91,11 +113,18 @@ class GrammarRuleFactory
                     new RuleReference($grammar, '_'),
                     new Label('namespace', new RuleReference($grammar, 'Namespace'))
                 ))),
+                new Label('imports', new ZeroOrMore(new Action(
+                    new Sequence(array(
+                        new RuleReference($grammar, '_'),
+                        new Label('import', new RuleReference($grammar, 'Import'))
+                    )),
+                    'return $import;'
+                ))),
                 new RuleReference($grammar, '_'),
                 new Label('grammar', new RuleReference($grammar, 'Grammar')),
                 new RuleReference($grammar, '_')
             )),
-            'if (isset($namespace)) $grammar->setNamespace($namespace); return $grammar;'
+            'if (isset($namespace)) $grammar->setNamespace($namespace); $grammar->setImports($imports); return $grammar;'
         );
     }
 }
