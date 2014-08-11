@@ -182,7 +182,7 @@ class PegFileSpec extends ObjectBehavior
             ->duringParse('grammar TestFile { File = "foo"; }');
 
         $this
-            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Identifier, Rule on line 1'))
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Identifier on line 1'))
             ->duringParse('grammar TestFile { start = "foo"; }');
 
         $this
