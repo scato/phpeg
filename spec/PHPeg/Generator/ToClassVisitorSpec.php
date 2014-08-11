@@ -175,7 +175,7 @@ class FooFile
             'value' => \$this->value
         );
 
-        if (!\$_success) {
+        if (!\$_success && end(\$this->cuts)) {
             \$this->expecting[\$_position][] = 'Foo';
         }
 
@@ -253,7 +253,10 @@ if (substr(\$this->string, \$this->position, 3) === 'foo') {
     \$this->position += 3;
 } else {
     \$_success = false;
-    \$this->expecting[\$this->position][] = 'foo';
+
+    if (end(\$this->cuts)) {
+        \$this->expecting[\$this->position][] = 'foo';
+    }
 }
 EOS;
 
@@ -373,7 +376,7 @@ protected function parseFoo()
         'value' => \$this->value
     );
 
-    if (!\$_success) {
+    if (!\$_success && end(\$this->cuts)) {
         \$this->expecting[\$_position][] = 'Foo';
     }
 

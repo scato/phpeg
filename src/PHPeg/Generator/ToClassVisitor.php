@@ -248,7 +248,10 @@ if (substr(\$this->string, \$this->position, {$strlen}) === {$var_export}) {
     \$this->position += {$strlen};
 } else {
     \$_success = false;
-    \$this->expecting[\$this->position][] = {$var_export};
+
+    if (end(\$this->cuts)) {
+        \$this->expecting[\$this->position][] = {$var_export};
+    }
 }
 EOS;
     }
@@ -352,7 +355,7 @@ protected function parse{$node->getName()}()
         'value' => \$this->value
     );
 
-    if (!\$_success) {
+    if (!\$_success && end(\$this->cuts)) {
         \$this->expecting[\$_position][] = '{$node->getName()}';
     }
 
