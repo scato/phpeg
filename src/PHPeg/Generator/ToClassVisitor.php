@@ -7,6 +7,7 @@ use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\AnyNode;
 use PHPeg\Grammar\Tree\CharacterClassNode;
 use PHPeg\Grammar\Tree\ChoiceNode;
+use PHPeg\Grammar\Tree\CutNode;
 use PHPeg\Grammar\Tree\GrammarNode;
 use PHPeg\Grammar\Tree\LabelNode;
 use PHPeg\Grammar\Tree\LiteralNode;
@@ -98,6 +99,7 @@ EOS;
 
         $result = <<<EOS
 \$this->positions[] = \$this->position;
+\$this->cuts[] = false;
 
 {$pieces[0]}
 EOS;
@@ -106,7 +108,7 @@ EOS;
             $result .= <<<EOS
 
 
-if (!\$_success) {
+if (!\$_success && !end(\$this->cuts)) {
     \$this->position = end(\$this->positions);
     {$this->indent($piece)}
 }
@@ -117,9 +119,21 @@ EOS;
 
 
 array_pop(\$this->positions);
+array_pop(\$this->cuts);
 EOS;
 
         $this->results[] = $result;
+    }
+
+    public function visitCut(CutNode $node)
+    {
+        $this->results[] = <<<EOS
+\$_success = true;
+\$this->value = null;
+
+array_pop(\$this->cuts);
+\$this->cuts[] = true;
+EOS;
     }
 
     public function visitGrammar(GrammarNode $node)
@@ -146,6 +160,7 @@ class {$node->getName()}
     protected \$positions = array();
     protected \$value;
     protected \$values = array();
+    protected \$cuts = array();
     protected \$cache;
     protected \$expecting = array();
 
@@ -175,9 +190,13 @@ EOS;
 
     private function expecting()
     {
+        if (empty(\$this->expecting)) {
+            return null;
+        }
+
         ksort(\$this->expecting);
 
-        return implode(', ', end(\$this->expecting));
+        return implode(', ', array_unique(end(\$this->expecting)));
     }
 
     public function parse(\$_string)
@@ -391,20 +410,29 @@ EOS;
 
 while (true) {
     \$this->positions[] = \$this->position;
+    \$this->cuts[] = false;
+
     {$this->indent($this->getResult())}
 
     if (!\$_success) {
-        \$this->position = array_pop(\$this->positions);
-
         break;
     }
 
     array_pop(\$this->positions);
+    array_pop(\$this->cuts);
     \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
 }
 
-\$_success = true;
-\$this->value = array_pop(\$this->values);
+if (!end(\$this->cuts)) {
+    \$this->position = end(\$this->positions);
+
+    \$_success = true;
+    \$this->value = end(\$this->values);
+}
+
+array_pop(\$this->positions);
+array_pop(\$this->cuts);
+array_pop(\$this->values);
 EOS;
     }
 }

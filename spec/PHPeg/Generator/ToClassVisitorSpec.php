@@ -7,6 +7,7 @@ use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\AnyNode;
 use PHPeg\Grammar\Tree\CharacterClassNode;
 use PHPeg\Grammar\Tree\ChoiceNode;
+use PHPeg\Grammar\Tree\CutNode;
 use PHPeg\Grammar\Tree\GrammarNode;
 use PHPeg\Grammar\Tree\LabelNode;
 use PHPeg\Grammar\Tree\LiteralNode;
@@ -101,19 +102,36 @@ EOS;
         $choiceNode = new ChoiceNode(array(new RuleReferenceNode('Foo'), new RuleReferenceNode('Bar')));
         $choiceCode = <<<EOS
 \$this->positions[] = \$this->position;
+\$this->cuts[] = false;
 
 \$_success = \$this->parseFoo();
 
-if (!\$_success) {
+if (!\$_success && !end(\$this->cuts)) {
     \$this->position = end(\$this->positions);
     \$_success = \$this->parseBar();
 }
 
 array_pop(\$this->positions);
+array_pop(\$this->cuts);
 EOS;
 
         $choiceNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBe($choiceCode);
+    }
+
+    function it_should_create_a_cut_from_a_node()
+    {
+        $cutNode = new CutNode();
+        $cutCode = <<<EOS
+\$_success = true;
+\$this->value = null;
+
+array_pop(\$this->cuts);
+\$this->cuts[] = true;
+EOS;
+
+        $cutNode->accept($this->getWrappedObject());
+        $this->getResult()->shouldBe($cutCode);
     }
 
     function it_should_create_a_grammar_from_a_node()
@@ -133,6 +151,7 @@ class FooFile
     protected \$positions = array();
     protected \$value;
     protected \$values = array();
+    protected \$cuts = array();
     protected \$cache;
     protected \$expecting = array();
 
@@ -175,9 +194,13 @@ class FooFile
 
     private function expecting()
     {
+        if (empty(\$this->expecting)) {
+            return null;
+        }
+
         ksort(\$this->expecting);
 
-        return implode(', ', end(\$this->expecting));
+        return implode(', ', array_unique(end(\$this->expecting)));
     }
 
     public function parse(\$_string)
@@ -406,20 +429,29 @@ EOS;
 
 while (true) {
     \$this->positions[] = \$this->position;
+    \$this->cuts[] = false;
+
     \$_success = \$this->parseFoo();
 
     if (!\$_success) {
-        \$this->position = array_pop(\$this->positions);
-
         break;
     }
 
     array_pop(\$this->positions);
+    array_pop(\$this->cuts);
     \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
 }
 
-\$_success = true;
-\$this->value = array_pop(\$this->values);
+if (!end(\$this->cuts)) {
+    \$this->position = end(\$this->positions);
+
+    \$_success = true;
+    \$this->value = end(\$this->values);
+}
+
+array_pop(\$this->positions);
+array_pop(\$this->cuts);
+array_pop(\$this->values);
 EOS;
 
         $zeroOrMoreNode->accept($this->getWrappedObject());
