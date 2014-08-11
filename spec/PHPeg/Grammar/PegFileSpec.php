@@ -7,6 +7,7 @@ use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\AnyNode;
 use PHPeg\Grammar\Tree\CharacterClassNode;
 use PHPeg\Grammar\Tree\ChoiceNode;
+use PHPeg\Grammar\Tree\CutNode;
 use PHPeg\Grammar\Tree\GrammarNode;
 use PHPeg\Grammar\Tree\LabelNode;
 use PHPeg\Grammar\Tree\LiteralNode;
@@ -47,6 +48,13 @@ class PegFileSpec extends ObjectBehavior
     {
         $this->parse($this->a_grammar_containing('.'))->shouldBeLike(
             $this->a_tree_containing(new AnyNode())
+        );
+    }
+
+    function it_should_parse_cuts()
+    {
+        $this->parse($this->a_grammar_containing('^'))->shouldBeLike(
+            $this->a_tree_containing(new CutNode())
         );
     }
 
@@ -178,11 +186,11 @@ class PegFileSpec extends ObjectBehavior
             ->duringParse('grammar TestFile { start = "foo"; }');
 
         $this
-            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting *, +, ?, Identifier, &, AndPredicate, !, NotPredicate, $, MatchedString, RuleReference, ", Literal, ., Any, [, CharacterClass, (, SubExpression, Terminal, ZeroOrMore, OneOrMore, Optional, Repetition, Predicate, Label, {, /, ; on line 1'))
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting *, +, ?, Identifier, &, AndPredicate, !, NotPredicate, $, MatchedString, RuleReference, ", Literal, ., Any, ^, Cut, [, CharacterClass, (, SubExpression, Terminal, ZeroOrMore, OneOrMore, Optional, Repetition, Predicate, Label, {, /, ; on line 1'))
             ->duringParse('grammar TestFile { start File = "foo" }');
 
         $this
-            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Identifier, &, AndPredicate, !, NotPredicate, $, MatchedString, RuleReference, ", Literal, ., Any, [, CharacterClass, (, SubExpression, Terminal, ZeroOrMore, OneOrMore, Optional, Repetition, Predicate, Label, Sequence, Action on line 1'))
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Identifier, &, AndPredicate, !, NotPredicate, $, MatchedString, RuleReference, ", Literal, ., Any, ^, Cut, [, CharacterClass, (, SubExpression, Terminal, ZeroOrMore, OneOrMore, Optional, Repetition, Predicate, Label, Sequence, Action on line 1'))
             ->duringParse('grammar TestFile { start File = "foo" / ; }');
 
         $this

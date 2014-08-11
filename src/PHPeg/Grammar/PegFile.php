@@ -7,6 +7,7 @@ use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\AnyNode;
 use PHPeg\Grammar\Tree\CharacterClassNode;
 use PHPeg\Grammar\Tree\ChoiceNode;
+use PHPeg\Grammar\Tree\CutNode;
 use PHPeg\Grammar\Tree\GrammarNode;
 use PHPeg\Grammar\Tree\LabelNode;
 use PHPeg\Grammar\Tree\LiteralNode;
@@ -1883,6 +1884,46 @@ class PegFile
         return $_success;
     }
 
+    protected function parseCut()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['Cut'][$_position])) {
+            $_success = $this->cache['Cut'][$_position]['success'];
+            $this->position = $this->cache['Cut'][$_position]['position'];
+            $this->value = $this->cache['Cut'][$_position]['value'];
+
+            return $_success;
+        }
+
+        if (substr($this->string, $this->position, 1) === '^') {
+            $_success = true;
+            $this->value = '^';
+            $this->position += 1;
+        } else {
+            $_success = false;
+            $this->expecting[$this->position][] = '^';
+        }
+
+        if ($_success) {
+            $this->value = call_user_func(function () {
+                return new CutNode();
+            });
+        }
+
+        $this->cache['Cut'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->expecting[$_position][] = 'Cut';
+        }
+
+        return $_success;
+    }
+
     protected function parseCharacterClass()
     {
         $_position = $this->position;
@@ -2241,6 +2282,11 @@ class PegFile
         if (!$_success) {
             $this->position = end($this->positions);
             $_success = $this->parseAny();
+        }
+
+        if (!$_success) {
+            $this->position = end($this->positions);
+            $_success = $this->parseCut();
         }
 
         if (!$_success) {
