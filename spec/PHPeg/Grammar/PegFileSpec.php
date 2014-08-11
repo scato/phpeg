@@ -179,6 +179,14 @@ class PegFileSpec extends ObjectBehavior
 
         $this
             ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting ; on line 1'))
+            ->duringParse('grammar TestFile { start File = "foo" }');
+
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting ; on line 1'))
             ->duringParse('grammar TestFile { start File = "foo" / ; }');
+
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, unexpected use on line 1'))
+            ->duringParse('grammar TestFile { start File = "foo" / "bar"; } use');
     }
 }

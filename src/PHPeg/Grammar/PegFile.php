@@ -2217,6 +2217,11 @@ class PegFile
         return count(explode("\n", substr($this->string, 0, $this->position)));
     }
 
+    private function rest()
+    {
+        return substr($this->string, $this->position);
+    }
+
     public function parse($_string)
     {
         $this->cache = array();
@@ -2230,7 +2235,7 @@ class PegFile
         }
 
         if ($this->position < strlen($this->string)) {
-            throw new \InvalidArgumentException("Unexpected input at position: {$this->position}");
+            throw new \InvalidArgumentException("Syntax error, unexpected {$this->rest()} on line {$this->line()}");
         }
 
         return $this->value;
