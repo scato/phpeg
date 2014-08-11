@@ -27,6 +27,7 @@ class PegFile
     protected $value;
     protected $values = array();
     protected $cache;
+    protected $expecting;
 
     protected function parsePegFile()
     {
@@ -73,6 +74,7 @@ class PegFile
             $this->values[] = array();
 
             while (true) {
+                $this->positions[] = $this->position;
                 $this->values[] = array();
 
                 $_success = $this->parse_();
@@ -100,9 +102,12 @@ class PegFile
                 }
 
                 if (!$_success) {
+                    $this->position = array_pop($this->positions);
+
                     break;
                 }
 
+                array_pop($this->positions);
                 $this->values[] = array_merge(array_pop($this->values), array($this->value));
             }
 
@@ -182,6 +187,7 @@ class PegFile
             $this->values[] = array();
 
             while (true) {
+                $this->positions[] = $this->position;
                 $this->values[] = array();
 
                 if (substr($this->string, $this->position, 1) === '\\') {
@@ -190,6 +196,7 @@ class PegFile
                     $this->position += 1;
                 } else {
                     $_success = false;
+                    $this->expecting = '\\';
                 }
 
                 if ($_success) {
@@ -205,9 +212,12 @@ class PegFile
                 }
 
                 if (!$_success) {
+                    $this->position = array_pop($this->positions);
+
                     break;
                 }
 
+                array_pop($this->positions);
                 $this->values[] = array_merge(array_pop($this->values), array($this->value));
             }
 
@@ -256,6 +266,7 @@ class PegFile
             $this->position += 9;
         } else {
             $_success = false;
+            $this->expecting = 'namespace';
         }
 
         if ($_success) {
@@ -289,6 +300,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = ';';
             }
         }
 
@@ -333,6 +345,7 @@ class PegFile
             $this->position += 3;
         } else {
             $_success = false;
+            $this->expecting = 'use';
         }
 
         if ($_success) {
@@ -366,6 +379,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = ';';
             }
         }
 
@@ -410,6 +424,7 @@ class PegFile
             $this->position += 7;
         } else {
             $_success = false;
+            $this->expecting = 'grammar';
         }
 
         if ($_success) {
@@ -443,6 +458,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = '{';
             }
         }
 
@@ -461,6 +477,7 @@ class PegFile
                 $this->position += 5;
             } else {
                 $_success = false;
+                $this->expecting = 'start';
             }
         }
 
@@ -486,6 +503,7 @@ class PegFile
             $this->values[] = array();
 
             while (true) {
+                $this->positions[] = $this->position;
                 $this->values[] = array();
 
                 $_success = $this->parse_();
@@ -513,9 +531,12 @@ class PegFile
                 }
 
                 if (!$_success) {
+                    $this->position = array_pop($this->positions);
+
                     break;
                 }
 
+                array_pop($this->positions);
                 $this->values[] = array_merge(array_pop($this->values), array($this->value));
             }
 
@@ -542,6 +563,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = '}';
             }
         }
 
@@ -601,6 +623,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = '=';
             }
         }
 
@@ -635,6 +658,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = ';';
             }
         }
 
@@ -696,6 +720,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = ':';
             }
         }
 
@@ -769,6 +794,7 @@ class PegFile
             $this->values[] = array();
 
             while (true) {
+                $this->positions[] = $this->position;
                 $this->values[] = array();
 
                 $_success = $this->parse_();
@@ -796,9 +822,12 @@ class PegFile
                 }
 
                 if (!$_success) {
+                    $this->position = array_pop($this->positions);
+
                     break;
                 }
 
+                array_pop($this->positions);
                 $this->values[] = array_merge(array_pop($this->values), array($this->value));
             }
 
@@ -848,6 +877,7 @@ class PegFile
 
         while (true) {
             $this->positions[] = $this->position;
+            $this->positions[] = $this->position;
 
             if (preg_match('/^[^{}]$/', substr($this->string, $this->position, 1))) {
                 $_success = true;
@@ -867,6 +897,7 @@ class PegFile
                     $this->position += 1;
                 } else {
                     $_success = false;
+                    $this->expecting = '{';
                 }
 
                 if ($_success) {
@@ -884,6 +915,7 @@ class PegFile
                         $this->position += 1;
                     } else {
                         $_success = false;
+                        $this->expecting = '}';
                     }
                 }
 
@@ -897,9 +929,12 @@ class PegFile
             array_pop($this->positions);
 
             if (!$_success) {
+                $this->position = array_pop($this->positions);
+
                 break;
             }
 
+            array_pop($this->positions);
             $this->values[] = array_merge(array_pop($this->values), array($this->value));
         }
 
@@ -958,6 +993,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = '{';
             }
         }
 
@@ -980,6 +1016,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = '}';
             }
         }
 
@@ -1037,6 +1074,7 @@ class PegFile
             $this->values[] = array();
 
             while (true) {
+                $this->positions[] = $this->position;
                 $this->values[] = array();
 
                 $_success = $this->parse_();
@@ -1050,6 +1088,7 @@ class PegFile
                         $this->position += 1;
                     } else {
                         $_success = false;
+                        $this->expecting = '/';
                     }
                 }
 
@@ -1082,9 +1121,12 @@ class PegFile
                 }
 
                 if (!$_success) {
+                    $this->position = array_pop($this->positions);
+
                     break;
                 }
 
+                array_pop($this->positions);
                 $this->values[] = array_merge(array_pop($this->values), array($this->value));
             }
 
@@ -1175,6 +1217,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = '*';
             }
         }
 
@@ -1234,6 +1277,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = '+';
             }
         }
 
@@ -1293,6 +1337,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = '?';
             }
         }
 
@@ -1379,6 +1424,7 @@ class PegFile
             $this->position += 1;
         } else {
             $_success = false;
+            $this->expecting = '&';
         }
 
         if ($_success) {
@@ -1438,6 +1484,7 @@ class PegFile
             $this->position += 1;
         } else {
             $_success = false;
+            $this->expecting = '!';
         }
 
         if ($_success) {
@@ -1497,6 +1544,7 @@ class PegFile
             $this->position += 1;
         } else {
             $_success = false;
+            $this->expecting = '$';
         }
 
         if ($_success) {
@@ -1598,6 +1646,7 @@ class PegFile
             $this->position += 1;
         } else {
             $_success = false;
+            $this->expecting = '"';
         }
 
         if ($_success) {
@@ -1607,6 +1656,7 @@ class PegFile
             $this->values[] = array();
 
             while (true) {
+                $this->positions[] = $this->position;
                 $this->positions[] = $this->position;
 
                 if (preg_match('/^[^\\\\"]$/', substr($this->string, $this->position, 1))) {
@@ -1627,6 +1677,7 @@ class PegFile
                         $this->position += 1;
                     } else {
                         $_success = false;
+                        $this->expecting = '\\';
                     }
 
                     if ($_success) {
@@ -1651,9 +1702,12 @@ class PegFile
                 array_pop($this->positions);
 
                 if (!$_success) {
+                    $this->position = array_pop($this->positions);
+
                     break;
                 }
 
+                array_pop($this->positions);
                 $this->values[] = array_merge(array_pop($this->values), array($this->value));
             }
 
@@ -1680,6 +1734,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = '"';
             }
         }
 
@@ -1722,6 +1777,7 @@ class PegFile
             $this->position += 1;
         } else {
             $_success = false;
+            $this->expecting = '.';
         }
 
         if ($_success) {
@@ -1759,6 +1815,7 @@ class PegFile
             $this->position += 1;
         } else {
             $_success = false;
+            $this->expecting = '[';
         }
 
         if ($_success) {
@@ -1768,6 +1825,7 @@ class PegFile
             $this->values[] = array();
 
             while (true) {
+                $this->positions[] = $this->position;
                 $this->positions[] = $this->position;
 
                 if (preg_match('/^[^\\\\\\]]$/', substr($this->string, $this->position, 1))) {
@@ -1788,6 +1846,7 @@ class PegFile
                         $this->position += 1;
                     } else {
                         $_success = false;
+                        $this->expecting = '\\';
                     }
 
                     if ($_success) {
@@ -1812,9 +1871,12 @@ class PegFile
                 array_pop($this->positions);
 
                 if (!$_success) {
+                    $this->position = array_pop($this->positions);
+
                     break;
                 }
 
+                array_pop($this->positions);
                 $this->values[] = array_merge(array_pop($this->values), array($this->value));
             }
 
@@ -1841,6 +1903,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = ']';
             }
         }
 
@@ -1894,6 +1957,7 @@ class PegFile
             $this->values[] = array();
 
             while (true) {
+                $this->positions[] = $this->position;
                 if (preg_match('/^[A-Za-z0-9_]$/', substr($this->string, $this->position, 1))) {
                     $_success = true;
                     $this->value = substr($this->string, $this->position, 1);
@@ -1903,9 +1967,12 @@ class PegFile
                 }
 
                 if (!$_success) {
+                    $this->position = array_pop($this->positions);
+
                     break;
                 }
 
+                array_pop($this->positions);
                 $this->values[] = array_merge(array_pop($this->values), array($this->value));
             }
 
@@ -1987,6 +2054,7 @@ class PegFile
             $this->position += 1;
         } else {
             $_success = false;
+            $this->expecting = '(';
         }
 
         if ($_success) {
@@ -2020,6 +2088,7 @@ class PegFile
                 $this->position += 1;
             } else {
                 $_success = false;
+                $this->expecting = ')';
             }
         }
 
@@ -2106,6 +2175,7 @@ class PegFile
         $this->values[] = array();
 
         while (true) {
+            $this->positions[] = $this->position;
             if (preg_match('/^[ \\n\\r\\t]$/', substr($this->string, $this->position, 1))) {
                 $_success = true;
                 $this->value = substr($this->string, $this->position, 1);
@@ -2115,9 +2185,12 @@ class PegFile
             }
 
             if (!$_success) {
+                $this->position = array_pop($this->positions);
+
                 break;
             }
 
+            array_pop($this->positions);
             $this->values[] = array_merge(array_pop($this->values), array($this->value));
         }
 
@@ -2139,6 +2212,11 @@ class PegFile
         return $_success;
     }
 
+    private function line()
+    {
+        return count(explode("\n", substr($this->string, 0, $this->position)));
+    }
+
     public function parse($_string)
     {
         $this->cache = array();
@@ -2148,7 +2226,7 @@ class PegFile
         $_success = $this->parsePegFile();
 
         if (!$_success) {
-            throw new \InvalidArgumentException("Could not parse '{$this->string}'");
+            throw new \InvalidArgumentException("Syntax error, expecting {$this->expecting} on line {$this->line()}");
         }
 
         if ($this->position < strlen($this->string)) {

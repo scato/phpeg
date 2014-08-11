@@ -166,4 +166,19 @@ class PegFileSpec extends ObjectBehavior
 
         $this->parse('namespace Acme\\Test; use Acme\\Factory; grammar TestFile { start File = "foo"; }')->shouldBeLike($tree);
     }
+
+    function it_should_report_errors()
+    {
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting start on line 1'))
+            ->duringParse('grammar TestFile { File = "foo"; }');
+
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting use on line 1'))
+            ->duringParse('grammar TestFile { start = "foo"; }');
+
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting ; on line 1'))
+            ->duringParse('grammar TestFile { start File = "foo" / ; }');
+    }
 }
