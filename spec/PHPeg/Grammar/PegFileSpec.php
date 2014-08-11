@@ -174,15 +174,15 @@ class PegFileSpec extends ObjectBehavior
             ->duringParse('grammar TestFile { File = "foo"; }');
 
         $this
-            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting use on line 1'))
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Identifier, Rule on line 1'))
             ->duringParse('grammar TestFile { start = "foo"; }');
 
         $this
-            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting ; on line 1'))
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting *, +, ?, Identifier, &, AndPredicate, !, NotPredicate, $, MatchedString, RuleReference, ", Literal, ., Any, [, CharacterClass, (, SubExpression, Terminal, ZeroOrMore, OneOrMore, Optional, Repetition, Predicate, Label, {, /, ; on line 1'))
             ->duringParse('grammar TestFile { start File = "foo" }');
 
         $this
-            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting ; on line 1'))
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Identifier, &, AndPredicate, !, NotPredicate, $, MatchedString, RuleReference, ", Literal, ., Any, [, CharacterClass, (, SubExpression, Terminal, ZeroOrMore, OneOrMore, Optional, Repetition, Predicate, Label, Sequence, Action on line 1'))
             ->duringParse('grammar TestFile { start File = "foo" / ; }');
 
         $this
