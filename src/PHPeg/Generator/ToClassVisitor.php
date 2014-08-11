@@ -147,6 +147,7 @@ class {$node->getName()}
     protected \$value;
     protected \$values = array();
     protected \$cache;
+    protected \$expecting;
 
 EOS;
 
@@ -162,6 +163,11 @@ EOS;
 
         $result .= <<<EOS
 
+    private function line()
+    {
+        return count(explode("\\n", substr(\$this->string, 0, \$this->position)));
+    }
+
     public function parse(\$_string)
     {
         \$this->cache = array();
@@ -171,7 +177,7 @@ EOS;
         \$_success = \$this->parse{$node->getStartSymbol()}();
 
         if (!\$_success) {
-            throw new \InvalidArgumentException("Could not parse '{\$this->string}'");
+            throw new \InvalidArgumentException("Syntax error, expecting {\$this->expecting} on line {\$this->line()}");
         }
 
         if (\$this->position < strlen(\$this->string)) {
@@ -211,6 +217,7 @@ if (substr(\$this->string, \$this->position, {$strlen}) === {$var_export}) {
     \$this->position += {$strlen};
 } else {
     \$_success = false;
+    \$this->expecting = {$var_export};
 }
 EOS;
     }
@@ -258,12 +265,16 @@ if (\$_success) {
     \$this->values[] = array(\$this->value);
 
     while (true) {
+        \$this->positions[] = \$this->position;
         {$this->indent($this->indent($result))}
 
         if (!\$_success) {
+            \$this->position = array_pop(\$this->positions);
+
             break;
         }
 
+        array_pop(\$this->positions);
         \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
     }
 
@@ -363,12 +374,16 @@ EOS;
 \$this->values[] = array();
 
 while (true) {
+    \$this->positions[] = \$this->position;
     {$this->indent($this->getResult())}
 
     if (!\$_success) {
+        \$this->position = array_pop(\$this->positions);
+
         break;
     }
 
+    array_pop(\$this->positions);
     \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
 }
 

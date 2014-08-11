@@ -134,6 +134,7 @@ class FooFile
     protected \$value;
     protected \$values = array();
     protected \$cache;
+    protected \$expecting;
 
     protected function parseFoo()
     {
@@ -158,6 +159,11 @@ class FooFile
         return \$_success;
     }
 
+    private function line()
+    {
+        return count(explode("\\n", substr(\$this->string, 0, \$this->position)));
+    }
+
     public function parse(\$_string)
     {
         \$this->cache = array();
@@ -167,7 +173,7 @@ class FooFile
         \$_success = \$this->parseFoo();
 
         if (!\$_success) {
-            throw new \InvalidArgumentException("Could not parse '{\$this->string}'");
+            throw new \InvalidArgumentException("Syntax error, expecting {\$this->expecting} on line {\$this->line()}");
         }
 
         if (\$this->position < strlen(\$this->string)) {
@@ -208,6 +214,7 @@ if (substr(\$this->string, \$this->position, 3) === 'foo') {
     \$this->position += 3;
 } else {
     \$_success = false;
+    \$this->expecting = 'foo';
 }
 EOS;
 
@@ -265,12 +272,16 @@ if (\$_success) {
     \$this->values[] = array(\$this->value);
 
     while (true) {
+        \$this->positions[] = \$this->position;
         \$_success = \$this->parseFoo();
 
         if (!\$_success) {
+            \$this->position = array_pop(\$this->positions);
+
             break;
         }
 
+        array_pop(\$this->positions);
         \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
     }
 
@@ -374,12 +385,16 @@ EOS;
 \$this->values[] = array();
 
 while (true) {
+    \$this->positions[] = \$this->position;
     \$_success = \$this->parseFoo();
 
     if (!\$_success) {
+        \$this->position = array_pop(\$this->positions);
+
         break;
     }
 
+    array_pop(\$this->positions);
     \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
 }
 
