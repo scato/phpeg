@@ -9,6 +9,7 @@ interface VisitorInterface
     public function visitAny(AnyNode $node);
     public function visitCharacterClass(CharacterClassNode $node);
     public function visitChoice(ChoiceNode $node);
+    public function visitCut(CutNode $node);
     public function visitGrammar(GrammarNode $node);
     public function visitLabel(LabelNode $node);
     public function visitLiteral(LiteralNode $node);
