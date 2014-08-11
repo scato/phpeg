@@ -300,20 +300,28 @@ if (\$_success) {
 
     while (true) {
         \$this->positions[] = \$this->position;
+        \$this->cuts[] = false;
+
         {$this->indent($this->indent($result))}
 
         if (!\$_success) {
-            \$this->position = array_pop(\$this->positions);
-
             break;
         }
 
         array_pop(\$this->positions);
+        array_pop(\$this->cuts);
         \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
     }
 
-    \$_success = true;
-    \$this->value = array_pop(\$this->values);
+    if (!end(\$this->cuts)) {
+        \$_success = true;
+        \$this->position = end(\$this->positions);
+        \$this->value = end(\$this->values);
+    }
+
+    array_pop(\$this->positions);
+    array_pop(\$this->cuts);
+    array_pop(\$this->values);
 }
 EOS;
     }
@@ -321,12 +329,16 @@ EOS;
     public function visitOptional(OptionalNode $node)
     {
         $this->results[] = <<<EOS
+\$this->cuts[] = false;
+
 {$this->getResult()}
 
-if (!\$_success) {
+if (!\$_success && !end(\$this->cuts)) {
     \$_success = true;
     \$this->value = null;
 }
+
+array_pop(\$this->cuts);
 EOS;
     }
 
@@ -427,9 +439,8 @@ while (true) {
 }
 
 if (!end(\$this->cuts)) {
-    \$this->position = end(\$this->positions);
-
     \$_success = true;
+    \$this->position = end(\$this->positions);
     \$this->value = end(\$this->values);
 }
 

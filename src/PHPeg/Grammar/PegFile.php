@@ -45,6 +45,8 @@ class PegFile
 
         $this->values[] = array();
 
+        $this->cuts[] = false;
+
         $this->values[] = array();
 
         $_success = $this->parse_();
@@ -65,10 +67,12 @@ class PegFile
             array_pop($this->values);
         }
 
-        if (!$_success) {
+        if (!$_success && !end($this->cuts)) {
             $_success = true;
             $this->value = null;
         }
+
+        array_pop($this->cuts);
 
         if ($_success) {
             $this->values[] = array_merge(array_pop($this->values), array($this->value));
@@ -115,9 +119,8 @@ class PegFile
             }
 
             if (!end($this->cuts)) {
-                $this->position = end($this->positions);
-
                 $_success = true;
+                $this->position = end($this->positions);
                 $this->value = end($this->values);
             }
 
@@ -251,9 +254,8 @@ class PegFile
             }
 
             if (!end($this->cuts)) {
-                $this->position = end($this->positions);
-
                 $_success = true;
+                $this->position = end($this->positions);
                 $this->value = end($this->values);
             }
 
@@ -642,9 +644,8 @@ class PegFile
             }
 
             if (!end($this->cuts)) {
-                $this->position = end($this->positions);
-
                 $_success = true;
+                $this->position = end($this->positions);
                 $this->value = end($this->values);
             }
 
@@ -988,9 +989,8 @@ class PegFile
             }
 
             if (!end($this->cuts)) {
-                $this->position = end($this->positions);
-
                 $_success = true;
+                $this->position = end($this->positions);
                 $this->value = end($this->values);
             }
 
@@ -1116,9 +1116,8 @@ class PegFile
         }
 
         if (!end($this->cuts)) {
-            $this->position = end($this->positions);
-
             $_success = true;
+            $this->position = end($this->positions);
             $this->value = end($this->values);
         }
 
@@ -1356,9 +1355,8 @@ class PegFile
             }
 
             if (!end($this->cuts)) {
-                $this->position = end($this->positions);
-
                 $_success = true;
+                $this->position = end($this->positions);
                 $this->value = end($this->values);
             }
 
@@ -2046,9 +2044,8 @@ class PegFile
             }
 
             if (!end($this->cuts)) {
-                $this->position = end($this->positions);
-
                 $_success = true;
+                $this->position = end($this->positions);
                 $this->value = end($this->values);
             }
 
@@ -2299,9 +2296,8 @@ class PegFile
             }
 
             if (!end($this->cuts)) {
-                $this->position = end($this->positions);
-
                 $_success = true;
+                $this->position = end($this->positions);
                 $this->value = end($this->values);
             }
 
@@ -2411,9 +2407,8 @@ class PegFile
             }
 
             if (!end($this->cuts)) {
-                $this->position = end($this->positions);
-
                 $_success = true;
+                $this->position = end($this->positions);
                 $this->value = end($this->values);
             }
 
@@ -2677,9 +2672,8 @@ class PegFile
         }
 
         if (!end($this->cuts)) {
-            $this->position = end($this->positions);
-
             $_success = true;
+            $this->position = end($this->positions);
             $this->value = end($this->values);
         }
 
