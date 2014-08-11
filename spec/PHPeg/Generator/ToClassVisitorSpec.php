@@ -134,7 +134,7 @@ class FooFile
     protected \$value;
     protected \$values = array();
     protected \$cache;
-    protected \$expecting;
+    protected \$expecting = array();
 
     protected function parseFoo()
     {
@@ -156,6 +156,10 @@ class FooFile
             'value' => \$this->value
         );
 
+        if (!\$_success) {
+            \$this->expecting[\$_position][] = 'Foo';
+        }
+
         return \$_success;
     }
 
@@ -169,6 +173,13 @@ class FooFile
         return substr(\$this->string, \$this->position);
     }
 
+    private function expecting()
+    {
+        ksort(\$this->expecting);
+
+        return implode(', ', end(\$this->expecting));
+    }
+
     public function parse(\$_string)
     {
         \$this->cache = array();
@@ -178,7 +189,7 @@ class FooFile
         \$_success = \$this->parseFoo();
 
         if (!\$_success) {
-            throw new \InvalidArgumentException("Syntax error, expecting {\$this->expecting} on line {\$this->line()}");
+            throw new \InvalidArgumentException("Syntax error, expecting {\$this->expecting()} on line {\$this->line()}");
         }
 
         if (\$this->position < strlen(\$this->string)) {
@@ -215,11 +226,11 @@ EOS;
         $literalCode = <<<EOS
 if (substr(\$this->string, \$this->position, 3) === 'foo') {
     \$_success = true;
-    \$this->value = substr(\$this->string, \$this->position, 3);
+    \$this->value = 'foo';
     \$this->position += 3;
 } else {
     \$_success = false;
-    \$this->expecting = 'foo';
+    \$this->expecting[\$this->position][] = 'foo';
 }
 EOS;
 
@@ -338,6 +349,10 @@ protected function parseFoo()
         'position' => \$this->position,
         'value' => \$this->value
     );
+
+    if (!\$_success) {
+        \$this->expecting[\$_position][] = 'Foo';
+    }
 
     return \$_success;
 }

@@ -147,7 +147,7 @@ class {$node->getName()}
     protected \$value;
     protected \$values = array();
     protected \$cache;
-    protected \$expecting;
+    protected \$expecting = array();
 
 EOS;
 
@@ -173,6 +173,13 @@ EOS;
         return substr(\$this->string, \$this->position);
     }
 
+    private function expecting()
+    {
+        ksort(\$this->expecting);
+
+        return implode(', ', end(\$this->expecting));
+    }
+
     public function parse(\$_string)
     {
         \$this->cache = array();
@@ -182,7 +189,7 @@ EOS;
         \$_success = \$this->parse{$node->getStartSymbol()}();
 
         if (!\$_success) {
-            throw new \InvalidArgumentException("Syntax error, expecting {\$this->expecting} on line {\$this->line()}");
+            throw new \InvalidArgumentException("Syntax error, expecting {\$this->expecting()} on line {\$this->line()}");
         }
 
         if (\$this->position < strlen(\$this->string)) {
@@ -218,11 +225,11 @@ EOS;
         $this->results[] = <<<EOS
 if (substr(\$this->string, \$this->position, {$strlen}) === {$var_export}) {
     \$_success = true;
-    \$this->value = substr(\$this->string, \$this->position, {$strlen});
+    \$this->value = {$var_export};
     \$this->position += {$strlen};
 } else {
     \$_success = false;
-    \$this->expecting = {$var_export};
+    \$this->expecting[\$this->position][] = {$var_export};
 }
 EOS;
     }
@@ -325,6 +332,10 @@ protected function parse{$node->getName()}()
         'position' => \$this->position,
         'value' => \$this->value
     );
+
+    if (!\$_success) {
+        \$this->expecting[\$_position][] = '{$node->getName()}';
+    }
 
     return \$_success;
 }
