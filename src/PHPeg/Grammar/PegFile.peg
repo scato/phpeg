@@ -28,7 +28,7 @@ grammar PegFile
 
     QualifiedIdentifier = $(Identifier ("\\" ^ Identifier)*);
     Namespace = "namespace" ^ _ name:QualifiedIdentifier _ ";" { return $name; };
-    Import = "use" ^ _ name:QualifiedIdentifier _ ";" { return $name; };
+    Import = "use" ^ _ name:QualifiedIdentifier _ ";"          { return $name; };
 
     Grammar = "grammar" ^ _ name:Identifier _ "{"
         _ "start" _ start:Rule
@@ -45,22 +45,22 @@ grammar PegFile
     Choice = first:Action rest:(_ "/" ^ _ next:Action { return $next; })* { return empty($rest) ? $first : new ChoiceNode(array_merge(array($first), $rest)); };
     Expression = Choice;
 
-    ZeroOrMore = expression:Terminal _ "*"      { return new ZeroOrMoreNode($expression); };
-    OneOrMore = expression:Terminal _ "+"       { return new OneOrMoreNode($expression); };
-    Optional = expression:Terminal _ "?"        { return new OptionalNode($expression); };
+    ZeroOrMore = expression:Terminal _ "*"        { return new ZeroOrMoreNode($expression); };
+    OneOrMore = expression:Terminal _ "+"         { return new OneOrMoreNode($expression); };
+    Optional = expression:Terminal _ "?"          { return new OptionalNode($expression); };
     Repetition = ZeroOrMore / OneOrMore / Optional / Terminal;
     AndPredicate = "&" ^ _ expression:Repetition  { return new AndPredicateNode($expression); };
     NotPredicate = "!" ^ _ expression:Repetition  { return new NotPredicateNode($expression); };
     MatchedString = "$" ^ _ expression:Repetition { return new MatchedStringNode($expression); };
     Predicate = AndPredicate / NotPredicate / MatchedString / Repetition;
 
-    Literal = "\"" string:$([^\\"] / "\\" .)* "\""          { return new LiteralNode(stripslashes($string)); };
-    Any = "."                                               { return new AnyNode(); };
-    Cut = "^"                                               { return new CutNode(); };
-    CharacterClass = "[" ^ string:$([^\\\]] / "\\" .)* "]"    { return new CharacterClassNode($string); };
+    Literal = "\"" ^ string:$([^\\"] / "\\" .)* "\""       { return new LiteralNode(stripslashes($string)); };
+    Any = "."                                              { return new AnyNode(); };
+    Cut = "^"                                              { return new CutNode(); };
+    CharacterClass = "[" ^ string:$([^\\\]] / "\\" .)* "]" { return new CharacterClassNode($string); };
     Identifier = $([A-Za-z_] [A-Za-z0-9_]*);
-    RuleReference = name:Identifier                         { return new RuleReferenceNode($name); };
-    SubExpression = "(" ^ _ expression:Expression _ ")"     { return $expression; };
+    RuleReference = name:Identifier                        { return new RuleReferenceNode($name); };
+    SubExpression = "(" ^ _ expression:Expression _ ")"    { return $expression; };
     Terminal = RuleReference / Literal / Any / Cut / CharacterClass / SubExpression;
 
     _ = [ \n\r\t]* { return null; };

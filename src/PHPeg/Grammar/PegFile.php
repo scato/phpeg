@@ -175,8 +175,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'PegFile';
+        if (!$_success) {
+            $this->report($_position, 'PegFile');
         }
 
         return $_success;
@@ -217,9 +217,7 @@ class PegFile
                 } else {
                     $_success = false;
 
-                    if (end($this->cuts)) {
-                        $this->expecting[$this->position][] = '\\';
-                    }
+                    $this->report($this->position, '\\');
                 }
 
                 if ($_success) {
@@ -282,8 +280,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'QualifiedIdentifier';
+        if (!$_success) {
+            $this->report($_position, 'QualifiedIdentifier');
         }
 
         return $_success;
@@ -310,9 +308,7 @@ class PegFile
         } else {
             $_success = false;
 
-            if (end($this->cuts)) {
-                $this->expecting[$this->position][] = 'namespace';
-            }
+            $this->report($this->position, 'namespace');
         }
 
         if ($_success) {
@@ -357,9 +353,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = ';';
-                }
+                $this->report($this->position, ';');
             }
         }
 
@@ -381,8 +375,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Namespace';
+        if (!$_success) {
+            $this->report($_position, 'Namespace');
         }
 
         return $_success;
@@ -409,9 +403,7 @@ class PegFile
         } else {
             $_success = false;
 
-            if (end($this->cuts)) {
-                $this->expecting[$this->position][] = 'use';
-            }
+            $this->report($this->position, 'use');
         }
 
         if ($_success) {
@@ -456,9 +448,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = ';';
-                }
+                $this->report($this->position, ';');
             }
         }
 
@@ -480,8 +470,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Import';
+        if (!$_success) {
+            $this->report($_position, 'Import');
         }
 
         return $_success;
@@ -508,9 +498,7 @@ class PegFile
         } else {
             $_success = false;
 
-            if (end($this->cuts)) {
-                $this->expecting[$this->position][] = 'grammar';
-            }
+            $this->report($this->position, 'grammar');
         }
 
         if ($_success) {
@@ -555,9 +543,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = '{';
-                }
+                $this->report($this->position, '{');
             }
         }
 
@@ -577,9 +563,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = 'start';
-                }
+                $this->report($this->position, 'start');
             }
         }
 
@@ -674,9 +658,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = '}';
-                }
+                $this->report($this->position, '}');
             }
         }
 
@@ -698,8 +680,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Grammar';
+        if (!$_success) {
+            $this->report($_position, 'Grammar');
         }
 
         return $_success;
@@ -741,9 +723,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = '=';
-                }
+                $this->report($this->position, '=');
             }
         }
 
@@ -789,9 +769,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = ';';
-                }
+                $this->report($this->position, ';');
             }
         }
 
@@ -813,8 +791,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Rule';
+        if (!$_success) {
+            $this->report($_position, 'Rule');
         }
 
         return $_success;
@@ -859,9 +837,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = ':';
-                }
+                $this->report($this->position, ':');
             }
         }
 
@@ -917,8 +893,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Label';
+        if (!$_success) {
+            $this->report($_position, 'Label');
         }
 
         return $_success;
@@ -1021,8 +997,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Sequence';
+        if (!$_success) {
+            $this->report($_position, 'Sequence');
         }
 
         return $_success;
@@ -1069,9 +1045,7 @@ class PegFile
                 } else {
                     $_success = false;
 
-                    if (end($this->cuts)) {
-                        $this->expecting[$this->position][] = '{';
-                    }
+                    $this->report($this->position, '{');
                 }
 
                 if ($_success) {
@@ -1090,9 +1064,7 @@ class PegFile
                     } else {
                         $_success = false;
 
-                        if (end($this->cuts)) {
-                            $this->expecting[$this->position][] = '}';
-                        }
+                        $this->report($this->position, '}');
                     }
                 }
 
@@ -1137,8 +1109,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Code';
+        if (!$_success) {
+            $this->report($_position, 'Code');
         }
 
         return $_success;
@@ -1183,9 +1155,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = '{';
-                }
+                $this->report($this->position, '{');
             }
         }
 
@@ -1219,9 +1189,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = '}';
-                }
+                $this->report($this->position, '}');
             }
         }
 
@@ -1251,8 +1219,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Action';
+        if (!$_success) {
+            $this->report($_position, 'Action');
         }
 
         return $_success;
@@ -1301,9 +1269,7 @@ class PegFile
                     } else {
                         $_success = false;
 
-                        if (end($this->cuts)) {
-                            $this->expecting[$this->position][] = '/';
-                        }
+                        $this->report($this->position, '/');
                     }
                 }
 
@@ -1387,8 +1353,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Choice';
+        if (!$_success) {
+            $this->report($_position, 'Choice');
         }
 
         return $_success;
@@ -1414,8 +1380,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Expression';
+        if (!$_success) {
+            $this->report($_position, 'Expression');
         }
 
         return $_success;
@@ -1457,9 +1423,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = '*';
-                }
+                $this->report($this->position, '*');
             }
         }
 
@@ -1481,8 +1445,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'ZeroOrMore';
+        if (!$_success) {
+            $this->report($_position, 'ZeroOrMore');
         }
 
         return $_success;
@@ -1524,9 +1488,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = '+';
-                }
+                $this->report($this->position, '+');
             }
         }
 
@@ -1548,8 +1510,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'OneOrMore';
+        if (!$_success) {
+            $this->report($_position, 'OneOrMore');
         }
 
         return $_success;
@@ -1591,9 +1553,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = '?';
-                }
+                $this->report($this->position, '?');
             }
         }
 
@@ -1615,8 +1575,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Optional';
+        if (!$_success) {
+            $this->report($_position, 'Optional');
         }
 
         return $_success;
@@ -1663,8 +1623,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Repetition';
+        if (!$_success) {
+            $this->report($_position, 'Repetition');
         }
 
         return $_success;
@@ -1691,9 +1651,7 @@ class PegFile
         } else {
             $_success = false;
 
-            if (end($this->cuts)) {
-                $this->expecting[$this->position][] = '&';
-            }
+            $this->report($this->position, '&');
         }
 
         if ($_success) {
@@ -1740,8 +1698,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'AndPredicate';
+        if (!$_success) {
+            $this->report($_position, 'AndPredicate');
         }
 
         return $_success;
@@ -1768,9 +1726,7 @@ class PegFile
         } else {
             $_success = false;
 
-            if (end($this->cuts)) {
-                $this->expecting[$this->position][] = '!';
-            }
+            $this->report($this->position, '!');
         }
 
         if ($_success) {
@@ -1817,8 +1773,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'NotPredicate';
+        if (!$_success) {
+            $this->report($_position, 'NotPredicate');
         }
 
         return $_success;
@@ -1845,9 +1801,7 @@ class PegFile
         } else {
             $_success = false;
 
-            if (end($this->cuts)) {
-                $this->expecting[$this->position][] = '$';
-            }
+            $this->report($this->position, '$');
         }
 
         if ($_success) {
@@ -1894,8 +1848,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'MatchedString';
+        if (!$_success) {
+            $this->report($_position, 'MatchedString');
         }
 
         return $_success;
@@ -1942,8 +1896,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Predicate';
+        if (!$_success) {
+            $this->report($_position, 'Predicate');
         }
 
         return $_success;
@@ -1970,9 +1924,17 @@ class PegFile
         } else {
             $_success = false;
 
-            if (end($this->cuts)) {
-                $this->expecting[$this->position][] = '"';
-            }
+            $this->report($this->position, '"');
+        }
+
+        if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+            $_success = true;
+            $this->value = null;
+
+            array_pop($this->cuts);
+            $this->cuts[] = true;
         }
 
         if ($_success) {
@@ -2007,9 +1969,7 @@ class PegFile
                     } else {
                         $_success = false;
 
-                        if (end($this->cuts)) {
-                            $this->expecting[$this->position][] = '\\';
-                        }
+                        $this->report($this->position, '\\');
                     }
 
                     if ($_success) {
@@ -2074,9 +2034,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = '"';
-                }
+                $this->report($this->position, '"');
             }
         }
 
@@ -2098,8 +2056,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Literal';
+        if (!$_success) {
+            $this->report($_position, 'Literal');
         }
 
         return $_success;
@@ -2124,9 +2082,7 @@ class PegFile
         } else {
             $_success = false;
 
-            if (end($this->cuts)) {
-                $this->expecting[$this->position][] = '.';
-            }
+            $this->report($this->position, '.');
         }
 
         if ($_success) {
@@ -2141,8 +2097,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Any';
+        if (!$_success) {
+            $this->report($_position, 'Any');
         }
 
         return $_success;
@@ -2167,9 +2123,7 @@ class PegFile
         } else {
             $_success = false;
 
-            if (end($this->cuts)) {
-                $this->expecting[$this->position][] = '^';
-            }
+            $this->report($this->position, '^');
         }
 
         if ($_success) {
@@ -2184,8 +2138,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Cut';
+        if (!$_success) {
+            $this->report($_position, 'Cut');
         }
 
         return $_success;
@@ -2212,9 +2166,7 @@ class PegFile
         } else {
             $_success = false;
 
-            if (end($this->cuts)) {
-                $this->expecting[$this->position][] = '[';
-            }
+            $this->report($this->position, '[');
         }
 
         if ($_success) {
@@ -2259,9 +2211,7 @@ class PegFile
                     } else {
                         $_success = false;
 
-                        if (end($this->cuts)) {
-                            $this->expecting[$this->position][] = '\\';
-                        }
+                        $this->report($this->position, '\\');
                     }
 
                     if ($_success) {
@@ -2326,9 +2276,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = ']';
-                }
+                $this->report($this->position, ']');
             }
         }
 
@@ -2350,8 +2298,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'CharacterClass';
+        if (!$_success) {
+            $this->report($_position, 'CharacterClass');
         }
 
         return $_success;
@@ -2435,8 +2383,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Identifier';
+        if (!$_success) {
+            $this->report($_position, 'Identifier');
         }
 
         return $_success;
@@ -2472,8 +2420,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'RuleReference';
+        if (!$_success) {
+            $this->report($_position, 'RuleReference');
         }
 
         return $_success;
@@ -2500,9 +2448,7 @@ class PegFile
         } else {
             $_success = false;
 
-            if (end($this->cuts)) {
-                $this->expecting[$this->position][] = '(';
-            }
+            $this->report($this->position, '(');
         }
 
         if ($_success) {
@@ -2547,9 +2493,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                if (end($this->cuts)) {
-                    $this->expecting[$this->position][] = ')';
-                }
+                $this->report($this->position, ')');
             }
         }
 
@@ -2571,8 +2515,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'SubExpression';
+        if (!$_success) {
+            $this->report($_position, 'SubExpression');
         }
 
         return $_success;
@@ -2629,8 +2573,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = 'Terminal';
+        if (!$_success) {
+            $this->report($_position, 'Terminal');
         }
 
         return $_success;
@@ -2693,8 +2637,8 @@ class PegFile
             'value' => $this->value
         );
 
-        if (!$_success && end($this->cuts)) {
-            $this->expecting[$_position][] = '_';
+        if (!$_success) {
+            $this->report($_position, '_');
         }
 
         return $_success;
@@ -2710,6 +2654,13 @@ class PegFile
         return substr($this->string, $this->position);
     }
 
+    protected function report($position, $expecting)
+    {
+        if (end($this->cuts) && !isset($this->expecting[$position])) {
+            $this->expecting[$position] = $expecting;
+        }
+    }
+
     private function expecting()
     {
         if (empty($this->expecting)) {
@@ -2718,7 +2669,7 @@ class PegFile
 
         ksort($this->expecting);
 
-        return implode(', ', array_unique(end($this->expecting)));
+        return end($this->expecting);
     }
 
     public function parse($_string)

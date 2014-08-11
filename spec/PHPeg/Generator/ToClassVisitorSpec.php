@@ -175,8 +175,8 @@ class FooFile
             'value' => \$this->value
         );
 
-        if (!\$_success && end(\$this->cuts)) {
-            \$this->expecting[\$_position][] = 'Foo';
+        if (!\$_success) {
+            \$this->report(\$_position, 'Foo');
         }
 
         return \$_success;
@@ -192,6 +192,13 @@ class FooFile
         return substr(\$this->string, \$this->position);
     }
 
+    protected function report(\$position, \$expecting)
+    {
+        if (end(\$this->cuts) && !isset(\$this->expecting[\$position])) {
+            \$this->expecting[\$position] = \$expecting;
+        }
+    }
+
     private function expecting()
     {
         if (empty(\$this->expecting)) {
@@ -200,7 +207,7 @@ class FooFile
 
         ksort(\$this->expecting);
 
-        return implode(', ', array_unique(end(\$this->expecting)));
+        return end(\$this->expecting);
     }
 
     public function parse(\$_string)
@@ -254,9 +261,7 @@ if (substr(\$this->string, \$this->position, 3) === 'foo') {
 } else {
     \$_success = false;
 
-    if (end(\$this->cuts)) {
-        \$this->expecting[\$this->position][] = 'foo';
-    }
+    \$this->report(\$this->position, 'foo');
 }
 EOS;
 
@@ -388,8 +393,8 @@ protected function parseFoo()
         'value' => \$this->value
     );
 
-    if (!\$_success && end(\$this->cuts)) {
-        \$this->expecting[\$_position][] = 'Foo';
+    if (!\$_success) {
+        \$this->report(\$_position, 'Foo');
     }
 
     return \$_success;

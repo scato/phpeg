@@ -188,6 +188,13 @@ EOS;
         return substr(\$this->string, \$this->position);
     }
 
+    protected function report(\$position, \$expecting)
+    {
+        if (end(\$this->cuts) && !isset(\$this->expecting[\$position])) {
+            \$this->expecting[\$position] = \$expecting;
+        }
+    }
+
     private function expecting()
     {
         if (empty(\$this->expecting)) {
@@ -196,7 +203,7 @@ EOS;
 
         ksort(\$this->expecting);
 
-        return implode(', ', array_unique(end(\$this->expecting)));
+        return end(\$this->expecting);
     }
 
     public function parse(\$_string)
@@ -249,9 +256,7 @@ if (substr(\$this->string, \$this->position, {$strlen}) === {$var_export}) {
 } else {
     \$_success = false;
 
-    if (end(\$this->cuts)) {
-        \$this->expecting[\$this->position][] = {$var_export};
-    }
+    \$this->report(\$this->position, {$var_export});
 }
 EOS;
     }
@@ -367,8 +372,8 @@ protected function parse{$node->getName()}()
         'value' => \$this->value
     );
 
-    if (!\$_success && end(\$this->cuts)) {
-        \$this->expecting[\$_position][] = '{$node->getName()}';
+    if (!\$_success) {
+        \$this->report(\$_position, '{$node->getName()}');
     }
 
     return \$_success;
