@@ -61,5 +61,8 @@ grammar PegFile
     SubExpression = "(" _ expression:Expression _ ")"       { return $expression; };
     Terminal = RuleReference / Literal / Any / CharacterClass / SubExpression;
 
-    _ = [ \n\r\t]* { return null; };
+    _ = (Whitespace / BlockComment / InlineComment)* { return null; };
+    Whitespace = [ \n\r\t];
+    BlockComment = "/*" (!"*/" .)* "*/";
+    InlineComment = "//" [^\r\n]*;
 }
