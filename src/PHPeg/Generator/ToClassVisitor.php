@@ -299,12 +299,17 @@ EOS;
     public function visitOptional(OptionalNode $node)
     {
         $this->results[] = <<<EOS
+\$this->positions[] = \$this->position;
+
 {$this->getResult()}
 
 if (!\$_success) {
     \$_success = true;
+    \$this->position = end(\$this->positions);
     \$this->value = null;
 }
+
+array_pop(\$this->positions);
 EOS;
     }
 

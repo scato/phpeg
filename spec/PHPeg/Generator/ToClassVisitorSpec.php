@@ -314,12 +314,17 @@ EOS;
     {
         $optionalNode = new OptionalNode(new RuleReferenceNode('Foo'));
         $optionalCode = <<<EOS
+\$this->positions[] = \$this->position;
+
 \$_success = \$this->parseFoo();
 
 if (!\$_success) {
     \$_success = true;
+    \$this->position = end(\$this->positions);
     \$this->value = null;
 }
+
+array_pop(\$this->positions);
 EOS;
 
         $optionalNode->accept($this->getWrappedObject());
