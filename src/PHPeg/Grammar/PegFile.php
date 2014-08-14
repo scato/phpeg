@@ -2284,13 +2284,21 @@ class PegFile
 
         while (true) {
             $this->positions[] = $this->position;
-            if (preg_match('/^[ \\n\\r\\t]$/', substr($this->string, $this->position, 1))) {
-                $_success = true;
-                $this->value = substr($this->string, $this->position, 1);
-                $this->position += 1;
-            } else {
-                $_success = false;
+            $this->positions[] = $this->position;
+
+            $_success = $this->parseWhitespace();
+
+            if (!$_success) {
+                $this->position = end($this->positions);
+                $_success = $this->parseBlockComment();
             }
+
+            if (!$_success) {
+                $this->position = end($this->positions);
+                $_success = $this->parseInlineComment();
+            }
+
+            array_pop($this->positions);
 
             if (!$_success) {
                 $this->position = array_pop($this->positions);
@@ -2319,6 +2327,226 @@ class PegFile
 
         if (!$_success) {
             $this->expecting[$_position][] = '_';
+        }
+
+        return $_success;
+    }
+
+    protected function parseWhitespace()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['Whitespace'][$_position])) {
+            $_success = $this->cache['Whitespace'][$_position]['success'];
+            $this->position = $this->cache['Whitespace'][$_position]['position'];
+            $this->value = $this->cache['Whitespace'][$_position]['value'];
+
+            return $_success;
+        }
+
+        if (preg_match('/^[ \\n\\r\\t]$/', substr($this->string, $this->position, 1))) {
+            $_success = true;
+            $this->value = substr($this->string, $this->position, 1);
+            $this->position += 1;
+        } else {
+            $_success = false;
+        }
+
+        $this->cache['Whitespace'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->expecting[$_position][] = 'Whitespace';
+        }
+
+        return $_success;
+    }
+
+    protected function parseBlockComment()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['BlockComment'][$_position])) {
+            $_success = $this->cache['BlockComment'][$_position]['success'];
+            $this->position = $this->cache['BlockComment'][$_position]['position'];
+            $this->value = $this->cache['BlockComment'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $this->values[] = array();
+
+        if (substr($this->string, $this->position, 2) === '/*') {
+            $_success = true;
+            $this->value = '/*';
+            $this->position += 2;
+        } else {
+            $_success = false;
+            $this->expecting[$this->position][] = '/*';
+        }
+
+        if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+            $this->values[] = array();
+
+            while (true) {
+                $this->positions[] = $this->position;
+                $this->values[] = array();
+
+                $this->positions[] = $this->position;
+
+                if (substr($this->string, $this->position, 2) === '*/') {
+                    $_success = true;
+                    $this->value = '*/';
+                    $this->position += 2;
+                } else {
+                    $_success = false;
+                    $this->expecting[$this->position][] = '*/';
+                }
+
+                if (!$_success) {
+                    $_success = true;
+                    $this->value = null;
+                } else {
+                    $_success = false;
+                }
+
+                $this->position = array_pop($this->positions);
+
+                if ($_success) {
+                    $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+                    if ($this->position < strlen($this->string)) {
+                        $_success = true;
+                        $this->value = substr($this->string, $this->position, 1);
+                        $this->position += 1;
+                    } else {
+                        $_success = false;
+                    }
+                }
+
+                if ($_success) {
+                    $this->value = array_pop($this->values);
+                } else {
+                    array_pop($this->values);
+                }
+
+                if (!$_success) {
+                    $this->position = array_pop($this->positions);
+
+                    break;
+                }
+
+                array_pop($this->positions);
+                $this->values[] = array_merge(array_pop($this->values), array($this->value));
+            }
+
+            $_success = true;
+            $this->value = array_pop($this->values);
+        }
+
+        if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+            if (substr($this->string, $this->position, 2) === '*/') {
+                $_success = true;
+                $this->value = '*/';
+                $this->position += 2;
+            } else {
+                $_success = false;
+                $this->expecting[$this->position][] = '*/';
+            }
+        }
+
+        if ($_success) {
+            $this->value = array_pop($this->values);
+        } else {
+            array_pop($this->values);
+        }
+
+        $this->cache['BlockComment'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->expecting[$_position][] = 'BlockComment';
+        }
+
+        return $_success;
+    }
+
+    protected function parseInlineComment()
+    {
+        $_position = $this->position;
+
+        if (isset($this->cache['InlineComment'][$_position])) {
+            $_success = $this->cache['InlineComment'][$_position]['success'];
+            $this->position = $this->cache['InlineComment'][$_position]['position'];
+            $this->value = $this->cache['InlineComment'][$_position]['value'];
+
+            return $_success;
+        }
+
+        $this->values[] = array();
+
+        if (substr($this->string, $this->position, 2) === '//') {
+            $_success = true;
+            $this->value = '//';
+            $this->position += 2;
+        } else {
+            $_success = false;
+            $this->expecting[$this->position][] = '//';
+        }
+
+        if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+            $this->values[] = array();
+
+            while (true) {
+                $this->positions[] = $this->position;
+                if (preg_match('/^[^\\r\\n]$/', substr($this->string, $this->position, 1))) {
+                    $_success = true;
+                    $this->value = substr($this->string, $this->position, 1);
+                    $this->position += 1;
+                } else {
+                    $_success = false;
+                }
+
+                if (!$_success) {
+                    $this->position = array_pop($this->positions);
+
+                    break;
+                }
+
+                array_pop($this->positions);
+                $this->values[] = array_merge(array_pop($this->values), array($this->value));
+            }
+
+            $_success = true;
+            $this->value = array_pop($this->values);
+        }
+
+        if ($_success) {
+            $this->value = array_pop($this->values);
+        } else {
+            array_pop($this->values);
+        }
+
+        $this->cache['InlineComment'][$_position] = array(
+            'success' => $_success,
+            'position' => $this->position,
+            'value' => $this->value
+        );
+
+        if (!$_success) {
+            $this->expecting[$_position][] = 'InlineComment';
         }
 
         return $_success;
