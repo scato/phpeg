@@ -14,6 +14,7 @@ class GrammarNodeSpec extends ObjectBehavior
         $this->beConstructedWith('Foo', 'Bar', array($rule));
         $this->setNamespace('Acme\\Factory');
         $this->setImports(array('Acme\\FactoryInterface'));
+        $this->setBase('Base');
     }
 
     function it_is_a_node()
@@ -34,6 +35,11 @@ class GrammarNodeSpec extends ObjectBehavior
     function it_has_a_name()
     {
         $this->getName()->shouldBe('Foo');
+    }
+
+    function it_has_a_base()
+    {
+        $this->getBase()->shouldBe('Base');
     }
 
     function it_has_a_qualified_name()

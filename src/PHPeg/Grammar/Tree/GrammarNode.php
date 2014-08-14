@@ -7,6 +7,7 @@ class GrammarNode implements NodeInterface
     private $namespace;
     private $imports;
     private $name;
+    private $base;
     private $startSymbol;
     private $rules;
 
@@ -14,6 +15,7 @@ class GrammarNode implements NodeInterface
     {
         $this->namespace = null;
         $this->name = $name;
+        $this->base = null;
         $this->startSymbol = $startSymbol;
         $this->rules = $rules;
     }
@@ -41,6 +43,16 @@ class GrammarNode implements NodeInterface
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setBase($base)
+    {
+        $this->base = $base;
+    }
+
+    public function getBase()
+    {
+        return $this->base;
     }
 
     public function getQualifiedName()
