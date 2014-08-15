@@ -30,9 +30,9 @@ grammar PegFile
     Import = "use" _ name:QualifiedIdentifier _ ";" { return $name; };
 
     Grammar = "grammar" _ name:Identifier _ "{"
-        _ "start" _ start:Rule
+        _ "start" _ startSymbol:Rule
         rules:(_ rule:Rule { return $rule; })*
-        _ "}" { return new GrammarNode($name, $start->getName(), array_merge(array($start), $rules)); };
+        _ "}" { return new GrammarNode($name, $startSymbol->getName(), array_merge(array($startSymbol), $rules)); };
     Rule = name:Identifier _ "=" _ expression:Expression _ ";" { return new RuleNode($name, $expression); };
 
     Label = name:Identifier _ ":" _ expression:Predicate                { return new LabelNode($name, $expression); }
