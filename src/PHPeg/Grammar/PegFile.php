@@ -43,6 +43,8 @@ class PegFile
 
         $this->values[] = array();
 
+        $this->positions[] = $this->position;
+
         $this->values[] = array();
 
         $_success = $this->parse_();
@@ -58,6 +60,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -65,8 +69,11 @@ class PegFile
 
         if (!$_success) {
             $_success = true;
+            $this->position = end($this->positions);
             $this->value = null;
         }
+
+        array_pop($this->positions);
 
         if ($_success) {
             $this->values[] = array_merge(array_pop($this->values), array($this->value));
@@ -90,6 +97,8 @@ class PegFile
                 }
 
                 if ($_success) {
+                    $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
                     $this->value = array_pop($this->values);
                 } else {
                     array_pop($this->values);
@@ -142,6 +151,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -210,6 +221,8 @@ class PegFile
                 }
 
                 if ($_success) {
+                    $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
                     $this->value = array_pop($this->values);
                 } else {
                     array_pop($this->values);
@@ -230,6 +243,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -313,6 +328,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -396,6 +413,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -535,6 +554,8 @@ class PegFile
                 }
 
                 if ($_success) {
+                    $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
                     $this->value = array_pop($this->values);
                 } else {
                     array_pop($this->values);
@@ -584,6 +605,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -683,6 +706,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -765,6 +790,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -838,6 +865,8 @@ class PegFile
                 }
 
                 if ($_success) {
+                    $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
                     $this->value = array_pop($this->values);
                 } else {
                     array_pop($this->values);
@@ -868,6 +897,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -952,6 +983,8 @@ class PegFile
                 }
 
                 if ($_success) {
+                    $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
                     $this->value = array_pop($this->values);
                 } else {
                     array_pop($this->values);
@@ -1057,6 +1090,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -1149,6 +1184,8 @@ class PegFile
                 }
 
                 if ($_success) {
+                    $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
                     $this->value = array_pop($this->values);
                 } else {
                     array_pop($this->values);
@@ -1179,6 +1216,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -1270,6 +1309,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -1334,6 +1375,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -1398,6 +1441,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -1508,6 +1553,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -1572,6 +1619,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -1636,6 +1685,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -1773,6 +1824,8 @@ class PegFile
                     }
 
                     if ($_success) {
+                        $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
                         $this->value = array_pop($this->values);
                     } else {
                         array_pop($this->values);
@@ -1819,6 +1872,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -1950,6 +2005,8 @@ class PegFile
                     }
 
                     if ($_success) {
+                        $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
                         $this->value = array_pop($this->values);
                     } else {
                         array_pop($this->values);
@@ -1996,6 +2053,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -2073,6 +2132,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -2193,6 +2254,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -2430,6 +2493,8 @@ class PegFile
                 }
 
                 if ($_success) {
+                    $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
                     $this->value = array_pop($this->values);
                 } else {
                     array_pop($this->values);
@@ -2463,6 +2528,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
@@ -2534,6 +2601,8 @@ class PegFile
         }
 
         if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $this->value = array_pop($this->values);
         } else {
             array_pop($this->values);
