@@ -29,10 +29,16 @@ grammar PegFile
     Namespace = "namespace" _ name:QualifiedIdentifier _ ";" { return $name; };
     Import = "use" _ name:QualifiedIdentifier _ ";" { return $name; };
 
-    Grammar = "grammar" _ name:Identifier _ "{"
-        _ "start" _ start:Rule
-        rules:(_ rule:Rule { return $rule; })*
-        _ "}" { return new GrammarNode($name, $start->getName(), array_merge(array($start), $rules)); };
+    Grammar = "grammar" _ name:Identifier
+        (_ "extends" _ base:Identifier)?
+        _ "{"
+            _ "start" _ start:Rule
+            rules:(_ rule:Rule { return $rule; })*
+        _ "}" {
+            $grammar = new GrammarNode($name, $start->getName(), array_merge(array($start), $rules));
+            if (isset($base)) $grammar->setBase($base);
+            return $grammar;
+        };
     Rule = name:Identifier _ "=" _ expression:Expression _ ";" { return new RuleNode($name, $expression); };
 
     Label = name:Identifier _ ":" _ expression:Predicate                { return new LabelNode($name, $expression); }
