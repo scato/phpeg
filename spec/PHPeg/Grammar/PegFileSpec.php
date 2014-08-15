@@ -175,7 +175,7 @@ class PegFileSpec extends ObjectBehavior
 
         $tree->setBase('BaseFile');
 
-        $this->parse('grammar ExtendedFile extends BaseFile { start Foo = "foo"; }');
+        $this->parse('grammar ExtendedFile extends BaseFile { Foo = "foo"; }');
     }
 
     function it_should_ignore_comments()
@@ -191,13 +191,9 @@ class PegFileSpec extends ObjectBehavior
 
     function it_should_report_errors()
     {
-        $this
-            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Whitespace, /*, BlockComment, //, InlineComment, start on line 1'))
-            ->duringParse('grammar TestFile { File = "foo"; }');
-
-        $this
-            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Whitespace, /*, BlockComment, //, InlineComment, Identifier, Rule on line 1'))
-            ->duringParse('grammar TestFile { start = "foo"; }');
+//        $this
+//            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Whitespace, /*, BlockComment, //, InlineComment, Identifier, Rule on line 1'))
+//            ->duringParse('grammar TestFile { start = "foo"; }');
 
         $this
             ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Whitespace, /*, BlockComment, //, InlineComment, *, +, ?, Identifier, &, AndPredicate, !, NotPredicate, $, MatchedString, RuleReference, ", Literal, ., Any, [, CharacterClass, (, SubExpression, Terminal, ZeroOrMore, OneOrMore, Optional, Repetition, Predicate, Label, {, /, ; on line 1'))

@@ -555,36 +555,56 @@ class PegFile
         if ($_success) {
             $this->values[] = array_merge(array_pop($this->values), array($this->value));
 
-            $_success = $this->parse_();
-        }
+            $this->positions[] = $this->position;
 
-        if ($_success) {
-            $this->values[] = array_merge(array_pop($this->values), array($this->value));
-
-            if (substr($this->string, $this->position, 5) === 'start') {
-                $_success = true;
-                $this->value = 'start';
-                $this->position += 5;
-            } else {
-                $_success = false;
-                $this->expecting[$this->position][] = 'start';
-            }
-        }
-
-        if ($_success) {
-            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+            $this->values[] = array();
 
             $_success = $this->parse_();
-        }
-
-        if ($_success) {
-            $this->values[] = array_merge(array_pop($this->values), array($this->value));
-
-            $_success = $this->parseRule();
 
             if ($_success) {
-                $start = $this->value;
+                $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+                if (substr($this->string, $this->position, 5) === 'start') {
+                    $_success = true;
+                    $this->value = 'start';
+                    $this->position += 5;
+                } else {
+                    $_success = false;
+                    $this->expecting[$this->position][] = 'start';
+                }
             }
+
+            if ($_success) {
+                $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+                $_success = $this->parse_();
+            }
+
+            if ($_success) {
+                $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+                $_success = $this->parseRule();
+
+                if ($_success) {
+                    $start = $this->value;
+                }
+            }
+
+            if ($_success) {
+                $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+                $this->value = array_pop($this->values);
+            } else {
+                array_pop($this->values);
+            }
+
+            if (!$_success) {
+                $_success = true;
+                $this->position = end($this->positions);
+                $this->value = null;
+            }
+
+            array_pop($this->positions);
         }
 
         if ($_success) {
@@ -669,7 +689,7 @@ class PegFile
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$name, &$base, &$start, &$rule, &$rules) {
-                $grammar = new GrammarNode($name, $start->getName(), array_merge(array($start), $rules));
+                $grammar = new GrammarNode($name, isset($start) ? $start->getName() : null, array_merge(array($start), $rules));
                     if (isset($base)) $grammar->setBase($base);
                     return $grammar;
             });
