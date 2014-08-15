@@ -70,7 +70,7 @@ grammar PegFile
     SubExpression = "(" ^ _ expression:Expression _ ")"    { return $expression; };
     Terminal = RuleReference / Literal / Any / Cut / CharacterClass / SubExpression;
 
-    _ = (Whitespace / BlockComment / InlineComment)* { return null; };
+    _ = (&[ \n\r\t\/] (Whitespace / BlockComment / InlineComment))*;
     Whitespace = [ \n\r\t];
     BlockComment = "/*" ^ (!"*/" .)* "*/";
     InlineComment = "//" ^ [^\r\n]*;
