@@ -138,7 +138,8 @@ EOS;
             $result .= "\n";
         }
 
-        $result .= <<<EOS
+        if ($node->getBase() === null) {
+            $result .= <<<EOS
 class {$node->getName()}
 {
     protected \$string;
@@ -150,6 +151,12 @@ class {$node->getName()}
     protected \$expecting = array();
 
 EOS;
+        } else {
+            $result .= <<<EOS
+class {$node->getName()} extends {$node->getBase()}
+{
+EOS;
+        }
 
         $pieces = $this->getResults($node->getLength());
 
@@ -161,7 +168,8 @@ EOS;
 EOS;
         }
 
-        $result .= <<<EOS
+        if ($node->getStartSymbol() !== null) {
+            $result .= <<<EOS
 
     private function line()
     {
@@ -198,9 +206,13 @@ EOS;
 
         return \$this->value;
     }
+
+EOS;
+        }
+
+        $result .= <<<EOS
 }
 EOS;
-
         $this->results[] = $result;
     }
 
