@@ -481,6 +481,61 @@ class PegFile
         if ($_success) {
             $this->values[] = array_merge(array_pop($this->values), array($this->value));
 
+            $this->positions[] = $this->position;
+
+            $this->values[] = array();
+
+            $_success = $this->parse_();
+
+            if ($_success) {
+                $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+                if (substr($this->string, $this->position, 7) === 'extends') {
+                    $_success = true;
+                    $this->value = 'extends';
+                    $this->position += 7;
+                } else {
+                    $_success = false;
+                    $this->expecting[$this->position][] = 'extends';
+                }
+            }
+
+            if ($_success) {
+                $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+                $_success = $this->parse_();
+            }
+
+            if ($_success) {
+                $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+                $_success = $this->parseIdentifier();
+
+                if ($_success) {
+                    $base = $this->value;
+                }
+            }
+
+            if ($_success) {
+                $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+                $this->value = array_pop($this->values);
+            } else {
+                array_pop($this->values);
+            }
+
+            if (!$_success) {
+                $_success = true;
+                $this->position = end($this->positions);
+                $this->value = null;
+            }
+
+            array_pop($this->positions);
+        }
+
+        if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
             $_success = $this->parse_();
         }
 
@@ -562,7 +617,7 @@ class PegFile
                 }
 
                 if ($_success) {
-                    $this->value = call_user_func(function () use (&$name, &$start, &$rule) {
+                    $this->value = call_user_func(function () use (&$name, &$base, &$start, &$rule) {
                         return $rule;
                     });
                 }
@@ -613,8 +668,10 @@ class PegFile
         }
 
         if ($_success) {
-            $this->value = call_user_func(function () use (&$name, &$start, &$rule, &$rules) {
-                return new GrammarNode($name, $start->getName(), array_merge(array($start), $rules));
+            $this->value = call_user_func(function () use (&$name, &$base, &$start, &$rule, &$rules) {
+                $grammar = new GrammarNode($name, $start->getName(), array_merge(array($start), $rules));
+                    if (isset($base)) $grammar->setBase($base);
+                    return $grammar;
             });
         }
 

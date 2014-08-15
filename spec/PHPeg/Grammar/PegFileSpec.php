@@ -167,6 +167,17 @@ class PegFileSpec extends ObjectBehavior
         $this->parse('namespace Acme\\Test; use Acme\\Factory; grammar TestFile { start File = "foo"; }')->shouldBeLike($tree);
     }
 
+    function it_should_parse_extended_grammars()
+    {
+        $tree = new GrammarNode('ExtendedFile', 'Foo', array(
+            new RuleNode('Foo', new LiteralNode('foo'))
+        ));
+
+        $tree->setBase('BaseFile');
+
+        $this->parse('grammar ExtendedFile extends BaseFile { start Foo = "foo"; }');
+    }
+
     function it_should_ignore_comments()
     {
         $this->parse($this->a_grammar_containing("Foo // example\n / Bar"))->shouldBeLike(
