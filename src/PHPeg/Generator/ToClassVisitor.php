@@ -22,6 +22,12 @@ use PHPeg\Grammar\Tree\ZeroOrMoreNode;
 class ToClassVisitor extends AbstractVisitor
 {
     private $scope = array();
+    private $unique = 1;
+
+    private function id($prefix)
+    {
+        return '$_' . $prefix . $this->unique++;
+    }
 
     private function indent($string)
     {
@@ -51,8 +57,10 @@ EOS;
 
     public function visitAndPredicate(AndPredicateNode $node)
     {
+        $position = $this->id('position');
+
         $this->results[] = <<<EOS
-\$this->positions[] = \$this->position;
+{$position} = \$this->position;
 
 {$this->getResult()}
 
@@ -60,7 +68,7 @@ if (\$_success) {
     \$this->value = null;
 }
 
-\$this->position = array_pop(\$this->positions);
+\$this->position = {$position};
 EOS;
     }
 
@@ -94,10 +102,12 @@ EOS;
 
     public function visitChoice(ChoiceNode $node)
     {
+        $position = $this->id('position');
+
         $pieces = $this->getResults($node->getLength());
 
         $result = <<<EOS
-\$this->positions[] = \$this->position;
+{$position} = \$this->position;
 
 {$pieces[0]}
 EOS;
@@ -107,17 +117,12 @@ EOS;
 
 
 if (!\$_success) {
-    \$this->position = end(\$this->positions);
+    \$this->position = {$position};
+
     {$this->indent($piece)}
 }
 EOS;
         }
-
-        $result .= <<<EOS
-
-
-array_pop(\$this->positions);
-EOS;
 
         $this->results[] = $result;
     }
@@ -144,9 +149,7 @@ class {$node->getName()}
 {
     protected \$string;
     protected \$position;
-    protected \$positions = array();
     protected \$value;
-    protected \$values = array();
     protected \$cache;
     protected \$expecting = array();
 
@@ -248,22 +251,25 @@ EOS;
 
     public function visitMatchedString(MatchedStringNode $node)
     {
+        $position = $this->id('position');
+
         $this->results[] = <<<EOS
-\$this->positions[] = \$this->position;
+{$position} = \$this->position;
+
 {$this->getResult()}
 
 if (\$_success) {
-    \$this->value = strval(substr(\$this->string, end(\$this->positions), \$this->position - end(\$this->positions)));
+    \$this->value = strval(substr(\$this->string, {$position}, \$this->position - {$position}));
 }
-
-array_pop(\$this->positions);
 EOS;
     }
 
     public function visitNotPredicate(NotPredicateNode $node)
     {
+        $position = $this->id('position');
+
         $this->results[] = <<<EOS
-\$this->positions[] = \$this->position;
+{$position} = \$this->position;
 
 {$this->getResult()}
 
@@ -274,54 +280,57 @@ if (!\$_success) {
     \$_success = false;
 }
 
-\$this->position = array_pop(\$this->positions);
+\$this->position = {$position};
 EOS;
     }
 
     public function visitOneOrMore(OneOrMoreNode $node)
     {
+        $position = $this->id('position');
+        $value = $this->id('value');
+
         $result = $this->getResult();
 
         $this->results[] = <<<EOS
 {$result}
 
 if (\$_success) {
-    \$this->values[] = array(\$this->value);
+    {$value} = array(\$this->value);
 
     while (true) {
-        \$this->positions[] = \$this->position;
+        {$position} = \$this->position;
+
         {$this->indent($this->indent($result))}
 
         if (!\$_success) {
-            \$this->position = array_pop(\$this->positions);
+            \$this->position = {$position};
 
             break;
         }
 
-        array_pop(\$this->positions);
-        \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
+        {$value}[] = \$this->value;
     }
 
     \$_success = true;
-    \$this->value = array_pop(\$this->values);
+    \$this->value = {$value};
 }
 EOS;
     }
 
     public function visitOptional(OptionalNode $node)
     {
+        $position = $this->id('position');
+
         $this->results[] = <<<EOS
-\$this->positions[] = \$this->position;
+{$position} = \$this->position;
 
 {$this->getResult()}
 
 if (!\$_success) {
     \$_success = true;
-    \$this->position = end(\$this->positions);
+    \$this->position = {$position};
     \$this->value = null;
 }
-
-array_pop(\$this->positions);
 EOS;
     }
 
@@ -368,10 +377,12 @@ EOS;
 
     public function visitSequence(SequenceNode $node)
     {
+        $value = $this->id('value');
+
         $pieces = $this->getResults($node->getLength());
 
         $result = <<<EOS
-\$this->values[] = array();
+{$value} = array();
 
 {$pieces[0]}
 EOS;
@@ -381,7 +392,7 @@ EOS;
 
 
 if (\$_success) {
-    \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
+    {$value}[] = \$this->value;
 
     {$this->indent($piece)}
 }
@@ -392,11 +403,9 @@ EOS;
 
 
 if (\$_success) {
-    \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
+    {$value}[] = \$this->value;
 
-    \$this->value = array_pop(\$this->values);
-} else {
-    array_pop(\$this->values);
+    \$this->value = {$value};
 }
 EOS;
 
@@ -405,25 +414,28 @@ EOS;
 
     public function visitZeroOrMore(ZeroOrMoreNode $node)
     {
+        $position = $this->id('position');
+        $value = $this->id('value');
+
         $this->results[] = <<<EOS
-\$this->values[] = array();
+{$value} = array();
 
 while (true) {
-    \$this->positions[] = \$this->position;
+    {$position} = \$this->position;
+
     {$this->indent($this->getResult())}
 
     if (!\$_success) {
-        \$this->position = array_pop(\$this->positions);
+        \$this->position = {$position};
 
         break;
     }
 
-    array_pop(\$this->positions);
-    \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
+    {$value}[] = \$this->value;
 }
 
 \$_success = true;
-\$this->value = array_pop(\$this->values);
+\$this->value = {$value};
 EOS;
     }
 }

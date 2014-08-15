@@ -47,7 +47,7 @@ EOS;
     {
         $andPredicateNode = new AndPredicateNode(new RuleReferenceNode('Foo'));
         $andPredicateCode = <<<EOS
-\$this->positions[] = \$this->position;
+\$_position1 = \$this->position;
 
 \$_success = \$this->parseFoo();
 
@@ -55,7 +55,7 @@ if (\$_success) {
     \$this->value = null;
 }
 
-\$this->position = array_pop(\$this->positions);
+\$this->position = \$_position1;
 EOS;
 
         $andPredicateNode->accept($this->getWrappedObject());
@@ -100,16 +100,15 @@ EOS;
     {
         $choiceNode = new ChoiceNode(array(new RuleReferenceNode('Foo'), new RuleReferenceNode('Bar')));
         $choiceCode = <<<EOS
-\$this->positions[] = \$this->position;
+\$_position1 = \$this->position;
 
 \$_success = \$this->parseFoo();
 
 if (!\$_success) {
-    \$this->position = end(\$this->positions);
+    \$this->position = \$_position1;
+
     \$_success = \$this->parseBar();
 }
-
-array_pop(\$this->positions);
 EOS;
 
         $choiceNode->accept($this->getWrappedObject());
@@ -131,9 +130,7 @@ class FooFile
 {
     protected \$string;
     protected \$position;
-    protected \$positions = array();
     protected \$value;
-    protected \$values = array();
     protected \$cache;
     protected \$expecting = array();
 
@@ -290,14 +287,13 @@ EOS;
     {
         $matchedStringNode = new MatchedStringNode(new RuleReferenceNode('Foo'));
         $matchedStringCode = <<<EOS
-\$this->positions[] = \$this->position;
+\$_position1 = \$this->position;
+
 \$_success = \$this->parseFoo();
 
 if (\$_success) {
-    \$this->value = strval(substr(\$this->string, end(\$this->positions), \$this->position - end(\$this->positions)));
+    \$this->value = strval(substr(\$this->string, \$_position1, \$this->position - \$_position1));
 }
-
-array_pop(\$this->positions);
 EOS;
 
         $matchedStringNode->accept($this->getWrappedObject());
@@ -308,7 +304,7 @@ EOS;
     {
         $notPredicateNode = new NotPredicateNode(new RuleReferenceNode('Foo'));
         $notPredicateCode = <<<EOS
-\$this->positions[] = \$this->position;
+\$_position1 = \$this->position;
 
 \$_success = \$this->parseFoo();
 
@@ -319,7 +315,7 @@ if (!\$_success) {
     \$_success = false;
 }
 
-\$this->position = array_pop(\$this->positions);
+\$this->position = \$_position1;
 EOS;
 
         $notPredicateNode->accept($this->getWrappedObject());
@@ -333,24 +329,24 @@ EOS;
 \$_success = \$this->parseFoo();
 
 if (\$_success) {
-    \$this->values[] = array(\$this->value);
+    \$_value2 = array(\$this->value);
 
     while (true) {
-        \$this->positions[] = \$this->position;
+        \$_position1 = \$this->position;
+
         \$_success = \$this->parseFoo();
 
         if (!\$_success) {
-            \$this->position = array_pop(\$this->positions);
+            \$this->position = \$_position1;
 
             break;
         }
 
-        array_pop(\$this->positions);
-        \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
+        \$_value2[] = \$this->value;
     }
 
     \$_success = true;
-    \$this->value = array_pop(\$this->values);
+    \$this->value = \$_value2;
 }
 EOS;
 
@@ -362,17 +358,15 @@ EOS;
     {
         $optionalNode = new OptionalNode(new RuleReferenceNode('Foo'));
         $optionalCode = <<<EOS
-\$this->positions[] = \$this->position;
+\$_position1 = \$this->position;
 
 \$_success = \$this->parseFoo();
 
 if (!\$_success) {
     \$_success = true;
-    \$this->position = end(\$this->positions);
+    \$this->position = \$_position1;
     \$this->value = null;
 }
-
-array_pop(\$this->positions);
 EOS;
 
         $optionalNode->accept($this->getWrappedObject());
@@ -430,22 +424,20 @@ EOS;
     {
         $sequenceNode = new SequenceNode(array(new RuleReferenceNode('Foo'), new RuleReferenceNode('Bar')));
         $sequenceCode = <<<EOS
-\$this->values[] = array();
+\$_value1 = array();
 
 \$_success = \$this->parseFoo();
 
 if (\$_success) {
-    \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
+    \$_value1[] = \$this->value;
 
     \$_success = \$this->parseBar();
 }
 
 if (\$_success) {
-    \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
+    \$_value1[] = \$this->value;
 
-    \$this->value = array_pop(\$this->values);
-} else {
-    array_pop(\$this->values);
+    \$this->value = \$_value1;
 }
 EOS;
 
@@ -457,24 +449,24 @@ EOS;
     {
         $zeroOrMoreNode = new ZeroOrMoreNode(new RuleReferenceNode('Foo'));
         $zeroOrMoreCode = <<<EOS
-\$this->values[] = array();
+\$_value2 = array();
 
 while (true) {
-    \$this->positions[] = \$this->position;
+    \$_position1 = \$this->position;
+
     \$_success = \$this->parseFoo();
 
     if (!\$_success) {
-        \$this->position = array_pop(\$this->positions);
+        \$this->position = \$_position1;
 
         break;
     }
 
-    array_pop(\$this->positions);
-    \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
+    \$_value2[] = \$this->value;
 }
 
 \$_success = true;
-\$this->value = array_pop(\$this->values);
+\$this->value = \$_value2;
 EOS;
 
         $zeroOrMoreNode->accept($this->getWrappedObject());
