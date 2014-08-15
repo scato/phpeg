@@ -29,10 +29,17 @@ grammar PegFile
     Namespace = "namespace" _ name:QualifiedIdentifier _ ";" { return $name; };
     Import = "use" _ name:QualifiedIdentifier _ ";" { return $name; };
 
-    Grammar = "grammar" _ name:Identifier _ "{"
-        _ "start" _ startSymbol:Rule
-        rules:(_ rule:Rule { return $rule; })*
-        _ "}" { return new GrammarNode($name, $startSymbol->getName(), array_merge(array($startSymbol), $rules)); };
+    Grammar = "grammar" _ name:Identifier
+        (_ "extends" _ base:Identifier)?
+        _ "{"
+            (_ "start" _ startSymbol:Rule)?
+            rules:(_ rule:Rule { return $rule; })*
+        _ "}" {
+            $grammar = new GrammarNode($name, array_merge(array($startSymbol), $rules));
+            if (isset($base)) $grammar->setBase($base);
+            if (isset($startSymbol)) $grammar->setStartSymbol($startSymbol->getName());
+            return $grammar;
+        };
     Rule = name:Identifier _ "=" _ expression:Expression _ ";" { return new RuleNode($name, $expression); };
 
     Label = name:Identifier _ ":" _ expression:Predicate                { return new LabelNode($name, $expression); }
@@ -56,7 +63,7 @@ grammar PegFile
     Literal = "\"" string:$([^\\"] / "\\" .)* "\""          { return new LiteralNode(stripslashes($string)); };
     Any = "."                                               { return new AnyNode(); };
     CharacterClass = "[" string:$([^\\\]] / "\\" .)* "]"    { return new CharacterClassNode($string); };
-    Identifier = $([A-Za-z_] [A-Za-z0-9_]*);
+    Identifier = $(!("start" ![A-Za-z0-9_]) [A-Za-z_] [A-Za-z0-9_]*);
     RuleReference = name:Identifier                         { return new RuleReferenceNode($name); };
     SubExpression = "(" _ expression:Expression _ ")"       { return $expression; };
     Terminal = RuleReference / Literal / Any / CharacterClass / SubExpression;

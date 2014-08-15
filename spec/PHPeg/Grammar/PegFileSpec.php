@@ -31,9 +31,13 @@ class PegFileSpec extends ObjectBehavior
 
     function a_tree_containing(NodeInterface $node)
     {
-        return new GrammarNode('TestFile', 'File', array(
+        $grammar = new GrammarNode('TestFile', array(
             new RuleNode('File', $node)
         ));
+
+        $grammar->setStartSymbol('File');
+
+        return $grammar;
     }
 
     function it_should_parse_literals()
@@ -166,19 +170,20 @@ class PegFileSpec extends ObjectBehavior
 
     function it_should_parse_namespaces_and_imports()
     {
-        $tree = new GrammarNode('TestFile', 'File', array(
+        $tree = new GrammarNode('TestFile', array(
             new RuleNode('File', new LiteralNode('foo'))
         ));
 
         $tree->setNamespace('Acme\\Test');
         $tree->setImports(array('Acme\\Factory'));
+        $tree->setStartSymbol('File');
 
         $this->parse('namespace Acme\\Test; use Acme\\Factory; grammar TestFile { start File = "foo"; }')->shouldBeLike($tree);
     }
 
     function it_should_parse_extended_grammars()
     {
-        $tree = new GrammarNode('ExtendedFile', 'Foo', array(
+        $tree = new GrammarNode('ExtendedFile', array(
             new RuleNode('Foo', new LiteralNode('foo'))
         ));
 

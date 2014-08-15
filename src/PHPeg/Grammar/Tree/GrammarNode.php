@@ -11,12 +11,12 @@ class GrammarNode implements NodeInterface
     private $startSymbol;
     private $rules;
 
-    public function __construct($name, $startSymbol, array $rules)
+    public function __construct($name, array $rules)
     {
         $this->namespace = null;
         $this->name = $name;
         $this->base = null;
-        $this->startSymbol = $startSymbol;
+        $this->startSymbol = null;
         $this->rules = $rules;
     }
 
@@ -67,6 +67,11 @@ class GrammarNode implements NodeInterface
     public function getStartSymbol()
     {
         return $this->startSymbol;
+    }
+
+    public function setStartSymbol($startSymbol)
+    {
+        $this->startSymbol = $startSymbol;
     }
 
     public function getRules()

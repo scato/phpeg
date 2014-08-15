@@ -11,10 +11,11 @@ class GrammarNodeSpec extends ObjectBehavior
 {
     function let(RuleNode $rule)
     {
-        $this->beConstructedWith('Foo', 'Bar', array($rule));
+        $this->beConstructedWith('Foo', array($rule));
         $this->setNamespace('Acme\\Factory');
         $this->setImports(array('Acme\\FactoryInterface'));
         $this->setBase('Base');
+        $this->setStartSymbol('Bar');
     }
 
     function it_is_a_node()
