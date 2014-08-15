@@ -69,4 +69,45 @@ class FeatureContext extends BehatContext
     {
         assertContains($string->getRaw(), file_get_contents($this->outputFile));
     }
+
+    private $result;
+    private $error;
+
+    /**
+     * @When /^I parse "([^"]*)"$/
+     */
+    public function iParse($string)
+    {
+        $parserGenerator = new \PHPeg\Generator\ParserGenerator(new \PHPeg\Grammar\PegFile());
+        $parser = $parserGenerator->createParser($this->inputFile);
+
+        $this->result = null;
+        $this->error = null;
+
+        try {
+            $this->result = $parser->parse($string);
+        } catch (InvalidArgumentException $exception) {
+            $this->error = $exception;
+        }
+    }
+
+    /**
+     * @Then /^I get (?!an error)(.*)$/
+     */
+    public function iGet($result)
+    {
+        if ($this->error !== null) {
+            throw $this->error;
+        }
+
+        assertSame(json_decode($result), $this->result);
+    }
+
+    /**
+     * @Then /^I get an error$/
+     */
+    public function iGetAnError()
+    {
+        assertNotNull($this->error);
+    }
 }
