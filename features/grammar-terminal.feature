@@ -1,4 +1,4 @@
-Feature: Defining grammars
+Feature: Defining grammars (terminal)
   In order to define a grammar
   As a developer
   I need terminal expressions to do so

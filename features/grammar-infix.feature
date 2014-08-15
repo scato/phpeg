@@ -1,4 +1,4 @@
-Feature: Defining grammars
+Feature: Defining grammars (infix)
   In order to define a grammar
   As a developer
   I need infix operators to do so
