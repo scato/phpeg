@@ -27,7 +27,8 @@ class PegFile
     protected $value;
     protected $cut = false;
     protected $cache;
-    protected $expecting = array();
+    protected $errors = array();
+    protected $warnings = array();
 
     protected function parsePegFile()
     {
@@ -3023,20 +3024,26 @@ class PegFile
 
     protected function report($position, $expecting)
     {
-        if ($this->cut && !isset($this->expecting[$position])) {
-            $this->expecting[$position] = $expecting;
+        if ($this->cut && !isset($this->errors[$position])) {
+            $this->errors[$position] = $expecting;
+        }
+
+        if (!$this->cut) {
+            $this->warnings[$position][] = $expecting;
         }
     }
 
     private function expecting()
     {
-        if (empty($this->expecting)) {
-            return null;
+        if (!empty($this->errors)) {
+            ksort($this->errors);
+
+            return end($this->errors);
         }
 
-        ksort($this->expecting);
+        ksort($this->warnings);
 
-        return end($this->expecting);
+        return implode(', ', end($this->warnings));
     }
 
     public function parse($_string)
