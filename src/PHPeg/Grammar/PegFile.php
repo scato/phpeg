@@ -586,7 +586,7 @@ class PegFile
                 $_success = $this->parseRule();
 
                 if ($_success) {
-                    $start = $this->value;
+                    $startSymbol = $this->value;
                 }
             }
 
@@ -637,7 +637,7 @@ class PegFile
                 }
 
                 if ($_success) {
-                    $this->value = call_user_func(function () use (&$name, &$base, &$start, &$rule) {
+                    $this->value = call_user_func(function () use (&$name, &$base, &$startSymbol, &$rule) {
                         return $rule;
                     });
                 }
@@ -688,8 +688,8 @@ class PegFile
         }
 
         if ($_success) {
-            $this->value = call_user_func(function () use (&$name, &$base, &$start, &$rule, &$rules) {
-                $grammar = new GrammarNode($name, isset($start) ? $start->getName() : null, array_merge(array($start), $rules));
+            $this->value = call_user_func(function () use (&$name, &$base, &$startSymbol, &$rule, &$rules) {
+                $grammar = new GrammarNode($name, isset($startSymbol) ? $startSymbol->getName() : null, array_merge(array($startSymbol), $rules));
                     if (isset($base)) $grammar->setBase($base);
                     return $grammar;
             });
@@ -2171,12 +2171,69 @@ class PegFile
         $this->positions[] = $this->position;
         $this->values[] = array();
 
-        if (preg_match('/^[A-Za-z_]$/', substr($this->string, $this->position, 1))) {
+        $this->positions[] = $this->position;
+
+        $this->values[] = array();
+
+        if (substr($this->string, $this->position, 5) === 'start') {
             $_success = true;
-            $this->value = substr($this->string, $this->position, 1);
-            $this->position += 1;
+            $this->value = 'start';
+            $this->position += 5;
         } else {
             $_success = false;
+            $this->expecting[$this->position][] = 'start';
+        }
+
+        if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+            $this->positions[] = $this->position;
+
+            if (preg_match('/^[A-Za-z0-9_]$/', substr($this->string, $this->position, 1))) {
+                $_success = true;
+                $this->value = substr($this->string, $this->position, 1);
+                $this->position += 1;
+            } else {
+                $_success = false;
+            }
+
+            if (!$_success) {
+                $_success = true;
+                $this->value = null;
+            } else {
+                $_success = false;
+            }
+
+            $this->position = array_pop($this->positions);
+        }
+
+        if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+            $this->value = array_pop($this->values);
+        } else {
+            array_pop($this->values);
+        }
+
+        if (!$_success) {
+            $_success = true;
+            $this->value = null;
+        } else {
+            $_success = false;
+        }
+
+        $this->position = array_pop($this->positions);
+
+        if ($_success) {
+            $this->values[] = array_merge(array_pop($this->values), array($this->value));
+
+            if (preg_match('/^[A-Za-z_]$/', substr($this->string, $this->position, 1))) {
+                $_success = true;
+                $this->value = substr($this->string, $this->position, 1);
+                $this->position += 1;
+            } else {
+                $_success = false;
+            }
         }
 
         if ($_success) {

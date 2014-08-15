@@ -32,10 +32,10 @@ grammar PegFile
     Grammar = "grammar" _ name:Identifier
         (_ "extends" _ base:Identifier)?
         _ "{"
-            (_ "start" _ start:Rule)?
+            (_ "start" _ startSymbol:Rule)?
             rules:(_ rule:Rule { return $rule; })*
         _ "}" {
-            $grammar = new GrammarNode($name, isset($start) ? $start->getName() : null, array_merge(array($start), $rules));
+            $grammar = new GrammarNode($name, isset($startSymbol) ? $startSymbol->getName() : null, array_merge(array($startSymbol), $rules));
             if (isset($base)) $grammar->setBase($base);
             return $grammar;
         };
@@ -62,7 +62,7 @@ grammar PegFile
     Literal = "\"" string:$([^\\"] / "\\" .)* "\""          { return new LiteralNode(stripslashes($string)); };
     Any = "."                                               { return new AnyNode(); };
     CharacterClass = "[" string:$([^\\\]] / "\\" .)* "]"    { return new CharacterClassNode($string); };
-    Identifier = $([A-Za-z_] [A-Za-z0-9_]*);
+    Identifier = $(!("start" ![A-Za-z0-9_]) [A-Za-z_] [A-Za-z0-9_]*);
     RuleReference = name:Identifier                         { return new RuleReferenceNode($name); };
     SubExpression = "(" _ expression:Expression _ ")"       { return $expression; };
     Terminal = RuleReference / Literal / Any / CharacterClass / SubExpression;

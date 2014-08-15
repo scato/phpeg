@@ -62,6 +62,15 @@ class PegFileSpec extends ObjectBehavior
         $this->parse($this->a_grammar_containing('Foo'))->shouldBeLike(
             $this->a_tree_containing(new RuleReferenceNode('Foo'))
         );
+
+        // "start" is a reserved word
+        $this->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Whitespace, /*, BlockComment, //, InlineComment on line 1'))
+            ->duringParse($this->a_grammar_containing('start'));
+
+        // "starter" is okay, though
+        $this->parse($this->a_grammar_containing('starter'))->shouldBeLike(
+            $this->a_tree_containing(new RuleReferenceNode('starter'))
+        );
     }
 
     function it_should_parse_subexpressions()
@@ -191,16 +200,16 @@ class PegFileSpec extends ObjectBehavior
 
     function it_should_report_errors()
     {
-//        $this
-//            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Whitespace, /*, BlockComment, //, InlineComment, Identifier, Rule on line 1'))
-//            ->duringParse('grammar TestFile { start = "foo"; }');
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Whitespace, /*, BlockComment, //, InlineComment, start, Identifier, Rule on line 1'))
+            ->duringParse('grammar TestFile { start = "foo"; }');
 
         $this
-            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Whitespace, /*, BlockComment, //, InlineComment, *, +, ?, Identifier, &, AndPredicate, !, NotPredicate, $, MatchedString, RuleReference, ", Literal, ., Any, [, CharacterClass, (, SubExpression, Terminal, ZeroOrMore, OneOrMore, Optional, Repetition, Predicate, Label, {, /, ; on line 1'))
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Whitespace, /*, BlockComment, //, InlineComment, *, +, ?, start, Identifier, &, AndPredicate, !, NotPredicate, $, MatchedString, RuleReference, ", Literal, ., Any, [, CharacterClass, (, SubExpression, Terminal, ZeroOrMore, OneOrMore, Optional, Repetition, Predicate, Label, {, /, ; on line 1'))
             ->duringParse('grammar TestFile { start File = "foo" }');
 
         $this
-            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Whitespace, /*, BlockComment, //, InlineComment, Identifier, &, AndPredicate, !, NotPredicate, $, MatchedString, RuleReference, ", Literal, ., Any, [, CharacterClass, (, SubExpression, Terminal, ZeroOrMore, OneOrMore, Optional, Repetition, Predicate, Label, Sequence, Action on line 1'))
+            ->shouldThrow(new \InvalidArgumentException('Syntax error, expecting Whitespace, /*, BlockComment, //, InlineComment, start, Identifier, &, AndPredicate, !, NotPredicate, $, MatchedString, RuleReference, ", Literal, ., Any, [, CharacterClass, (, SubExpression, Terminal, ZeroOrMore, OneOrMore, Optional, Repetition, Predicate, Label, Sequence, Action on line 1'))
             ->duringParse('grammar TestFile { start File = "foo" / ; }');
 
         $this
