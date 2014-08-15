@@ -32,10 +32,10 @@ grammar PegFile
     Grammar = "grammar" _ name:Identifier
         (_ "extends" _ base:Identifier)?
         _ "{"
-            _ "start" _ start:Rule
+            (_ "start" _ start:Rule)?
             rules:(_ rule:Rule { return $rule; })*
         _ "}" {
-            $grammar = new GrammarNode($name, $start->getName(), array_merge(array($start), $rules));
+            $grammar = new GrammarNode($name, isset($start) ? $start->getName() : null, array_merge(array($start), $rules));
             if (isset($base)) $grammar->setBase($base);
             return $grammar;
         };
