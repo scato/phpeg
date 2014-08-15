@@ -20,5 +20,8 @@ class Application extends BaseApplication
     {
         $generate = new GenerateCommand('generate');
         $this->add($generate);
+
+        $benchmark = new BenchmarkCommand('benchmark');
+        $this->add($benchmark);
     }
 }
