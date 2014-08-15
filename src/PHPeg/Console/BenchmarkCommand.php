@@ -16,7 +16,7 @@ class BenchmarkCommand extends Command
     {
         $this->addArgument('input-file', InputArgument::REQUIRED);
         $this->addArgument('example-file', InputArgument::REQUIRED);
-        $this->addOption('number', null, InputArgument::OPTIONAL, 'The number of times that the parser should be run', 100);
+        $this->addOption('number', null, InputArgument::OPTIONAL, 'The number of times that the parser should be run', 10);
     }
 
     /**
