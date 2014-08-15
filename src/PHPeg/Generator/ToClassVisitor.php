@@ -380,6 +380,8 @@ EOS;
 
 
 if (\$_success) {
+    \$this->values[] = array_merge(array_pop(\$this->values), array(\$this->value));
+
     \$this->value = array_pop(\$this->values);
 } else {
     array_pop(\$this->values);
