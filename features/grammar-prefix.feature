@@ -1,4 +1,4 @@
-Feature: Defining grammars
+Feature: Defining grammars (prefix)
   In order to define a grammar
   As a developer
   I need predicates and the matched string operator to do so

@@ -1,4 +1,4 @@
-Feature: Defining grammars
+Feature: Defining grammars (postfix)
   In order to define a grammar
   As a developer
   I need repetition operators to do so
