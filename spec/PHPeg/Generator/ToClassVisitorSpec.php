@@ -7,6 +7,7 @@ use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\AnyNode;
 use PHPeg\Grammar\Tree\CharacterClassNode;
 use PHPeg\Grammar\Tree\ChoiceNode;
+use PHPeg\Grammar\Tree\CutNode;
 use PHPeg\Grammar\Tree\GrammarNode;
 use PHPeg\Grammar\Tree\LabelNode;
 use PHPeg\Grammar\Tree\LiteralNode;
@@ -101,18 +102,36 @@ EOS;
         $choiceNode = new ChoiceNode(array(new RuleReferenceNode('Foo'), new RuleReferenceNode('Bar')));
         $choiceCode = <<<EOS
 \$_position1 = \$this->position;
+\$_cut2 = \$this->cut;
 
+\$this->cut = false;
 \$_success = \$this->parseFoo();
 
-if (!\$_success) {
+if (!\$_success && !\$this->cut) {
     \$this->position = \$_position1;
 
     \$_success = \$this->parseBar();
 }
+
+\$this->cut = \$_cut2;
 EOS;
 
         $choiceNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBe($choiceCode);
+    }
+
+    function it_should_create_a_cut_from_a_node()
+    {
+        $cutNode = new CutNode();
+        $cutCode = <<<EOS
+\$_success = true;
+\$this->value = null;
+
+\$this->cut = true;
+EOS;
+
+        $cutNode->accept($this->getWrappedObject());
+        $this->getResult()->shouldBe($cutCode);
     }
 
     function it_should_create_a_grammar_from_a_node()
@@ -131,6 +150,7 @@ class FooFile
     protected \$string;
     protected \$position;
     protected \$value;
+    protected \$cut = false;
     protected \$cache;
     protected \$expecting = array();
 
@@ -155,7 +175,7 @@ class FooFile
         );
 
         if (!\$_success) {
-            \$this->expecting[\$_position][] = 'Foo';
+            \$this->report(\$_position, 'Foo');
         }
 
         return \$_success;
@@ -171,11 +191,22 @@ class FooFile
         return substr(\$this->string, \$this->position);
     }
 
+    protected function report(\$position, \$expecting)
+    {
+        if (\$this->cut && !isset(\$this->expecting[\$position])) {
+            \$this->expecting[\$position] = \$expecting;
+        }
+    }
+
     private function expecting()
     {
+        if (empty(\$this->expecting)) {
+            return null;
+        }
+
         ksort(\$this->expecting);
 
-        return implode(', ', end(\$this->expecting));
+        return end(\$this->expecting);
     }
 
     public function parse(\$_string)
@@ -238,7 +269,7 @@ class FooFile extends BaseFile
         );
 
         if (!\$_success) {
-            \$this->expecting[\$_position][] = 'Foo';
+            \$this->report(\$_position, 'Foo');
         }
 
         return \$_success;
@@ -275,7 +306,8 @@ if (substr(\$this->string, \$this->position, 3) === 'foo') {
     \$this->position += 3;
 } else {
     \$_success = false;
-    \$this->expecting[\$this->position][] = 'foo';
+
+    \$this->report(\$this->position, 'foo');
 }
 EOS;
 
@@ -330,23 +362,28 @@ EOS;
 
 if (\$_success) {
     \$_value2 = array(\$this->value);
+    \$_cut3 = \$this->cut;
 
     while (true) {
         \$_position1 = \$this->position;
 
+        \$this->cut = false;
         \$_success = \$this->parseFoo();
 
         if (!\$_success) {
-            \$this->position = \$_position1;
-
             break;
         }
 
         \$_value2[] = \$this->value;
     }
 
-    \$_success = true;
-    \$this->value = \$_value2;
+    if (!\$this->cut) {
+        \$_success = true;
+        \$this->position = \$_position1;
+        \$this->value = \$_value2;
+    }
+
+    \$this->cut = \$_cut3;
 }
 EOS;
 
@@ -359,14 +396,18 @@ EOS;
         $optionalNode = new OptionalNode(new RuleReferenceNode('Foo'));
         $optionalCode = <<<EOS
 \$_position1 = \$this->position;
+\$_cut2 = \$this->cut;
 
+\$this->cut = false;
 \$_success = \$this->parseFoo();
 
-if (!\$_success) {
+if (!\$_success && !\$this->cut) {
     \$_success = true;
     \$this->position = \$_position1;
     \$this->value = null;
 }
+
+\$this->cut = \$_cut2;
 EOS;
 
         $optionalNode->accept($this->getWrappedObject());
@@ -398,7 +439,7 @@ protected function parseFoo()
     );
 
     if (!\$_success) {
-        \$this->expecting[\$_position][] = 'Foo';
+        \$this->report(\$_position, 'Foo');
     }
 
     return \$_success;
@@ -450,23 +491,28 @@ EOS;
         $zeroOrMoreNode = new ZeroOrMoreNode(new RuleReferenceNode('Foo'));
         $zeroOrMoreCode = <<<EOS
 \$_value2 = array();
+\$_cut3 = \$this->cut;
 
 while (true) {
     \$_position1 = \$this->position;
 
+    \$this->cut = false;
     \$_success = \$this->parseFoo();
 
     if (!\$_success) {
-        \$this->position = \$_position1;
-
         break;
     }
 
     \$_value2[] = \$this->value;
 }
 
-\$_success = true;
-\$this->value = \$_value2;
+if (!\$this->cut) {
+    \$_success = true;
+    \$this->position = \$_position1;
+    \$this->value = \$_value2;
+}
+
+\$this->cut = \$_cut3;
 EOS;
 
         $zeroOrMoreNode->accept($this->getWrappedObject());

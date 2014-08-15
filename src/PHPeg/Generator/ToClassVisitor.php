@@ -7,6 +7,7 @@ use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\AnyNode;
 use PHPeg\Grammar\Tree\CharacterClassNode;
 use PHPeg\Grammar\Tree\ChoiceNode;
+use PHPeg\Grammar\Tree\CutNode;
 use PHPeg\Grammar\Tree\GrammarNode;
 use PHPeg\Grammar\Tree\LabelNode;
 use PHPeg\Grammar\Tree\LiteralNode;
@@ -103,12 +104,15 @@ EOS;
     public function visitChoice(ChoiceNode $node)
     {
         $position = $this->id('position');
+        $cut = $this->id('cut');
 
         $pieces = $this->getResults($node->getLength());
 
         $result = <<<EOS
 {$position} = \$this->position;
+{$cut} = \$this->cut;
 
+\$this->cut = false;
 {$pieces[0]}
 EOS;
 
@@ -116,7 +120,7 @@ EOS;
             $result .= <<<EOS
 
 
-if (!\$_success) {
+if (!\$_success && !\$this->cut) {
     \$this->position = {$position};
 
     {$this->indent($piece)}
@@ -124,7 +128,23 @@ if (!\$_success) {
 EOS;
         }
 
+        $result .= <<<EOS
+
+
+\$this->cut = {$cut};
+EOS;
+
         $this->results[] = $result;
+    }
+
+    public function visitCut(CutNode $node)
+    {
+        $this->results[] = <<<EOS
+\$_success = true;
+\$this->value = null;
+
+\$this->cut = true;
+EOS;
     }
 
     public function visitGrammar(GrammarNode $node)
@@ -150,6 +170,7 @@ class {$node->getName()}
     protected \$string;
     protected \$position;
     protected \$value;
+    protected \$cut = false;
     protected \$cache;
     protected \$expecting = array();
 
@@ -184,11 +205,22 @@ EOS;
         return substr(\$this->string, \$this->position);
     }
 
+    protected function report(\$position, \$expecting)
+    {
+        if (\$this->cut && !isset(\$this->expecting[\$position])) {
+            \$this->expecting[\$position] = \$expecting;
+        }
+    }
+
     private function expecting()
     {
+        if (empty(\$this->expecting)) {
+            return null;
+        }
+
         ksort(\$this->expecting);
 
-        return implode(', ', end(\$this->expecting));
+        return end(\$this->expecting);
     }
 
     public function parse(\$_string)
@@ -244,7 +276,8 @@ if (substr(\$this->string, \$this->position, {$strlen}) === {$var_export}) {
     \$this->position += {$strlen};
 } else {
     \$_success = false;
-    \$this->expecting[\$this->position][] = {$var_export};
+
+    \$this->report(\$this->position, {$var_export});
 }
 EOS;
     }
@@ -288,6 +321,7 @@ EOS;
     {
         $position = $this->id('position');
         $value = $this->id('value');
+        $cut = $this->id('cut');
 
         $result = $this->getResult();
 
@@ -296,23 +330,28 @@ EOS;
 
 if (\$_success) {
     {$value} = array(\$this->value);
+    {$cut} = \$this->cut;
 
     while (true) {
         {$position} = \$this->position;
 
+        \$this->cut = false;
         {$this->indent($this->indent($result))}
 
         if (!\$_success) {
-            \$this->position = {$position};
-
             break;
         }
 
         {$value}[] = \$this->value;
     }
 
-    \$_success = true;
-    \$this->value = {$value};
+    if (!\$this->cut) {
+        \$_success = true;
+        \$this->position = {$position};
+        \$this->value = {$value};
+    }
+
+    \$this->cut = {$cut};
 }
 EOS;
     }
@@ -320,17 +359,22 @@ EOS;
     public function visitOptional(OptionalNode $node)
     {
         $position = $this->id('position');
+        $cut = $this->id('cut');
 
         $this->results[] = <<<EOS
 {$position} = \$this->position;
+{$cut} = \$this->cut;
 
+\$this->cut = false;
 {$this->getResult()}
 
-if (!\$_success) {
+if (!\$_success && !\$this->cut) {
     \$_success = true;
     \$this->position = {$position};
     \$this->value = null;
 }
+
+\$this->cut = {$cut};
 EOS;
     }
 
@@ -360,7 +404,7 @@ protected function parse{$node->getName()}()
     );
 
     if (!\$_success) {
-        \$this->expecting[\$_position][] = '{$node->getName()}';
+        \$this->report(\$_position, '{$node->getName()}');
     }
 
     return \$_success;
@@ -416,26 +460,32 @@ EOS;
     {
         $position = $this->id('position');
         $value = $this->id('value');
+        $cut = $this->id('cut');
 
         $this->results[] = <<<EOS
 {$value} = array();
+{$cut} = \$this->cut;
 
 while (true) {
     {$position} = \$this->position;
 
+    \$this->cut = false;
     {$this->indent($this->getResult())}
 
     if (!\$_success) {
-        \$this->position = {$position};
-
         break;
     }
 
     {$value}[] = \$this->value;
 }
 
-\$_success = true;
-\$this->value = {$value};
+if (!\$this->cut) {
+    \$_success = true;
+    \$this->position = {$position};
+    \$this->value = {$value};
+}
+
+\$this->cut = {$cut};
 EOS;
     }
 }
