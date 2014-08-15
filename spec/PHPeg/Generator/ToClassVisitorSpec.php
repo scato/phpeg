@@ -206,6 +206,53 @@ EOS;
         $this->getResult()->shouldBe($grammarCode);
     }
 
+    function it_should_create_an_extended_grammar_from_a_node()
+    {
+        $grammarNode = new GrammarNode('FooFile', array(new RuleNode('Foo', new RuleReferenceNode('Bar'))));
+        $grammarNode->setNamespace('Acme\\Factory');
+        $grammarNode->setImports(array('Acme\\FactoryInterface', 'Acme\\BaseFile'));
+        $grammarNode->setBase('BaseFile');
+        $grammarCode = <<<EOS
+namespace Acme\Factory;
+
+use Acme\FactoryInterface;
+use Acme\BaseFile;
+
+class FooFile extends BaseFile
+{
+    protected function parseFoo()
+    {
+        \$_position = \$this->position;
+
+        if (isset(\$this->cache['Foo'][\$_position])) {
+            \$_success = \$this->cache['Foo'][\$_position]['success'];
+            \$this->position = \$this->cache['Foo'][\$_position]['position'];
+            \$this->value = \$this->cache['Foo'][\$_position]['value'];
+
+            return \$_success;
+        }
+
+        \$_success = \$this->parseBar();
+
+        \$this->cache['Foo'][\$_position] = array(
+            'success' => \$_success,
+            'position' => \$this->position,
+            'value' => \$this->value
+        );
+
+        if (!\$_success) {
+            \$this->expecting[\$_position][] = 'Foo';
+        }
+
+        return \$_success;
+    }
+}
+EOS;
+
+        $grammarNode->accept($this->getWrappedObject());
+        $this->getResult()->shouldBe($grammarCode);
+    }
+
     function it_should_create_a_label_from_a_node()
     {
         $labelNode = new LabelNode('name', new RuleReferenceNode('Foo'));
