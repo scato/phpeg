@@ -92,7 +92,7 @@ class FeatureContext extends BehatContext
     }
 
     /**
-     * @Then /^I get (?!an error)(.*)$/
+     * @Then /^I get (?!an error|the error)(.*)$/
      */
     public function iGet($result)
     {
@@ -109,5 +109,14 @@ class FeatureContext extends BehatContext
     public function iGetAnError()
     {
         assertNotNull($this->error);
+    }
+
+    /**
+     * @Then /^I get the error "([^"]*)"$/
+     */
+    public function iGetTheError($error)
+    {
+        assertNotNull($this->error);
+        assertEquals($error, $this->error->getMessage());
     }
 }
