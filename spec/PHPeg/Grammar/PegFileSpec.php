@@ -197,7 +197,7 @@ class PegFileSpec extends ObjectBehavior
 
         $tree->setBase('BaseFile');
 
-        $this->parse('grammar ExtendedFile extends BaseFile { Foo = "foo"; }');
+        $this->parse('grammar ExtendedFile extends BaseFile { Foo = "foo"; }')->shouldBeLike($tree);
     }
 
     function it_should_ignore_comments()

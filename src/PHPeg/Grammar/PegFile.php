@@ -734,7 +734,8 @@ class PegFile
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$name, &$base, &$startSymbol, &$rule, &$rules) {
-                $grammar = new GrammarNode($name, array_merge(array($startSymbol), $rules));
+                $rules = array_merge(isset($startSymbol) ? array($startSymbol) : array(), $rules);
+                    $grammar = new GrammarNode($name, $rules);
                     if (isset($base)) $grammar->setBase($base);
                     if (isset($startSymbol)) $grammar->setStartSymbol($startSymbol->getName());
                     return $grammar;
