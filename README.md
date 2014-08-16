@@ -28,3 +28,12 @@ About
 This is a PEG parser generator. It used to contain combinator parsing, but now it contains only code generation.
 
 The generated parser is a PEG parser that uses memoization. This effectively makes it a Packrat Parser, or so I'm told.
+
+PHPeg is heavily inspired by [PEG.js](http://pegjs.majda.cz/). The main differences are:
+
+  - PHPeg includes a cut operator, which also influences error reporting
+  - PHPeg does not support semantic predicates, yet
+  - PHPeg does not support initializers
+  - PHPeg does not support single quote literals, nor does it allow the 'i' postfix
+
+I mean to write some documentation that will clarify all this.
