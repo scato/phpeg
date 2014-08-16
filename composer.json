@@ -3,6 +3,9 @@
     "description": "PEG Parser Generator",
     "type": "library",
     "license": "MIT",
+    "require": {
+        "symfony/console": "~2.1"
+    },
     "require-dev": {
         "phpspec/phpspec": "~2.0",
         "behat/behat": "2.4.*@stable",
