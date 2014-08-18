@@ -35,6 +35,19 @@ class ToClassVisitor extends AbstractVisitor
         return preg_replace('/(?<=\\n)(?!\\n)/', '    ', $string);
     }
 
+    private function toSingleQuotes($expression)
+    {
+        return var_export($expression, true);
+    }
+
+    private function toDoubleQuotes($expression)
+    {
+        $search = array("\\", "\n", "\r", "\t", "\v", "\e", "\f", "\$", "\"");
+        $replace = array('\\\\', '\\n', '\\r', '\\t', '\\v', '\\e', '\\f', '\\$', '\\"');
+
+        return '"' . str_replace($search, $replace, $expression) . '"';
+    }
+
     public function visitAction(ActionNode $node)
     {
         if (empty($this->scope)) {
@@ -88,7 +101,7 @@ EOS;
 
     public function visitCharacterClass(CharacterClassNode $node)
     {
-        $pattern = var_export("/^[{$node->getString()}]$/", true);
+        $pattern = $this->toSingleQuotes("/^[{$node->getString()}]$/");
 
         $this->results[] = <<<EOS
 if (preg_match({$pattern}, substr(\$this->string, \$this->position, 1))) {
@@ -274,18 +287,18 @@ EOS;
     public function visitLiteral(LiteralNode $node)
     {
         $strlen = strlen($node->getString());
-        $var_export = var_export($node->getString(), true);
-        $var_export_export = var_export($var_export, true);
+        $doubleQuotes = $this->toDoubleQuotes($node->getString());
+        $doubleQuotesEscaped = $this->toDoubleQuotes($doubleQuotes);
 
         $this->results[] = <<<EOS
-if (substr(\$this->string, \$this->position, {$strlen}) === {$var_export}) {
+if (substr(\$this->string, \$this->position, {$strlen}) === {$doubleQuotes}) {
     \$_success = true;
-    \$this->value = {$var_export};
+    \$this->value = {$doubleQuotes};
     \$this->position += {$strlen};
 } else {
     \$_success = false;
 
-    \$this->report(\$this->position, {$var_export_export});
+    \$this->report(\$this->position, {$doubleQuotesEscaped});
 }
 EOS;
     }

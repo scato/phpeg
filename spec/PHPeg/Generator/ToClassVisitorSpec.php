@@ -307,14 +307,30 @@ EOS;
     {
         $literalNode = new LiteralNode('foo');
         $literalCode = <<<EOS
-if (substr(\$this->string, \$this->position, 3) === 'foo') {
+if (substr(\$this->string, \$this->position, 3) === "foo") {
     \$_success = true;
-    \$this->value = 'foo';
+    \$this->value = "foo";
     \$this->position += 3;
 } else {
     \$_success = false;
 
-    \$this->report(\$this->position, '\'foo\'');
+    \$this->report(\$this->position, "\"foo\"");
+}
+EOS;
+
+        $literalNode->accept($this->getWrappedObject());
+        $this->getResult()->shouldBe($literalCode);
+
+        $literalNode = new LiteralNode("\n");
+        $literalCode = <<<EOS
+if (substr(\$this->string, \$this->position, 1) === "\\n") {
+    \$_success = true;
+    \$this->value = "\\n";
+    \$this->position += 1;
+} else {
+    \$_success = false;
+
+    \$this->report(\$this->position, "\\"\\\\n\\"");
 }
 EOS;
 
