@@ -6,6 +6,8 @@ grammar SumFile
 
     Sum = left:Primary (_ "+" _ right:Primary { $left = $left + $right; })* { return $left; };
 
-    Primary = primary:$([0-9]+) { return intval($primary); };
-    _ = [ \r\n\t]*;
+    Primary = primary:$([0-9]+)     { return intval($primary); }
+            / "(" _ sum:Sum _ ")"   { return $sum; };
+
+    _ = (" " / "\n")*;
 }
