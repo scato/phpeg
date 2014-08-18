@@ -61,6 +61,8 @@ grammar MathFile extends SumFile
 }
 ```
 
+Like PHP files, grammar files can contain inline comments (``//``) and block comments (``/* ... */``).
+
 Parsing Expressions
 -------------------
 
