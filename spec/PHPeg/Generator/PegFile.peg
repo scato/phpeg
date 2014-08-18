@@ -36,7 +36,8 @@ grammar PegFile
             (_ "start" _ startSymbol:Rule)?
             rules:(_ rule:Rule { return $rule; })*
         _ "}" {
-            $grammar = new GrammarNode($name, array_merge(array($startSymbol), $rules));
+            $rules = array_merge(isset($startSymbol) ? array($startSymbol) : array(), $rules);
+            $grammar = new GrammarNode($name, $rules);
             if (isset($base)) $grammar->setBase($base);
             if (isset($startSymbol)) $grammar->setStartSymbol($startSymbol->getName());
             return $grammar;
@@ -61,7 +62,7 @@ grammar PegFile
     MatchedString = "$" ^ _ expression:Repetition { return new MatchedStringNode($expression); };
     Predicate = AndPredicate / NotPredicate / MatchedString / Repetition;
 
-    Literal = "\"" ^ string:$([^\\"] / "\\" .)* "\""       { return new LiteralNode(stripslashes($string)); };
+    Literal = string:$("\"" ^ ([^\\"] / "\\" .)* "\"")     { return new LiteralNode($string); };
     Any = "."                                              { return new AnyNode(); };
     Cut = "^"                                              { return new CutNode(); };
     CharacterClass = "[" ^ string:$([^\\\]] / "\\" .)* "]" { return new CharacterClassNode($string); };
