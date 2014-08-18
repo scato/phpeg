@@ -14,8 +14,23 @@ class GenerateCommand extends Command
 {
     protected function configure()
     {
-        $this->addArgument('input-file', InputArgument::REQUIRED);
-        $this->addArgument('output-file', InputArgument::REQUIRED);
+        $this->setDescription('Generate a parser class from a grammar definition file');
+        $this->addArgument('input-file', InputArgument::REQUIRED, 'The grammar definition');
+        $this->addArgument('output-file', InputArgument::OPTIONAL, 'The parse class file path');
+        $this->setHelp(
+<<<EOS
+If no parse class file path is given, the grammar definition file path is used.
+
+The extension with ".php". For example, if the grammar is in:
+
+    src/PHPeg/Grammar/PegFile.peg
+
+then the parser class will be written to:
+
+    src/PHPeg/Grammar/PegFile.php
+
+EOS
+        );
     }
 
     /**
@@ -29,6 +44,10 @@ class GenerateCommand extends Command
     {
         $inputFile = $input->getArgument('input-file');
         $outputFile = $input->getArgument('output-file');
+
+        if ($outputFile === null) {
+            $outputFile = preg_replace('/\\.[^.]*$/', '.php', $inputFile);
+        }
 
         $parserGenerator = new ParserGenerator(new PegFile());
 

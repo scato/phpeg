@@ -14,8 +14,9 @@ class BenchmarkCommand extends Command
 {
     protected function configure()
     {
-        $this->addArgument('input-file', InputArgument::REQUIRED);
-        $this->addArgument('example-file', InputArgument::REQUIRED);
+        $this->setDescription('Generate and run a parser to evaluate its performance');
+        $this->addArgument('input-file', InputArgument::REQUIRED, 'The grammar definition');
+        $this->addArgument('example-file', InputArgument::REQUIRED, 'An example file to parse');
         $this->addOption('number', null, InputArgument::OPTIONAL, 'The number of times that the parser should be run', 10);
     }
 
