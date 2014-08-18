@@ -203,7 +203,7 @@ EOS;
 
     private function rest()
     {
-        return substr(\$this->string, \$this->position);
+        return '\\'' . substr(\$this->string, \$this->position) . '\\'';
     }
 
     protected function report(\$position, \$expecting)
@@ -275,6 +275,7 @@ EOS;
     {
         $strlen = strlen($node->getString());
         $var_export = var_export($node->getString(), true);
+        $var_export_export = var_export($var_export, true);
 
         $this->results[] = <<<EOS
 if (substr(\$this->string, \$this->position, {$strlen}) === {$var_export}) {
@@ -284,7 +285,7 @@ if (substr(\$this->string, \$this->position, {$strlen}) === {$var_export}) {
 } else {
     \$_success = false;
 
-    \$this->report(\$this->position, {$var_export});
+    \$this->report(\$this->position, {$var_export_export});
 }
 EOS;
     }
