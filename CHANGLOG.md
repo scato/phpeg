@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+0.2.1
+-----
+
+ - Quotes for literals in error reporting
+ - Default output file path
+ - Descriptions and help for CLI tools
+
 0.2.0
 -----
 
