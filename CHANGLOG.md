@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+0.2.2
+-----
+
+ - Example grammars
+ - Documentation for grammar
+ - Documentation for CLI tools
+ - Documentation for usage
+ - Documentation for error reporting
+
 0.2.1
 -----
 
