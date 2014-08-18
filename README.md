@@ -19,7 +19,7 @@ Install this tool as a dev requirement:
 You can now generate (and regenerate) parsers using the command line tool:
 
 ```
-$ bin/phpeg generate <input> [<output>]
+$ vendor/bin/phpeg generate <input-file> [<output-file>]
 ```
 
 Read [the documentation](doc/grammar.md) for help on the grammar syntax.
