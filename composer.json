@@ -17,5 +17,12 @@
         "bin-dir": "bin"
     },
     "bin": ["bin/phpeg"],
-    "autoload": {"psr-0": {"": "src"}}
+    "autoload": {
+        "psr-0": {
+            "": "src"
+        },
+        "psr-4": {
+            "PHPeg\\Example\\": "examples"
+        }
+    }
 }

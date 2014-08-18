@@ -1,0 +1,7 @@
+namespace PHPeg\Example;
+
+grammar MathFile extends SumFile
+{
+    Sum    = left:Factor  (_ "+" _ right:Factor  { $left = $left + $right; })* { return $left; };
+    Factor = left:Primary (_ "*" _ right:Primary { $left = $left * $right; })* { return $left; };
+}
