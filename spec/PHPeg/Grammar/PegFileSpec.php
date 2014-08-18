@@ -46,6 +46,11 @@ class PegFileSpec extends ObjectBehavior
         $this->parse($this->a_grammar_containing('"\\"foo\\""'))->shouldBeLike(
             $this->a_tree_containing(new LiteralNode('"foo"'))
         );
+
+        // special characters as well!
+        $this->parse($this->a_grammar_containing('"\\n"'))->shouldBeLike(
+            $this->a_tree_containing(new LiteralNode("\n"))
+        );
     }
 
     function it_should_parse_wildcards()
