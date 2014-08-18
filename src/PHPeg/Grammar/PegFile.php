@@ -218,7 +218,7 @@ class PegFile
                 } else {
                     $_success = false;
 
-                    $this->report($this->position, '\\');
+                    $this->report($this->position, '\'\\\\\'');
                 }
 
                 if ($_success) {
@@ -302,7 +302,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, 'namespace');
+            $this->report($this->position, '\'namespace\'');
         }
 
         if ($_success) {
@@ -346,7 +346,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, ';');
+                $this->report($this->position, '\';\'');
             }
         }
 
@@ -396,7 +396,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, 'use');
+            $this->report($this->position, '\'use\'');
         }
 
         if ($_success) {
@@ -440,7 +440,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, ';');
+                $this->report($this->position, '\';\'');
             }
         }
 
@@ -490,7 +490,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, 'grammar');
+            $this->report($this->position, '\'grammar\'');
         }
 
         if ($_success) {
@@ -539,7 +539,7 @@ class PegFile
                 } else {
                     $_success = false;
 
-                    $this->report($this->position, 'extends');
+                    $this->report($this->position, '\'extends\'');
                 }
             }
 
@@ -590,7 +590,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, '{');
+                $this->report($this->position, '\'{\'');
             }
         }
 
@@ -615,7 +615,7 @@ class PegFile
                 } else {
                     $_success = false;
 
-                    $this->report($this->position, 'start');
+                    $this->report($this->position, '\'start\'');
                 }
             }
 
@@ -722,7 +722,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, '}');
+                $this->report($this->position, '\'}\'');
             }
         }
 
@@ -791,7 +791,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, '=');
+                $this->report($this->position, '\'=\'');
             }
         }
 
@@ -836,7 +836,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, ';');
+                $this->report($this->position, '\';\'');
             }
         }
 
@@ -905,7 +905,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, ':');
+                $this->report($this->position, '\':\'');
             }
         }
 
@@ -1113,7 +1113,7 @@ class PegFile
                 } else {
                     $_success = false;
 
-                    $this->report($this->position, '{');
+                    $this->report($this->position, '\'{\'');
                 }
 
                 if ($_success) {
@@ -1132,7 +1132,7 @@ class PegFile
                     } else {
                         $_success = false;
 
-                        $this->report($this->position, '}');
+                        $this->report($this->position, '\'}\'');
                     }
                 }
 
@@ -1217,7 +1217,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, '{');
+                $this->report($this->position, '\'{\'');
             }
         }
 
@@ -1250,7 +1250,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, '}');
+                $this->report($this->position, '\'}\'');
             }
         }
 
@@ -1331,7 +1331,7 @@ class PegFile
                     } else {
                         $_success = false;
 
-                        $this->report($this->position, '/');
+                        $this->report($this->position, '\'/\'');
                     }
                 }
 
@@ -1480,7 +1480,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, '*');
+                $this->report($this->position, '\'*\'');
             }
         }
 
@@ -1545,7 +1545,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, '+');
+                $this->report($this->position, '\'+\'');
             }
         }
 
@@ -1610,7 +1610,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, '?');
+                $this->report($this->position, '\'?\'');
             }
         }
 
@@ -1711,7 +1711,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, '&');
+            $this->report($this->position, '\'&\'');
         }
 
         if ($_success) {
@@ -1785,7 +1785,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, '!');
+            $this->report($this->position, '\'!\'');
         }
 
         if ($_success) {
@@ -1859,7 +1859,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, '$');
+            $this->report($this->position, '\'$\'');
         }
 
         if ($_success) {
@@ -1984,7 +1984,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, '"');
+            $this->report($this->position, '\'"\'');
         }
 
         if ($_success) {
@@ -2032,7 +2032,7 @@ class PegFile
                     } else {
                         $_success = false;
 
-                        $this->report($this->position, '\\');
+                        $this->report($this->position, '\'\\\\\'');
                     }
 
                     if ($_success) {
@@ -2090,7 +2090,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, '"');
+                $this->report($this->position, '\'"\'');
             }
         }
 
@@ -2138,7 +2138,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, '.');
+            $this->report($this->position, '\'.\'');
         }
 
         if ($_success) {
@@ -2179,7 +2179,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, '^');
+            $this->report($this->position, '\'^\'');
         }
 
         if ($_success) {
@@ -2222,7 +2222,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, '[');
+            $this->report($this->position, '\'[\'');
         }
 
         if ($_success) {
@@ -2270,7 +2270,7 @@ class PegFile
                     } else {
                         $_success = false;
 
-                        $this->report($this->position, '\\');
+                        $this->report($this->position, '\'\\\\\'');
                     }
 
                     if ($_success) {
@@ -2328,7 +2328,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, ']');
+                $this->report($this->position, '\']\'');
             }
         }
 
@@ -2384,7 +2384,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, 'start');
+            $this->report($this->position, '\'start\'');
         }
 
         if ($_success) {
@@ -2552,7 +2552,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, '(');
+            $this->report($this->position, '\'(\'');
         }
 
         if ($_success) {
@@ -2596,7 +2596,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, ')');
+                $this->report($this->position, '\')\'');
             }
         }
 
@@ -2837,7 +2837,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, '/*');
+            $this->report($this->position, '\'/*\'');
         }
 
         if ($_success) {
@@ -2870,7 +2870,7 @@ class PegFile
                 } else {
                     $_success = false;
 
-                    $this->report($this->position, '*/');
+                    $this->report($this->position, '\'*/\'');
                 }
 
                 if (!$_success) {
@@ -2926,7 +2926,7 @@ class PegFile
             } else {
                 $_success = false;
 
-                $this->report($this->position, '*/');
+                $this->report($this->position, '\'*/\'');
             }
         }
 
@@ -2970,7 +2970,7 @@ class PegFile
         } else {
             $_success = false;
 
-            $this->report($this->position, '//');
+            $this->report($this->position, '\'//\'');
         }
 
         if ($_success) {
@@ -3042,7 +3042,7 @@ class PegFile
 
     private function rest()
     {
-        return substr($this->string, $this->position);
+        return '\'' . substr($this->string, $this->position) . '\'';
     }
 
     protected function report($position, $expecting)

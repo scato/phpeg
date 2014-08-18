@@ -189,7 +189,7 @@ class FooFile
 
     private function rest()
     {
-        return substr(\$this->string, \$this->position);
+        return '\\'' . substr(\$this->string, \$this->position) . '\\'';
     }
 
     protected function report(\$position, \$expecting)
@@ -314,7 +314,7 @@ if (substr(\$this->string, \$this->position, 3) === 'foo') {
 } else {
     \$_success = false;
 
-    \$this->report(\$this->position, 'foo');
+    \$this->report(\$this->position, '\'foo\'');
 }
 EOS;
 
