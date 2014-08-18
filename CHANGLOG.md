@@ -5,10 +5,10 @@ Change Log
 -----
 
  - Example grammars
- - Documentation for grammar
- - Documentation for CLI tools
- - Documentation for usage
- - Documentation for error reporting
+ - Documentation on grammar syntax
+ - Documentation on basic and advanced usage
+ - Documentation on error reporting
+ - Bugfix: newlines in literals were parsed as 'n'
 
 0.2.1
 -----
