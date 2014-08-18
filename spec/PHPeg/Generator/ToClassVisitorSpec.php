@@ -189,7 +189,7 @@ class FooFile
 
     private function rest()
     {
-        return '\\'' . substr(\$this->string, \$this->position) . '\\'';
+        return '"' . substr(\$this->string, \$this->position) . '"';
     }
 
     protected function report(\$position, \$expecting)
@@ -305,32 +305,32 @@ EOS;
 
     function it_should_create_a_literal_from_a_node()
     {
-        $literalNode = new LiteralNode('foo');
+        $literalNode = new LiteralNode('"foo"');
         $literalCode = <<<EOS
-if (substr(\$this->string, \$this->position, 3) === "foo") {
+if (substr(\$this->string, \$this->position, strlen("foo")) === "foo") {
     \$_success = true;
     \$this->value = "foo";
-    \$this->position += 3;
+    \$this->position += strlen("foo");
 } else {
     \$_success = false;
 
-    \$this->report(\$this->position, "\"foo\"");
+    \$this->report(\$this->position, '"foo"');
 }
 EOS;
 
         $literalNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBe($literalCode);
 
-        $literalNode = new LiteralNode("\n");
+        $literalNode = new LiteralNode('"\\n"');
         $literalCode = <<<EOS
-if (substr(\$this->string, \$this->position, 1) === "\\n") {
+if (substr(\$this->string, \$this->position, strlen("\\n")) === "\\n") {
     \$_success = true;
     \$this->value = "\\n";
-    \$this->position += 1;
+    \$this->position += strlen("\\n");
 } else {
     \$_success = false;
 
-    \$this->report(\$this->position, "\\"\\\\n\\"");
+    \$this->report(\$this->position, '"\\\\n"');
 }
 EOS;
 

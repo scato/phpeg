@@ -35,19 +35,6 @@ class ToClassVisitor extends AbstractVisitor
         return preg_replace('/(?<=\\n)(?!\\n)/', '    ', $string);
     }
 
-    private function toSingleQuotes($expression)
-    {
-        return var_export($expression, true);
-    }
-
-    private function toDoubleQuotes($expression)
-    {
-        $search = array("\\", "\n", "\r", "\t", "\v", "\e", "\f", "\$", "\"");
-        $replace = array('\\\\', '\\n', '\\r', '\\t', '\\v', '\\e', '\\f', '\\$', '\\"');
-
-        return '"' . str_replace($search, $replace, $expression) . '"';
-    }
-
     public function visitAction(ActionNode $node)
     {
         if (empty($this->scope)) {
@@ -101,7 +88,7 @@ EOS;
 
     public function visitCharacterClass(CharacterClassNode $node)
     {
-        $pattern = $this->toSingleQuotes("/^[{$node->getString()}]$/");
+        $pattern = var_export("/^[{$node->getString()}]$/", true);
 
         $this->results[] = <<<EOS
 if (preg_match({$pattern}, substr(\$this->string, \$this->position, 1))) {
@@ -216,7 +203,7 @@ EOS;
 
     private function rest()
     {
-        return '\\'' . substr(\$this->string, \$this->position) . '\\'';
+        return '"' . substr(\$this->string, \$this->position) . '"';
     }
 
     protected function report(\$position, \$expecting)
@@ -286,19 +273,17 @@ EOS;
 
     public function visitLiteral(LiteralNode $node)
     {
-        $strlen = strlen($node->getString());
-        $doubleQuotes = $this->toDoubleQuotes($node->getString());
-        $doubleQuotesEscaped = $this->toDoubleQuotes($doubleQuotes);
+        $expecting = var_export($node->getString(), true);
 
         $this->results[] = <<<EOS
-if (substr(\$this->string, \$this->position, {$strlen}) === {$doubleQuotes}) {
+if (substr(\$this->string, \$this->position, strlen({$node->getString()})) === {$node->getString()}) {
     \$_success = true;
-    \$this->value = {$doubleQuotes};
-    \$this->position += {$strlen};
+    \$this->value = {$node->getString()};
+    \$this->position += strlen({$node->getString()});
 } else {
     \$_success = false;
 
-    \$this->report(\$this->position, {$doubleQuotesEscaped});
+    \$this->report(\$this->position, {$expecting});
 }
 EOS;
     }
