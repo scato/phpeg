@@ -9,5 +9,5 @@ grammar SumFile
     Primary = primary:$([0-9]+)     { return intval($primary); }
             / "(" _ sum:Sum _ ")"   { return $sum; };
 
-    _ = (" " / "\n")*;
+    _ = (" " / "\n" / "\r")*;
 }
