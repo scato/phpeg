@@ -12,6 +12,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class BenchmarkCommand extends Command
 {
+    private function humanReadable($value)
+    {
+        $units = 'BKMGT';
+        $order = 0;
+
+        while ($value >= 1024) {
+            $value /= 1024;
+            $order += 1;
+        }
+
+        $precision = 3 - strlen(floor($value));
+
+        return round($value, $precision) . $units{$order};
+    }
+
     protected function configure()
     {
         $this->setDescription('Generate and run a parser to evaluate its performance');
@@ -38,16 +53,23 @@ class BenchmarkCommand extends Command
         $parser = $parserGenerator->createParser($inputFile);
         $contents = file_get_contents($exampleFile);
         $start = microtime(true);
+        $memoryUsage = $memoryBase = memory_get_usage();
 
         for ($i = 0; $i < $number; $i++) {
             $parser->parse($contents);
+
+            if ($i === 0) {
+                $memoryUsage = memory_get_usage() - $memoryBase;
+            }
         }
 
+        $memory = $this->humanReadable($memoryUsage);
         $time = microtime(true) - $start;
         $ms = round($time * 1000);
         $avg = round($time * 1000 / $number);
         $rps = round($number / $time);
 
+        $output->writeln("Memory usage: {$memory}");
         $output->writeln("Number of runs: {$number}");
         $output->writeln("Total time: {$ms}ms");
         $output->writeln("Average time: {$avg}ms");
