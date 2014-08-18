@@ -1,0 +1,11 @@
+namespace PHPeg\Example;
+
+grammar SumFile
+{
+    start SumFile = _ input:$(sum:Sum) _ { echo "$input = $sum\n"; };
+
+    Sum = left:Primary (_ "+" _ right:Primary { $left = $left + $right; })* { return $left; };
+
+    Primary = primary:$([0-9]+) { return intval($primary); };
+    _ = [ \r\n\t]*;
+}
