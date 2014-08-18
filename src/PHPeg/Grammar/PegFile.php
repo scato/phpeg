@@ -1975,7 +1975,9 @@ class PegFile
             return $_success;
         }
 
-        $_value69 = array();
+        $_position69 = $this->position;
+
+        $_value68 = array();
 
         if (substr($this->string, $this->position, 1) === '"') {
             $_success = true;
@@ -1988,7 +1990,7 @@ class PegFile
         }
 
         if ($_success) {
-            $_value69[] = $this->value;
+            $_value68[] = $this->value;
 
             $_success = true;
             $this->value = null;
@@ -1997,9 +1999,7 @@ class PegFile
         }
 
         if ($_success) {
-            $_value69[] = $this->value;
-
-            $_position68 = $this->position;
+            $_value68[] = $this->value;
 
             $_value66 = array();
             $_cut67 = $this->cut;
@@ -2070,18 +2070,10 @@ class PegFile
             }
 
             $this->cut = $_cut67;
-
-            if ($_success) {
-                $this->value = strval(substr($this->string, $_position68, $this->position - $_position68));
-            }
-
-            if ($_success) {
-                $string = $this->value;
-            }
         }
 
         if ($_success) {
-            $_value69[] = $this->value;
+            $_value68[] = $this->value;
 
             if (substr($this->string, $this->position, 1) === '"') {
                 $_success = true;
@@ -2095,14 +2087,22 @@ class PegFile
         }
 
         if ($_success) {
-            $_value69[] = $this->value;
+            $_value68[] = $this->value;
 
-            $this->value = $_value69;
+            $this->value = $_value68;
+        }
+
+        if ($_success) {
+            $this->value = strval(substr($this->string, $_position69, $this->position - $_position69));
+        }
+
+        if ($_success) {
+            $string = $this->value;
         }
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$string) {
-                return new LiteralNode(stripslashes($string));
+                return new LiteralNode(eval('return ' . $string . ';'));
             });
         }
 
