@@ -3,7 +3,7 @@ PHPeg
 
 PEG Parser Generator
 
-Warning! Work in progress!
+This project is still unstable. Some features like case-insensitive literals are stil missing. The rest should work, though.
 
 Usage
 -----
@@ -12,7 +12,7 @@ Install this tool as a dev requirement:
 
 ```
 "require-dev": {
-    "scato/phpeg": "1.*"
+    "scato/phpeg": "@dev"
 }
 ```
 
