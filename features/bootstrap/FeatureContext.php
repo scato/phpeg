@@ -112,7 +112,7 @@ class FeatureContext extends BehatContext
     }
 
     /**
-     * @Then /^I get the error "([^"]*)"$/
+     * @Then /^I get the error "(.*)"$/
      */
     public function iGetTheError($error)
     {
