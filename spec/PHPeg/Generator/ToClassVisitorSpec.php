@@ -48,7 +48,7 @@ EOS;
 
     function it_should_create_an_and_action_from_a_node()
     {
-        $andActionNode = new SequenceNode(array(new AnyNode(), new AndActionNode('return true;')));
+        $andActionNode = new SequenceNode(array(new LabelNode('name', new AnyNode()), new AndActionNode('return true;')));
         $andActionCode = <<<EOS
 \$_value2 = array();
 
@@ -58,6 +58,10 @@ if (\$this->position < strlen(\$this->string)) {
     \$this->position += 1;
 } else {
     \$_success = false;
+}
+
+if (\$_success) {
+    \$name = \$this->value;
 }
 
 if (\$_success) {
@@ -399,7 +403,7 @@ EOS;
 
     function it_should_create_a_not_action_from_a_node()
     {
-        $notActionNode = new SequenceNode(array(new AnyNode(), new NotActionNode('return false;')));
+        $notActionNode = new SequenceNode(array(new LabelNode('name', new AnyNode()), new NotActionNode('return false;')));
         $notActionCode = <<<EOS
 \$_value2 = array();
 
@@ -409,6 +413,10 @@ if (\$this->position < strlen(\$this->string)) {
     \$this->position += 1;
 } else {
     \$_success = false;
+}
+
+if (\$_success) {
+    \$name = \$this->value;
 }
 
 if (\$_success) {

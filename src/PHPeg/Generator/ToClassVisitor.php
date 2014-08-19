@@ -37,15 +37,20 @@ class ToClassVisitor extends AbstractVisitor
         return preg_replace('/(?<=\\n)(?!\\n)/', '    ', $string);
     }
 
-    public function visitAction(ActionNode $node)
+    private function createUseClause()
     {
         if (empty($this->scope)) {
-            $use = '';
-        } else {
-            $use = ' use (' . implode(', ', array_map(function ($name) {
-                    return '&$' . $name;
-                }, $this->scope)) . ')';
+            return '';
         }
+
+        return ' use (' . implode(', ', array_map(function ($name) {
+            return '&$' . $name;
+        }, $this->scope)) . ')';
+    }
+
+    public function visitAction(ActionNode $node)
+    {
+        $use = $this->createUseClause();
 
         $this->results[] = <<<EOS
 {$this->getResult()}
@@ -61,11 +66,12 @@ EOS;
     public function visitAndAction(AndActionNode $node)
     {
         $position = $this->id('position');
+        $use = $this->createUseClause();
 
         $this->results[] = <<<EOS
 {$position} = \$this->position;
 
-\$_success = call_user_func(function () use (&\$name) {
+\$_success = call_user_func(function (){$use} {
     {$this->indent($node->getCode())}
 });
 
@@ -327,11 +333,12 @@ EOS;
     public function visitNotAction(NotActionNode $node)
     {
         $position = $this->id('position');
+        $use = $this->createUseClause();
 
         $this->results[] = <<<EOS
 {$position} = \$this->position;
 
-\$_success = call_user_func(function () use (&\$name) {
+\$_success = call_user_func(function (){$use} {
     {$this->indent($node->getCode())}
 });
 
