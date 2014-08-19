@@ -10,7 +10,6 @@ The grammar definition syntax is heaviliy inspired by [PEG.js](http://pegjs.majd
   - PHPeg does not support initializers
   - PHPeg does not support named rules
   - PHPeg does not support single quote literals, nor does it allow the 'i' postfix
-  - PHPeg does not support semantic predicates
 
 Unsupported features might be added in the future.
 
@@ -124,6 +123,16 @@ but transform the input as well.
 
 > Try to match the expression. If the match does **not** succeed, return ``null`` and do not advance the parser
 > position. If matching the expression **does** succeed, consider the match failed.
+
+``& { action }``
+
+> Evaluate the expression. If it evaluates to true, consider the match successful and return null. Otherwise, consider
+> the match failed. Do not advance the parser position.
+
+``! { action }``
+
+> Evaluate the expression. If it evaluates to false, consider the match successful and return null. Otherwise, consider
+> the match failed. Do not advance the parser position.
 
 ``$ expression``
 
