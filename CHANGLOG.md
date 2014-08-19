@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+0.3.0
+-----
+
+ - Semantic predicates
+
 0.2.3
 -----
 
