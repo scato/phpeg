@@ -2,7 +2,7 @@
 
 namespace PHPeg\Grammar\Tree;
 
-class ActionNode extends UnaryNode implements NodeInterface
+class ActionNode extends AbstractUnaryNode implements NodeInterface
 {
     private $code;
 

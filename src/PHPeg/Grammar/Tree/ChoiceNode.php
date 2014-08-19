@@ -2,7 +2,7 @@
 
 namespace PHPeg\Grammar\Tree;
 
-class ChoiceNode extends BinaryNode
+class ChoiceNode extends AbstractBinaryNode
 {
     public function accept(VisitorInterface $visitor)
     {

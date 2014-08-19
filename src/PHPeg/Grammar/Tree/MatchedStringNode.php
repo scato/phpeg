@@ -2,7 +2,7 @@
 
 namespace PHPeg\Grammar\Tree;
 
-class MatchedStringNode extends UnaryNode
+class MatchedStringNode extends AbstractUnaryNode
 {
     public function accept(VisitorInterface $visitor)
     {

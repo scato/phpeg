@@ -4,7 +4,7 @@
 namespace PHPeg\Grammar\Tree;
 
 
-abstract class BinaryNode implements NodeInterface
+abstract class AbstractBinaryNode implements NodeInterface
 {
     private $expressions;
 

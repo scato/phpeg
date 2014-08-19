@@ -4,7 +4,7 @@
 namespace PHPeg\Grammar\Tree;
 
 
-class NamedNode extends UnaryNode
+class AbstractNamedNode extends AbstractUnaryNode
 {
     private $name;
 

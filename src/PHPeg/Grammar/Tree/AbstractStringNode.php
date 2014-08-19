@@ -4,7 +4,7 @@
 namespace PHPeg\Grammar\Tree;
 
 
-abstract class StringNode implements NodeInterface
+abstract class AbstractStringNode implements NodeInterface
 {
     private $string;
 
