@@ -5,6 +5,7 @@ namespace PHPeg\Grammar\Tree;
 interface VisitorInterface
 {
     public function visitAction(ActionNode $node);
+    public function visitAndAction(AndActionNode $node);
     public function visitAndPredicate(AndPredicateNode $node);
     public function visitAny(AnyNode $node);
     public function visitCharacterClass(CharacterClassNode $node);
@@ -14,6 +15,7 @@ interface VisitorInterface
     public function visitLabel(LabelNode $node);
     public function visitLiteral(LiteralNode $node);
     public function visitMatchedString(MatchedStringNode $node);
+    public function visitNotAction(NotActionNode $node);
     public function visitNotPredicate(NotPredicateNode $node);
     public function visitOneOrMore(OneOrMoreNode $node);
     public function visitOptional(OptionalNode $node);
