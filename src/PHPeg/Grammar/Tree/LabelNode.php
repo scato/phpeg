@@ -2,7 +2,7 @@
 
 namespace PHPeg\Grammar\Tree;
 
-class LabelNode extends NamedNode
+class LabelNode extends AbstractNamedNode
 {
     public function accept(VisitorInterface $visitor)
     {

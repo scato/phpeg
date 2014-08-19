@@ -2,7 +2,7 @@
 
 namespace PHPeg\Grammar\Tree;
 
-class SequenceNode extends BinaryNode
+class SequenceNode extends AbstractBinaryNode
 {
     public function accept(VisitorInterface $visitor)
     {

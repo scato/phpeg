@@ -2,7 +2,7 @@
 
 namespace PHPeg\Grammar\Tree;
 
-class LiteralNode extends StringNode
+class LiteralNode extends AbstractStringNode
 {
     public function accept(VisitorInterface $visitor)
     {

@@ -2,7 +2,7 @@
 
 namespace PHPeg\Grammar\Tree;
 
-class NotPredicateNode extends UnaryNode
+class NotPredicateNode extends AbstractUnaryNode
 {
     public function accept(VisitorInterface $visitor)
     {

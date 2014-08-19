@@ -2,7 +2,7 @@
 
 namespace PHPeg\Grammar\Tree;
 
-class ZeroOrMoreNode extends UnaryNode implements NodeInterface
+class ZeroOrMoreNode extends AbstractUnaryNode implements NodeInterface
 {
     public function accept(VisitorInterface $visitor)
     {

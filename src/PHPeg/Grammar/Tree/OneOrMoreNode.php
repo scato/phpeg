@@ -2,7 +2,7 @@
 
 namespace PHPeg\Grammar\Tree;
 
-class OneOrMoreNode extends UnaryNode
+class OneOrMoreNode extends AbstractUnaryNode
 {
     public function accept(VisitorInterface $visitor)
     {
