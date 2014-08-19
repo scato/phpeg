@@ -1,6 +1,7 @@
 namespace PHPeg\Generator;
 
 use PHPeg\Grammar\Tree\ActionNode;
+use PHPeg\Grammar\Tree\AndActionNode;
 use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\AnyNode;
 use PHPeg\Grammar\Tree\CharacterClassNode;
@@ -10,6 +11,7 @@ use PHPeg\Grammar\Tree\GrammarNode;
 use PHPeg\Grammar\Tree\LabelNode;
 use PHPeg\Grammar\Tree\LiteralNode;
 use PHPeg\Grammar\Tree\MatchedStringNode;
+use PHPeg\Grammar\Tree\NotActionNode;
 use PHPeg\Grammar\Tree\NotPredicateNode;
 use PHPeg\Grammar\Tree\OneOrMoreNode;
 use PHPeg\Grammar\Tree\OptionalNode;
@@ -59,8 +61,10 @@ grammar PegFile
     Repetition = ZeroOrMore / OneOrMore / Optional / Terminal;
     AndPredicate = "&" ^ _ expression:Repetition  { return new AndPredicateNode($expression); };
     NotPredicate = "!" ^ _ expression:Repetition  { return new NotPredicateNode($expression); };
+    AndAction = "&" _ "{" ^ code:Code "}"         { return new AndActionNode(trim($code)); };
+    NotAction = "!" _ "{" ^ code:Code "}"         { return new NotActionNode(trim($code)); };
     MatchedString = "$" ^ _ expression:Repetition { return new MatchedStringNode($expression); };
-    Predicate = AndPredicate / NotPredicate / MatchedString / Repetition;
+    Predicate = AndAction / NotAction / AndPredicate / NotPredicate / MatchedString / Repetition;
 
     Literal = string:$("\"" ^ ([^\\"] / "\\" .)* "\"")     { return new LiteralNode($string); };
     Any = "."                                              { return new AnyNode(); };
