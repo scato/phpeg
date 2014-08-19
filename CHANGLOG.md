@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+0.2.3
+-----
+
+ - Keywords for Packagist
+ - Change docs to point to unstable version
+
 0.2.2
 -----
 
