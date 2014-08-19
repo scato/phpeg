@@ -3,6 +3,7 @@
 namespace spec\PHPeg\Grammar;
 
 use PHPeg\Grammar\Tree\ActionNode;
+use PHPeg\Grammar\Tree\AndActionNode;
 use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\AnyNode;
 use PHPeg\Grammar\Tree\CharacterClassNode;
@@ -13,6 +14,7 @@ use PHPeg\Grammar\Tree\LabelNode;
 use PHPeg\Grammar\Tree\LiteralNode;
 use PHPeg\Grammar\Tree\MatchedStringNode;
 use PHPeg\Grammar\Tree\NodeInterface;
+use PHPeg\Grammar\Tree\NotActionNode;
 use PHPeg\Grammar\Tree\NotPredicateNode;
 use PHPeg\Grammar\Tree\OneOrMoreNode;
 use PHPeg\Grammar\Tree\OptionalNode;
@@ -125,10 +127,17 @@ class PegFileSpec extends ObjectBehavior
         );
     }
 
+    function it_should_parse_and_action_expressions()
+    {
+        $this->parse($this->a_grammar_containing('& { return true; }'))->shouldBeLike(
+            $this->a_tree_containing(new AndActionNode('return true;'))
+        );
+    }
+
     function it_should_parse_not_predicate_expressions()
     {
-        $this->parse($this->a_grammar_containing('! Foo'))->shouldBeLike(
-            $this->a_tree_containing(new NotPredicateNode(new RuleReferenceNode('Foo')))
+        $this->parse($this->a_grammar_containing('! { return false; }'))->shouldBeLike(
+            $this->a_tree_containing(new NotActionNode('return false;'))
         );
     }
 
