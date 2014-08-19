@@ -17,7 +17,7 @@ Feature: Parser errors
     Then I get "(1 + 1 + 1)"
 
     When I parse "(1 + 1 + )"
-    Then I get the error "Syntax error, expecting ' ', '1' on line 1"
+    Then I get the error "Syntax error, expecting " ", "1" on line 1"
 
   Scenario: A grammar with a cut operator gives us useful hints
     Given I have a grammar containing:
@@ -33,4 +33,4 @@ Feature: Parser errors
     Then I get "(1 + 1 + 1)"
 
     When I parse "(1 + 1 + )"
-    Then I get the error "Syntax error, expecting '1' on line 1"
+    Then I get the error "Syntax error, expecting "1" on line 1"
