@@ -21,6 +21,21 @@ Feature: Defining grammars (prefix)
     When I parse "bard"
     Then I get an error
 
+  Scenario: I parse something using an and action
+    Given I have a grammar containing:
+    """
+    grammar AndActionTest
+    {
+      start Test = char:. &{ return ord($char) % 2 === 0; };
+    }
+    """
+
+    When I parse "a"
+    Then I get an error
+
+    When I parse "b"
+    Then I get ["b", null]
+
   Scenario: I parse something using a not predicate
     Given I have a grammar containing:
     """
@@ -38,6 +53,21 @@ Feature: Defining grammars (prefix)
 
     When I parse "bard"
     Then I get [null, ["b", "a", "r", "d"]]
+
+  Scenario: I parse something using a not action
+    Given I have a grammar containing:
+    """
+    grammar NotActionTest
+    {
+      start Test = char:. !{ return ord($char) % 2 === 0; };
+    }
+    """
+
+    When I parse "a"
+    Then I get ["a", null]
+
+    When I parse "b"
+    Then I get an error
 
   Scenario: I parse something, but I only want the string that was matched
     Given I have a grammar containing:
