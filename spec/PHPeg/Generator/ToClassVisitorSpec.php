@@ -3,6 +3,7 @@
 namespace spec\PHPeg\Generator;
 
 use PHPeg\Grammar\Tree\ActionNode;
+use PHPeg\Grammar\Tree\AndActionNode;
 use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\AnyNode;
 use PHPeg\Grammar\Tree\CharacterClassNode;
@@ -12,6 +13,7 @@ use PHPeg\Grammar\Tree\GrammarNode;
 use PHPeg\Grammar\Tree\LabelNode;
 use PHPeg\Grammar\Tree\LiteralNode;
 use PHPeg\Grammar\Tree\MatchedStringNode;
+use PHPeg\Grammar\Tree\NotActionNode;
 use PHPeg\Grammar\Tree\NotPredicateNode;
 use PHPeg\Grammar\Tree\OneOrMoreNode;
 use PHPeg\Grammar\Tree\OptionalNode;
@@ -42,6 +44,46 @@ if (\$_success) {
 EOS;
         $actionNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBe($actionCode);
+    }
+
+    function it_should_create_an_and_action_from_a_node()
+    {
+        $andActionNode = new SequenceNode(array(new AnyNode(), new AndActionNode('return true;')));
+        $andActionCode = <<<EOS
+\$_value2 = array();
+
+if (\$this->position < strlen(\$this->string)) {
+    \$_success = true;
+    \$this->value = substr(\$this->string, \$this->position, 1);
+    \$this->position += 1;
+} else {
+    \$_success = false;
+}
+
+if (\$_success) {
+    \$_value2[] = \$this->value;
+
+    \$_position1 = \$this->position;
+
+    \$_success = call_user_func(function () use (&\$name) {
+        return true;
+    });
+
+    if (\$_success) {
+        \$this->value = null;
+    }
+
+    \$this->position = \$_position1;
+}
+
+if (\$_success) {
+    \$_value2[] = \$this->value;
+
+    \$this->value = \$_value2;
+}
+EOS;
+        $andActionNode->accept($this->getWrappedObject());
+        $this->getResult()->shouldBe($andActionCode);
     }
 
     function it_should_create_an_and_predicate_from_a_node()
@@ -353,6 +395,49 @@ EOS;
 
         $matchedStringNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBe($matchedStringCode);
+    }
+
+    function it_should_create_a_not_action_from_a_node()
+    {
+        $notActionNode = new SequenceNode(array(new AnyNode(), new NotActionNode('return false;')));
+        $notActionCode = <<<EOS
+\$_value2 = array();
+
+if (\$this->position < strlen(\$this->string)) {
+    \$_success = true;
+    \$this->value = substr(\$this->string, \$this->position, 1);
+    \$this->position += 1;
+} else {
+    \$_success = false;
+}
+
+if (\$_success) {
+    \$_value2[] = \$this->value;
+
+    \$_position1 = \$this->position;
+
+    \$_success = call_user_func(function () use (&\$name) {
+        return false;
+    });
+
+    if (!\$_success) {
+        \$_success = true;
+        \$this->value = null;
+    } else {
+        \$_success = false;
+    }
+
+    \$this->position = \$_position1;
+}
+
+if (\$_success) {
+    \$_value2[] = \$this->value;
+
+    \$this->value = \$_value2;
+}
+EOS;
+        $notActionNode->accept($this->getWrappedObject());
+        $this->getResult()->shouldBe($notActionCode);
     }
 
     function it_should_create_a_not_predicate_from_a_node()
