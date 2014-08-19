@@ -3,6 +3,7 @@
 namespace PHPeg\Generator;
 
 use PHPeg\Grammar\Tree\ActionNode;
+use PHPeg\Grammar\Tree\AndActionNode;
 use PHPeg\Grammar\Tree\AndPredicateNode;
 use PHPeg\Grammar\Tree\AnyNode;
 use PHPeg\Grammar\Tree\CharacterClassNode;
@@ -12,6 +13,7 @@ use PHPeg\Grammar\Tree\GrammarNode;
 use PHPeg\Grammar\Tree\LabelNode;
 use PHPeg\Grammar\Tree\LiteralNode;
 use PHPeg\Grammar\Tree\MatchedStringNode;
+use PHPeg\Grammar\Tree\NotActionNode;
 use PHPeg\Grammar\Tree\NotPredicateNode;
 use PHPeg\Grammar\Tree\OneOrMoreNode;
 use PHPeg\Grammar\Tree\OptionalNode;
@@ -53,6 +55,25 @@ if (\$_success) {
         {$node->getCode()}
     });
 }
+EOS;
+    }
+
+    public function visitAndAction(AndActionNode $node)
+    {
+        $position = $this->id('position');
+
+        $this->results[] = <<<EOS
+{$position} = \$this->position;
+
+\$_success = call_user_func(function () use (&\$name) {
+    {$this->indent($node->getCode())}
+});
+
+if (\$_success) {
+    \$this->value = null;
+}
+
+\$this->position = {$position};
 EOS;
     }
 
@@ -300,6 +321,28 @@ EOS;
 if (\$_success) {
     \$this->value = strval(substr(\$this->string, {$position}, \$this->position - {$position}));
 }
+EOS;
+    }
+
+    public function visitNotAction(NotActionNode $node)
+    {
+        $position = $this->id('position');
+
+        $this->results[] = <<<EOS
+{$position} = \$this->position;
+
+\$_success = call_user_func(function () use (&\$name) {
+    {$this->indent($node->getCode())}
+});
+
+if (!\$_success) {
+    \$_success = true;
+    \$this->value = null;
+} else {
+    \$_success = false;
+}
+
+\$this->position = {$position};
 EOS;
     }
 
