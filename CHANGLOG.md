@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+0.3.1
+-----
+
+ - Single quoted literals
+ - Documentation on how to perform back-references
+
 0.3.0
 -----
 
