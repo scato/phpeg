@@ -18,6 +18,57 @@ Feature: Defining grammars (terminal)
     When I parse "foobar"
     Then I get an error
 
+  Scenario: I parse an XML tag using a back-reference
+    Given I have a grammar containing:
+    """
+    grammar LiteralBackReferenceTest
+    {
+      start Test =
+        "<" tagName:$([a-z\-]*) ">"
+        $([^<]*)
+        "</{$tagName}>";
+    }
+    """
+
+    When I parse "<a>foo</a>"
+    Then I get ["<", "a", ">", "foo", "</a>"]
+
+    When I parse "<a>foo</b>"
+    Then I get an error
+
+  Scenario: I parse a literal string using single quotes
+    Given I have a grammar containing:
+    """
+    grammar SingleQuoteLiteralTest
+    {
+      start Test = 'foo';
+    }
+    """
+
+    When I parse "foo"
+    Then I get "foo"
+
+    When I parse "foobar"
+    Then I get an error
+
+  Scenario: I try to parse an XML tag using a back-reference and single quotes
+    Given I have a grammar containing:
+    """
+    grammar LiteralBackReferenceTest
+    {
+      start Test =
+        '<' tagName:$([a-z\-]*) '>'
+        $([^<]*)
+        '</{$tagName}>';
+    }
+    """
+
+    When I parse "<a>foo</a>"
+    Then I get an error
+
+    When I parse "<a>foo</{$tagName}>"
+    Then I get ["<", "a", ">", "foo", "</{$tagName}>"]
+
   Scenario: I parse any character
     Given I have a grammar containing:
     """
