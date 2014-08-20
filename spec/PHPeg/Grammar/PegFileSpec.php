@@ -55,6 +55,18 @@ class PegFileSpec extends ObjectBehavior
         );
     }
 
+    function it_should_parse_single_quoted_literals()
+    {
+        $this->parse($this->a_grammar_containing('\'foo\''))->shouldBeLike(
+            $this->a_tree_containing(new LiteralNode('\'foo\''))
+        );
+
+        // single quotes means no special characters!
+        $this->parse($this->a_grammar_containing('\'\\n\''))->shouldBeLike(
+            $this->a_tree_containing(new LiteralNode('\'\n\''))
+        );
+    }
+
     function it_should_parse_wildcards()
     {
         $this->parse($this->a_grammar_containing('.'))->shouldBeLike(

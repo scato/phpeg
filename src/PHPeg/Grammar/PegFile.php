@@ -2193,6 +2193,10 @@ class PegFile
             return $_success;
         }
 
+        $_position80 = $this->position;
+        $_cut81 = $this->cut;
+
+        $this->cut = false;
         $_position71 = $this->position;
 
         $_value70 = array();
@@ -2324,6 +2328,143 @@ class PegFile
             });
         }
 
+        if (!$_success && !$this->cut) {
+            $this->position = $_position80;
+
+            $_position79 = $this->position;
+
+            $_value78 = array();
+
+            if (substr($this->string, $this->position, strlen("'")) === "'") {
+                $_success = true;
+                $this->value = "'";
+                $this->position += strlen("'");
+            } else {
+                $_success = false;
+
+                $this->report($this->position, '"\'"');
+            }
+
+            if ($_success) {
+                $_value78[] = $this->value;
+
+                $_success = true;
+                $this->value = null;
+
+                $this->cut = true;
+            }
+
+            if ($_success) {
+                $_value78[] = $this->value;
+
+                $_value76 = array();
+                $_cut77 = $this->cut;
+
+                while (true) {
+                    $_position75 = $this->position;
+
+                    $this->cut = false;
+                    $_position73 = $this->position;
+                    $_cut74 = $this->cut;
+
+                    $this->cut = false;
+                    if (preg_match('/^[^\\\\\']$/', substr($this->string, $this->position, 1))) {
+                        $_success = true;
+                        $this->value = substr($this->string, $this->position, 1);
+                        $this->position += 1;
+                    } else {
+                        $_success = false;
+                    }
+
+                    if (!$_success && !$this->cut) {
+                        $this->position = $_position73;
+
+                        $_value72 = array();
+
+                        if (substr($this->string, $this->position, strlen("\\")) === "\\") {
+                            $_success = true;
+                            $this->value = "\\";
+                            $this->position += strlen("\\");
+                        } else {
+                            $_success = false;
+
+                            $this->report($this->position, '"\\\\"');
+                        }
+
+                        if ($_success) {
+                            $_value72[] = $this->value;
+
+                            if ($this->position < strlen($this->string)) {
+                                $_success = true;
+                                $this->value = substr($this->string, $this->position, 1);
+                                $this->position += 1;
+                            } else {
+                                $_success = false;
+                            }
+                        }
+
+                        if ($_success) {
+                            $_value72[] = $this->value;
+
+                            $this->value = $_value72;
+                        }
+                    }
+
+                    $this->cut = $_cut74;
+
+                    if (!$_success) {
+                        break;
+                    }
+
+                    $_value76[] = $this->value;
+                }
+
+                if (!$this->cut) {
+                    $_success = true;
+                    $this->position = $_position75;
+                    $this->value = $_value76;
+                }
+
+                $this->cut = $_cut77;
+            }
+
+            if ($_success) {
+                $_value78[] = $this->value;
+
+                if (substr($this->string, $this->position, strlen("'")) === "'") {
+                    $_success = true;
+                    $this->value = "'";
+                    $this->position += strlen("'");
+                } else {
+                    $_success = false;
+
+                    $this->report($this->position, '"\'"');
+                }
+            }
+
+            if ($_success) {
+                $_value78[] = $this->value;
+
+                $this->value = $_value78;
+            }
+
+            if ($_success) {
+                $this->value = strval(substr($this->string, $_position79, $this->position - $_position79));
+            }
+
+            if ($_success) {
+                $string = $this->value;
+            }
+
+            if ($_success) {
+                $this->value = call_user_func(function () use (&$string, &$string) {
+                    return new LiteralNode($string);
+                });
+            }
+        }
+
+        $this->cut = $_cut81;
+
         $this->cache['Literal'][$_position] = array(
             'success' => $_success,
             'position' => $this->position,
@@ -2431,7 +2572,7 @@ class PegFile
             return $_success;
         }
 
-        $_value79 = array();
+        $_value89 = array();
 
         if (substr($this->string, $this->position, strlen("[")) === "[") {
             $_success = true;
@@ -2444,7 +2585,7 @@ class PegFile
         }
 
         if ($_success) {
-            $_value79[] = $this->value;
+            $_value89[] = $this->value;
 
             $_success = true;
             $this->value = null;
@@ -2453,19 +2594,19 @@ class PegFile
         }
 
         if ($_success) {
-            $_value79[] = $this->value;
+            $_value89[] = $this->value;
 
-            $_position78 = $this->position;
+            $_position88 = $this->position;
 
-            $_value76 = array();
-            $_cut77 = $this->cut;
+            $_value86 = array();
+            $_cut87 = $this->cut;
 
             while (true) {
-                $_position75 = $this->position;
+                $_position85 = $this->position;
 
                 $this->cut = false;
-                $_position73 = $this->position;
-                $_cut74 = $this->cut;
+                $_position83 = $this->position;
+                $_cut84 = $this->cut;
 
                 $this->cut = false;
                 if (preg_match('/^[^\\\\\\]]$/', substr($this->string, $this->position, 1))) {
@@ -2477,9 +2618,9 @@ class PegFile
                 }
 
                 if (!$_success && !$this->cut) {
-                    $this->position = $_position73;
+                    $this->position = $_position83;
 
-                    $_value72 = array();
+                    $_value82 = array();
 
                     if (substr($this->string, $this->position, strlen("\\")) === "\\") {
                         $_success = true;
@@ -2492,7 +2633,7 @@ class PegFile
                     }
 
                     if ($_success) {
-                        $_value72[] = $this->value;
+                        $_value82[] = $this->value;
 
                         if ($this->position < strlen($this->string)) {
                             $_success = true;
@@ -2504,31 +2645,31 @@ class PegFile
                     }
 
                     if ($_success) {
-                        $_value72[] = $this->value;
+                        $_value82[] = $this->value;
 
-                        $this->value = $_value72;
+                        $this->value = $_value82;
                     }
                 }
 
-                $this->cut = $_cut74;
+                $this->cut = $_cut84;
 
                 if (!$_success) {
                     break;
                 }
 
-                $_value76[] = $this->value;
+                $_value86[] = $this->value;
             }
 
             if (!$this->cut) {
                 $_success = true;
-                $this->position = $_position75;
-                $this->value = $_value76;
+                $this->position = $_position85;
+                $this->value = $_value86;
             }
 
-            $this->cut = $_cut77;
+            $this->cut = $_cut87;
 
             if ($_success) {
-                $this->value = strval(substr($this->string, $_position78, $this->position - $_position78));
+                $this->value = strval(substr($this->string, $_position88, $this->position - $_position88));
             }
 
             if ($_success) {
@@ -2537,7 +2678,7 @@ class PegFile
         }
 
         if ($_success) {
-            $_value79[] = $this->value;
+            $_value89[] = $this->value;
 
             if (substr($this->string, $this->position, strlen("]")) === "]") {
                 $_success = true;
@@ -2551,9 +2692,9 @@ class PegFile
         }
 
         if ($_success) {
-            $_value79[] = $this->value;
+            $_value89[] = $this->value;
 
-            $this->value = $_value79;
+            $this->value = $_value89;
         }
 
         if ($_success) {
@@ -2587,13 +2728,13 @@ class PegFile
             return $_success;
         }
 
-        $_position87 = $this->position;
+        $_position97 = $this->position;
 
-        $_value86 = array();
+        $_value96 = array();
 
-        $_position82 = $this->position;
+        $_position92 = $this->position;
 
-        $_value81 = array();
+        $_value91 = array();
 
         if (substr($this->string, $this->position, strlen("start")) === "start") {
             $_success = true;
@@ -2606,9 +2747,9 @@ class PegFile
         }
 
         if ($_success) {
-            $_value81[] = $this->value;
+            $_value91[] = $this->value;
 
-            $_position80 = $this->position;
+            $_position90 = $this->position;
 
             if (preg_match('/^[A-Za-z0-9_]$/', substr($this->string, $this->position, 1))) {
                 $_success = true;
@@ -2625,13 +2766,13 @@ class PegFile
                 $_success = false;
             }
 
-            $this->position = $_position80;
+            $this->position = $_position90;
         }
 
         if ($_success) {
-            $_value81[] = $this->value;
+            $_value91[] = $this->value;
 
-            $this->value = $_value81;
+            $this->value = $_value91;
         }
 
         if (!$_success) {
@@ -2641,10 +2782,10 @@ class PegFile
             $_success = false;
         }
 
-        $this->position = $_position82;
+        $this->position = $_position92;
 
         if ($_success) {
-            $_value86[] = $this->value;
+            $_value96[] = $this->value;
 
             if (preg_match('/^[A-Za-z_]$/', substr($this->string, $this->position, 1))) {
                 $_success = true;
@@ -2656,13 +2797,13 @@ class PegFile
         }
 
         if ($_success) {
-            $_value86[] = $this->value;
+            $_value96[] = $this->value;
 
-            $_value84 = array();
-            $_cut85 = $this->cut;
+            $_value94 = array();
+            $_cut95 = $this->cut;
 
             while (true) {
-                $_position83 = $this->position;
+                $_position93 = $this->position;
 
                 $this->cut = false;
                 if (preg_match('/^[A-Za-z0-9_]$/', substr($this->string, $this->position, 1))) {
@@ -2677,26 +2818,26 @@ class PegFile
                     break;
                 }
 
-                $_value84[] = $this->value;
+                $_value94[] = $this->value;
             }
 
             if (!$this->cut) {
                 $_success = true;
-                $this->position = $_position83;
-                $this->value = $_value84;
+                $this->position = $_position93;
+                $this->value = $_value94;
             }
 
-            $this->cut = $_cut85;
+            $this->cut = $_cut95;
         }
 
         if ($_success) {
-            $_value86[] = $this->value;
+            $_value96[] = $this->value;
 
-            $this->value = $_value86;
+            $this->value = $_value96;
         }
 
         if ($_success) {
-            $this->value = strval(substr($this->string, $_position87, $this->position - $_position87));
+            $this->value = strval(substr($this->string, $_position97, $this->position - $_position97));
         }
 
         $this->cache['Identifier'][$_position] = array(
@@ -2761,7 +2902,7 @@ class PegFile
             return $_success;
         }
 
-        $_value88 = array();
+        $_value98 = array();
 
         if (substr($this->string, $this->position, strlen("(")) === "(") {
             $_success = true;
@@ -2774,7 +2915,7 @@ class PegFile
         }
 
         if ($_success) {
-            $_value88[] = $this->value;
+            $_value98[] = $this->value;
 
             $_success = true;
             $this->value = null;
@@ -2783,13 +2924,13 @@ class PegFile
         }
 
         if ($_success) {
-            $_value88[] = $this->value;
+            $_value98[] = $this->value;
 
             $_success = $this->parse_();
         }
 
         if ($_success) {
-            $_value88[] = $this->value;
+            $_value98[] = $this->value;
 
             $_success = $this->parseExpression();
 
@@ -2799,13 +2940,13 @@ class PegFile
         }
 
         if ($_success) {
-            $_value88[] = $this->value;
+            $_value98[] = $this->value;
 
             $_success = $this->parse_();
         }
 
         if ($_success) {
-            $_value88[] = $this->value;
+            $_value98[] = $this->value;
 
             if (substr($this->string, $this->position, strlen(")")) === ")") {
                 $_success = true;
@@ -2819,9 +2960,9 @@ class PegFile
         }
 
         if ($_success) {
-            $_value88[] = $this->value;
+            $_value98[] = $this->value;
 
-            $this->value = $_value88;
+            $this->value = $_value98;
         }
 
         if ($_success) {
@@ -2855,43 +2996,43 @@ class PegFile
             return $_success;
         }
 
-        $_position89 = $this->position;
-        $_cut90 = $this->cut;
+        $_position99 = $this->position;
+        $_cut100 = $this->cut;
 
         $this->cut = false;
         $_success = $this->parseRuleReference();
 
         if (!$_success && !$this->cut) {
-            $this->position = $_position89;
+            $this->position = $_position99;
 
             $_success = $this->parseLiteral();
         }
 
         if (!$_success && !$this->cut) {
-            $this->position = $_position89;
+            $this->position = $_position99;
 
             $_success = $this->parseAny();
         }
 
         if (!$_success && !$this->cut) {
-            $this->position = $_position89;
+            $this->position = $_position99;
 
             $_success = $this->parseCut();
         }
 
         if (!$_success && !$this->cut) {
-            $this->position = $_position89;
+            $this->position = $_position99;
 
             $_success = $this->parseCharacterClass();
         }
 
         if (!$_success && !$this->cut) {
-            $this->position = $_position89;
+            $this->position = $_position99;
 
             $_success = $this->parseSubExpression();
         }
 
-        $this->cut = $_cut90;
+        $this->cut = $_cut100;
 
         $this->cache['Terminal'][$_position] = array(
             'success' => $_success,
@@ -2918,16 +3059,16 @@ class PegFile
             return $_success;
         }
 
-        $_value96 = array();
-        $_cut97 = $this->cut;
+        $_value106 = array();
+        $_cut107 = $this->cut;
 
         while (true) {
-            $_position95 = $this->position;
+            $_position105 = $this->position;
 
             $this->cut = false;
-            $_value94 = array();
+            $_value104 = array();
 
-            $_position91 = $this->position;
+            $_position101 = $this->position;
 
             if (preg_match('/^[ \\n\\r\\t\\/]$/', substr($this->string, $this->position, 1))) {
                 $_success = true;
@@ -2941,52 +3082,52 @@ class PegFile
                 $this->value = null;
             }
 
-            $this->position = $_position91;
+            $this->position = $_position101;
 
             if ($_success) {
-                $_value94[] = $this->value;
+                $_value104[] = $this->value;
 
-                $_position92 = $this->position;
-                $_cut93 = $this->cut;
+                $_position102 = $this->position;
+                $_cut103 = $this->cut;
 
                 $this->cut = false;
                 $_success = $this->parseWhitespace();
 
                 if (!$_success && !$this->cut) {
-                    $this->position = $_position92;
+                    $this->position = $_position102;
 
                     $_success = $this->parseBlockComment();
                 }
 
                 if (!$_success && !$this->cut) {
-                    $this->position = $_position92;
+                    $this->position = $_position102;
 
                     $_success = $this->parseInlineComment();
                 }
 
-                $this->cut = $_cut93;
+                $this->cut = $_cut103;
             }
 
             if ($_success) {
-                $_value94[] = $this->value;
+                $_value104[] = $this->value;
 
-                $this->value = $_value94;
+                $this->value = $_value104;
             }
 
             if (!$_success) {
                 break;
             }
 
-            $_value96[] = $this->value;
+            $_value106[] = $this->value;
         }
 
         if (!$this->cut) {
             $_success = true;
-            $this->position = $_position95;
-            $this->value = $_value96;
+            $this->position = $_position105;
+            $this->value = $_value106;
         }
 
-        $this->cut = $_cut97;
+        $this->cut = $_cut107;
 
         $this->cache['_'][$_position] = array(
             'success' => $_success,
@@ -3046,7 +3187,7 @@ class PegFile
             return $_success;
         }
 
-        $_value103 = array();
+        $_value113 = array();
 
         if (substr($this->string, $this->position, strlen("/*")) === "/*") {
             $_success = true;
@@ -3059,7 +3200,7 @@ class PegFile
         }
 
         if ($_success) {
-            $_value103[] = $this->value;
+            $_value113[] = $this->value;
 
             $_success = true;
             $this->value = null;
@@ -3068,18 +3209,18 @@ class PegFile
         }
 
         if ($_success) {
-            $_value103[] = $this->value;
+            $_value113[] = $this->value;
 
-            $_value101 = array();
-            $_cut102 = $this->cut;
+            $_value111 = array();
+            $_cut112 = $this->cut;
 
             while (true) {
-                $_position100 = $this->position;
+                $_position110 = $this->position;
 
                 $this->cut = false;
-                $_value99 = array();
+                $_value109 = array();
 
-                $_position98 = $this->position;
+                $_position108 = $this->position;
 
                 if (substr($this->string, $this->position, strlen("*/")) === "*/") {
                     $_success = true;
@@ -3098,10 +3239,10 @@ class PegFile
                     $_success = false;
                 }
 
-                $this->position = $_position98;
+                $this->position = $_position108;
 
                 if ($_success) {
-                    $_value99[] = $this->value;
+                    $_value109[] = $this->value;
 
                     if ($this->position < strlen($this->string)) {
                         $_success = true;
@@ -3113,29 +3254,29 @@ class PegFile
                 }
 
                 if ($_success) {
-                    $_value99[] = $this->value;
+                    $_value109[] = $this->value;
 
-                    $this->value = $_value99;
+                    $this->value = $_value109;
                 }
 
                 if (!$_success) {
                     break;
                 }
 
-                $_value101[] = $this->value;
+                $_value111[] = $this->value;
             }
 
             if (!$this->cut) {
                 $_success = true;
-                $this->position = $_position100;
-                $this->value = $_value101;
+                $this->position = $_position110;
+                $this->value = $_value111;
             }
 
-            $this->cut = $_cut102;
+            $this->cut = $_cut112;
         }
 
         if ($_success) {
-            $_value103[] = $this->value;
+            $_value113[] = $this->value;
 
             if (substr($this->string, $this->position, strlen("*/")) === "*/") {
                 $_success = true;
@@ -3149,9 +3290,9 @@ class PegFile
         }
 
         if ($_success) {
-            $_value103[] = $this->value;
+            $_value113[] = $this->value;
 
-            $this->value = $_value103;
+            $this->value = $_value113;
         }
 
         $this->cache['BlockComment'][$_position] = array(
@@ -3179,7 +3320,7 @@ class PegFile
             return $_success;
         }
 
-        $_value107 = array();
+        $_value117 = array();
 
         if (substr($this->string, $this->position, strlen("//")) === "//") {
             $_success = true;
@@ -3192,7 +3333,7 @@ class PegFile
         }
 
         if ($_success) {
-            $_value107[] = $this->value;
+            $_value117[] = $this->value;
 
             $_success = true;
             $this->value = null;
@@ -3201,13 +3342,13 @@ class PegFile
         }
 
         if ($_success) {
-            $_value107[] = $this->value;
+            $_value117[] = $this->value;
 
-            $_value105 = array();
-            $_cut106 = $this->cut;
+            $_value115 = array();
+            $_cut116 = $this->cut;
 
             while (true) {
-                $_position104 = $this->position;
+                $_position114 = $this->position;
 
                 $this->cut = false;
                 if (preg_match('/^[^\\r\\n]$/', substr($this->string, $this->position, 1))) {
@@ -3222,22 +3363,22 @@ class PegFile
                     break;
                 }
 
-                $_value105[] = $this->value;
+                $_value115[] = $this->value;
             }
 
             if (!$this->cut) {
                 $_success = true;
-                $this->position = $_position104;
-                $this->value = $_value105;
+                $this->position = $_position114;
+                $this->value = $_value115;
             }
 
-            $this->cut = $_cut106;
+            $this->cut = $_cut116;
         }
 
         if ($_success) {
-            $_value107[] = $this->value;
+            $_value117[] = $this->value;
 
-            $this->value = $_value107;
+            $this->value = $_value117;
         }
 
         $this->cache['InlineComment'][$_position] = array(

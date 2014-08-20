@@ -54,7 +54,7 @@ Feature: Defining grammars (terminal)
   Scenario: I try to parse an XML tag using a back-reference and single quotes
     Given I have a grammar containing:
     """
-    grammar LiteralBackReferenceTest
+    grammar SingleQuotedLiteralBackReferenceTest
     {
       start Test =
         '<' tagName:$([a-z\-]*) '>'
