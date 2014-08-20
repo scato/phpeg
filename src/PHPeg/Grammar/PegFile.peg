@@ -66,7 +66,8 @@ grammar PegFile
     MatchedString = "$" ^ _ expression:Repetition { return new MatchedStringNode($expression); };
     Predicate = AndAction / NotAction / AndPredicate / NotPredicate / MatchedString / Repetition;
 
-    Literal = string:$("\"" ^ ([^\\"] / "\\" .)* "\"")     { return new LiteralNode($string); };
+    Literal = string:$("\"" ^ ([^\\"] / "\\" .)* "\"")     { return new LiteralNode($string); }
+            / string:$("'" ^ ([^\\'] / "\\" .)* "'")       { return new LiteralNode($string); };
     Any = "."                                              { return new AnyNode(); };
     Cut = "^"                                              { return new CutNode(); };
     CharacterClass = "[" ^ string:$([^\\\]] / "\\" .)* "]" { return new CharacterClassNode($string); };
