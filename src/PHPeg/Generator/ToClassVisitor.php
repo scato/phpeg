@@ -301,11 +301,18 @@ EOS;
     public function visitLiteral(LiteralNode $node)
     {
         $expecting = var_export($node->getString(), true);
+        $match = "substr(\$this->string, \$this->position, strlen({$node->getString()}))";
+
+        if ($node->isCaseInsensitive()) {
+            $cond = "strtolower({$match}) === strtolower({$node->getString()})";
+        } else {
+            $cond = "{$match} === {$node->getString()}";
+        }
 
         $this->results[] = <<<EOS
-if (substr(\$this->string, \$this->position, strlen({$node->getString()})) === {$node->getString()}) {
+if ({$cond}) {
     \$_success = true;
-    \$this->value = {$node->getString()};
+    \$this->value = {$match};
     \$this->position += strlen({$node->getString()});
 } else {
     \$_success = false;

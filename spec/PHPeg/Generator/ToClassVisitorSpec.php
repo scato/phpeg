@@ -351,11 +351,11 @@ EOS;
 
     function it_should_create_a_literal_from_a_node()
     {
-        $literalNode = new LiteralNode('"foo"');
+        $literalNode = new LiteralNode('"foo"', false);
         $literalCode = <<<EOS
 if (substr(\$this->string, \$this->position, strlen("foo")) === "foo") {
     \$_success = true;
-    \$this->value = "foo";
+    \$this->value = substr(\$this->string, \$this->position, strlen("foo"));
     \$this->position += strlen("foo");
 } else {
     \$_success = false;
@@ -367,11 +367,27 @@ EOS;
         $literalNode->accept($this->getWrappedObject());
         $this->getResult()->shouldBe($literalCode);
 
-        $literalNode = new LiteralNode('"\\n"');
+        $literalNode = new LiteralNode('"foo"', true);
+        $literalCode = <<<EOS
+if (strtolower(substr(\$this->string, \$this->position, strlen("foo"))) === strtolower("foo")) {
+    \$_success = true;
+    \$this->value = substr(\$this->string, \$this->position, strlen("foo"));
+    \$this->position += strlen("foo");
+} else {
+    \$_success = false;
+
+    \$this->report(\$this->position, '"foo"');
+}
+EOS;
+
+        $literalNode->accept($this->getWrappedObject());
+        $this->getResult()->shouldBe($literalCode);
+
+        $literalNode = new LiteralNode('"\\n"', false);
         $literalCode = <<<EOS
 if (substr(\$this->string, \$this->position, strlen("\\n")) === "\\n") {
     \$_success = true;
-    \$this->value = "\\n";
+    \$this->value = substr(\$this->string, \$this->position, strlen("\\n"));
     \$this->position += strlen("\\n");
 } else {
     \$_success = false;
