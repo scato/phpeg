@@ -9,7 +9,6 @@ The grammar definition syntax is heaviliy inspired by [PEG.js](http://pegjs.majd
   - PHPeg includes a cut operator (^), which also influences error reporting
   - PHPeg does not support initializers
   - PHPeg does not support named rules
-  - PHPeg does not support the 'i' postfix for case-insensitive literals
 
 Unsupported features might be added in the future.
 
@@ -69,12 +68,13 @@ Parsing expressions look a lot like regular expressions. Parsing expressions can
 making it possible to create recursive grammars. Also, parsing expressions have return values. They don't just match,
 but transform the input as well.
 
-``"literal"``
+``"literal"``  
 ``'literal'``
 
 > Match an exact string and return it. These literals are directly copied to the parser. This means you can use
 > variables for back-references: ``"</{$tagName}>"``. The difference between single quotes and double quotes is the
-> same as in PHP, so ``'\n'`` will not match newlines.
+> same as in PHP, so ``'\n'`` will not match newlines.  
+> Appending i right after the literal makes the match case-insensitive.
 
 ``.``
 
