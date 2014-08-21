@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+0.3.2
+-----
+
+ - Case insensitive literals
+
 0.3.1
 -----
 
