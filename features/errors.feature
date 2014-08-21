@@ -24,7 +24,7 @@ Feature: Parser errors
     """
     grammar UsefulErrorTest
     {
-      start Test = $("(" "1" (_ "+" ^ _ "1")* ")");
+      start Test = $("(" ^ "1" (_ "+" ^ _ "1")* ")");
       _ = " "*;
     }
     """
@@ -34,3 +34,19 @@ Feature: Parser errors
 
     When I parse "(1 + 1 + )"
     Then I get the error "Syntax error, expecting "1" on line 1"
+
+    When I parse ""
+    Then I get the error "Syntax error, expecting "(", Test on line 1"
+
+  Scenario: A grammar with named rules gives us custom hints
+    Given I have a grammar containing:
+    """
+    grammar NamedRuleTest
+    {
+      start Test "expression" = $("(" ^ "1" (_ "+" ^ _ "1")* ")");
+      _ = " "*;
+    }
+    """
+
+    When I parse ""
+    Then I get the error "Syntax error, expecting "(", expression on line 1"
