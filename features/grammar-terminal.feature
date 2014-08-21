@@ -69,6 +69,24 @@ Feature: Defining grammars (terminal)
     When I parse "<a>foo</{$tagName}>"
     Then I get ["<", "a", ">", "foo", "</{$tagName}>"]
 
+  Scenario: I parse the PHP empty keyword (which is case insensitive)
+    Given I have a grammar containing:
+    """
+    grammar CaseInsensitiveLiteralTest
+    {
+      start Test = 'empty'i;
+    }
+    """
+
+    When I parse "empty"
+    Then I get "empty"
+
+    When I parse "Empty"
+    Then I get "Empty"
+
+    When I parse "null"
+    Then I get an error
+
   Scenario: I parse any character
     Given I have a grammar containing:
     """
