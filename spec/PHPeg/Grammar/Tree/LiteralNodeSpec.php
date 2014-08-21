@@ -10,7 +10,7 @@ class LiteralNodeSpec extends ObjectBehavior
 {
     function let()
     {
-        $this->beConstructedWith('foo');
+        $this->beConstructedWith('foo', false);
     }
 
     function it_is_a_node()
@@ -21,6 +21,11 @@ class LiteralNodeSpec extends ObjectBehavior
     function it_has_a_string()
     {
         $this->getString()->shouldBe('foo');
+    }
+
+    function it_has_a_case_insensitive_flag()
+    {
+        $this->isCaseInsensitive()->shouldBe(false);
     }
 
     function it_should_accept_a_visitor(VisitorInterface $visitor)
