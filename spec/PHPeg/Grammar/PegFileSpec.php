@@ -43,27 +43,37 @@ class PegFileSpec extends ObjectBehavior
         return $grammar;
     }
 
-    function it_should_parse_literals()
+    function it_should_parse_double_quoted_literals()
     {
         $this->parse($this->a_grammar_containing('"\\"foo\\""'))->shouldBeLike(
-            $this->a_tree_containing(new LiteralNode('"\\"foo\\""'))
+            $this->a_tree_containing(new LiteralNode('"\\"foo\\""', false))
         );
 
         // special characters as well!
         $this->parse($this->a_grammar_containing('"\\n"'))->shouldBeLike(
-            $this->a_tree_containing(new LiteralNode('"\n"'))
+            $this->a_tree_containing(new LiteralNode('"\n"', false))
+        );
+
+        // case insensitive
+        $this->parse($this->a_grammar_containing('"\\"foo\\""i'))->shouldBeLike(
+            $this->a_tree_containing(new LiteralNode('"\\"foo\\""', true))
         );
     }
 
     function it_should_parse_single_quoted_literals()
     {
         $this->parse($this->a_grammar_containing('\'foo\''))->shouldBeLike(
-            $this->a_tree_containing(new LiteralNode('\'foo\''))
+            $this->a_tree_containing(new LiteralNode('\'foo\'', false))
         );
 
         // single quotes means no special characters!
         $this->parse($this->a_grammar_containing('\'\\n\''))->shouldBeLike(
-            $this->a_tree_containing(new LiteralNode('\'\n\''))
+            $this->a_tree_containing(new LiteralNode('\'\n\'', false))
+        );
+
+        // case insensitive
+        $this->parse($this->a_grammar_containing('\'foo\'i'))->shouldBeLike(
+            $this->a_tree_containing(new LiteralNode('\'foo\'', true))
         );
     }
 
@@ -193,7 +203,7 @@ class PegFileSpec extends ObjectBehavior
         $this->parse($this->a_grammar_containing('m:"-"? _ v:$[a-z]* { return $m . $v; } / Num'))->shouldBeLike(
             $this->a_tree_containing(new ChoiceNode(array(
                 new ActionNode(new SequenceNode(array(
-                    new LabelNode('m', new OptionalNode(new LiteralNode('"-"'))),
+                    new LabelNode('m', new OptionalNode(new LiteralNode('"-"', false))),
                     new RuleReferenceNode('_'),
                     new LabelNode('v', new MatchedStringNode(new ZeroOrMoreNode(new CharacterClassNode('a-z'))))
                 )), 'return $m . $v;'),
@@ -205,7 +215,7 @@ class PegFileSpec extends ObjectBehavior
     function it_should_parse_namespaces_and_imports()
     {
         $tree = new GrammarNode('TestFile', array(
-            new RuleNode('File', new LiteralNode('"foo"'))
+            new RuleNode('File', new LiteralNode('"foo"', false))
         ));
 
         $tree->setNamespace('Acme\\Test');
@@ -218,7 +228,7 @@ class PegFileSpec extends ObjectBehavior
     function it_should_parse_extended_grammars()
     {
         $tree = new GrammarNode('ExtendedFile', array(
-            new RuleNode('Foo', new LiteralNode('"foo"'))
+            new RuleNode('Foo', new LiteralNode('"foo"', false))
         ));
 
         $tree->setBase('BaseFile');
