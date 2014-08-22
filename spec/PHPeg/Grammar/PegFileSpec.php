@@ -236,6 +236,15 @@ class PegFileSpec extends ObjectBehavior
         $this->parse('grammar ExtendedFile extends BaseFile { Foo = "foo"; }')->shouldBeLike($tree);
     }
 
+    function it_should_parse_named_rules()
+    {
+        $tree = new GrammarNode('NamedRuleFile', array(
+            new RuleNode('Foo', '"expression"', new LiteralNode('"foo"', false))
+        ));
+
+        $this->parse('grammar NamedRuleFile { Foo "expression" = "foo"; }')->shouldBeLike($tree);
+    }
+
     function it_should_ignore_comments()
     {
         $this->parse($this->a_grammar_containing("Foo // example\n / Bar"))->shouldBeLike(
