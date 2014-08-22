@@ -11,7 +11,7 @@ class RuleNodeSpec extends ObjectBehavior
 {
     function let(NodeInterface $expression)
     {
-        $this->beConstructedWith('foo', $expression);
+        $this->beConstructedWith('foo', 'bar', $expression);
     }
 
     function it_is_a_node()
@@ -19,9 +19,14 @@ class RuleNodeSpec extends ObjectBehavior
         $this->shouldHaveType('PHPeg\Grammar\Tree\NodeInterface');
     }
 
+    function it_has_an_identifier()
+    {
+        $this->getIdentifier()->shouldBe('foo');
+    }
+
     function it_has_a_name()
     {
-        $this->getName()->shouldBe('foo');
+        $this->getName()->shouldBe('bar');
     }
 
     function it_has_an_expression(NodeInterface $expression)
