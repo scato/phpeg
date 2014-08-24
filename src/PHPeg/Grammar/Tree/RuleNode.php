@@ -6,13 +6,8 @@ class RuleNode extends AbstractNamedNode
 {
     private $identifier;
 
-    public function __construct($identifier, $name, $expression = null)
+    public function __construct($identifier, $name, NodeInterface $expression)
     {
-        if ($expression === null) {
-            $expression = $name;
-            $name = $identifier;
-        }
-
         parent::__construct($name, $expression);
 
         $this->identifier = $identifier;

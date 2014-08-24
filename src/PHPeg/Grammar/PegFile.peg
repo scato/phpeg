@@ -41,11 +41,11 @@ grammar PegFile
             $rules = array_merge(isset($startSymbol) ? array($startSymbol) : array(), $rules);
             $grammar = new GrammarNode($name, $rules);
             if (isset($base)) $grammar->setBase($base);
-            if (isset($startSymbol)) $grammar->setStartSymbol($startSymbol->getName());
+            if (isset($startSymbol)) $grammar->setStartSymbol($startSymbol->getIdentifier());
             return $grammar;
         };
     Rule = identifier:Identifier (_ name:String)? _ "=" ^ _ expression:Expression _ ";"
-           { return new RuleNode($identifier, isset($name) ? $name : $identifier, $expression); };
+           { return new RuleNode($identifier, isset($name) ? $name : "'$identifier'", $expression); };
 
     Label = name:Identifier _ ":" ^ _ expression:Predicate                { return new LabelNode($name, $expression); }
           / Predicate;
@@ -68,8 +68,7 @@ grammar PegFile
     Predicate = AndAction / NotAction / AndPredicate / NotPredicate / MatchedString / Repetition;
 
     String = $("\"" ^ ([^\\"] / "\\" .)* "\"" / "'" ^ ([^\\'] / "\\" .)* "'");
-    Literal = string:String ci:"i"?
-              { return new LiteralNode($string, isset($ci)); };
+    Literal = string:String ci:"i"?                        { return new LiteralNode($string, isset($ci)); };
 
     Any = "."                                              { return new AnyNode(); };
     Cut = "^"                                              { return new CutNode(); };
