@@ -446,28 +446,28 @@ EOS;
         $this->scope = array();
 
         $this->results[] = <<<EOS
-protected function parse{$node->getName()}()
+protected function parse{$node->getIdentifier()}()
 {
     \$_position = \$this->position;
 
-    if (isset(\$this->cache['{$node->getName()}'][\$_position])) {
-        \$_success = \$this->cache['{$node->getName()}'][\$_position]['success'];
-        \$this->position = \$this->cache['{$node->getName()}'][\$_position]['position'];
-        \$this->value = \$this->cache['{$node->getName()}'][\$_position]['value'];
+    if (isset(\$this->cache['{$node->getIdentifier()}'][\$_position])) {
+        \$_success = \$this->cache['{$node->getIdentifier()}'][\$_position]['success'];
+        \$this->position = \$this->cache['{$node->getIdentifier()}'][\$_position]['position'];
+        \$this->value = \$this->cache['{$node->getIdentifier()}'][\$_position]['value'];
 
         return \$_success;
     }
 
     {$this->indent($this->getResult())}
 
-    \$this->cache['{$node->getName()}'][\$_position] = array(
+    \$this->cache['{$node->getIdentifier()}'][\$_position] = array(
         'success' => \$_success,
         'position' => \$this->position,
         'value' => \$this->value
     );
 
     if (!\$_success) {
-        \$this->report(\$_position, '{$node->getName()}');
+        \$this->report(\$_position, {$node->getName()});
     }
 
     return \$_success;

@@ -182,7 +182,7 @@ EOS;
 
     function it_should_create_a_grammar_from_a_node()
     {
-        $grammarNode = new GrammarNode('FooFile', array(new RuleNode('Foo', new RuleReferenceNode('Bar'))));
+        $grammarNode = new GrammarNode('FooFile', array(new RuleNode('Foo', '"Foo"', new RuleReferenceNode('Bar'))));
         $grammarNode->setNamespace('Acme\\Factory');
         $grammarNode->setImports(array('Acme\\FactoryInterface'));
         $grammarNode->setStartSymbol('Foo');
@@ -222,7 +222,7 @@ class FooFile
         );
 
         if (!\$_success) {
-            \$this->report(\$_position, 'Foo');
+            \$this->report(\$_position, "Foo");
         }
 
         return \$_success;
@@ -289,7 +289,7 @@ EOS;
 
     function it_should_create_an_extended_grammar_from_a_node()
     {
-        $grammarNode = new GrammarNode('FooFile', array(new RuleNode('Foo', new RuleReferenceNode('Bar'))));
+        $grammarNode = new GrammarNode('FooFile', array(new RuleNode('Foo', '"Foo"', new RuleReferenceNode('Bar'))));
         $grammarNode->setNamespace('Acme\\Factory');
         $grammarNode->setImports(array('Acme\\FactoryInterface', 'Acme\\BaseFile'));
         $grammarNode->setBase('BaseFile');
@@ -322,7 +322,7 @@ class FooFile extends BaseFile
         );
 
         if (!\$_success) {
-            \$this->report(\$_position, 'Foo');
+            \$this->report(\$_position, "Foo");
         }
 
         return \$_success;
@@ -548,7 +548,7 @@ EOS;
 
     function it_should_create_a_rule_from_a_node()
     {
-        $ruleNode = new RuleNode('Foo', new RuleReferenceNode('Bar'));
+        $ruleNode = new RuleNode('Foo', '"expression"', new RuleReferenceNode('Bar'));
         $ruleCode = <<<EOS
 protected function parseFoo()
 {
@@ -571,7 +571,7 @@ protected function parseFoo()
     );
 
     if (!\$_success) {
-        \$this->report(\$_position, 'Foo');
+        \$this->report(\$_position, "expression");
     }
 
     return \$_success;
