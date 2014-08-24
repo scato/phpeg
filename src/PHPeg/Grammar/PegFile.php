@@ -739,7 +739,7 @@ class PegFile
                 $rules = array_merge(isset($startSymbol) ? array($startSymbol) : array(), $rules);
                     $grammar = new GrammarNode($name, $rules);
                     if (isset($base)) $grammar->setBase($base);
-                    if (isset($startSymbol)) $grammar->setStartSymbol($startSymbol->getName());
+                    if (isset($startSymbol)) $grammar->setStartSymbol($startSymbol->getIdentifier());
                     return $grammar;
             });
         }
@@ -886,7 +886,7 @@ class PegFile
 
         if ($_success) {
             $this->value = call_user_func(function () use (&$identifier, &$name, &$expression) {
-                return new RuleNode($identifier, isset($name) ? $name : $identifier, $expression);
+                return new RuleNode($identifier, isset($name) ? $name : "'$identifier'", $expression);
             });
         }
 

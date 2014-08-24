@@ -35,7 +35,7 @@ class PegFileSpec extends ObjectBehavior
     function a_tree_containing(NodeInterface $node)
     {
         $grammar = new GrammarNode('TestFile', array(
-            new RuleNode('File', $node)
+            new RuleNode('File', "'File'", $node)
         ));
 
         $grammar->setStartSymbol('File');
@@ -212,10 +212,28 @@ class PegFileSpec extends ObjectBehavior
         );
     }
 
+    function it_should_parse_unnamed_rules()
+    {
+        $tree = new GrammarNode('UnnamedRuleFile', array(
+            new RuleNode('Foo', "'Foo'", new LiteralNode('"foo"', false))
+        ));
+
+        $this->parse('grammar UnnamedRuleFile { Foo = "foo"; }')->shouldBeLike($tree);
+    }
+
+    function it_should_parse_named_rules()
+    {
+        $tree = new GrammarNode('NamedRuleFile', array(
+            new RuleNode('Foo', '"expression"', new LiteralNode('"foo"', false))
+        ));
+
+        $this->parse('grammar NamedRuleFile { Foo "expression" = "foo"; }')->shouldBeLike($tree);
+    }
+
     function it_should_parse_namespaces_and_imports()
     {
         $tree = new GrammarNode('TestFile', array(
-            new RuleNode('File', new LiteralNode('"foo"', false))
+            new RuleNode('File', "'File'", new LiteralNode('"foo"', false))
         ));
 
         $tree->setNamespace('Acme\\Test');
@@ -228,21 +246,12 @@ class PegFileSpec extends ObjectBehavior
     function it_should_parse_extended_grammars()
     {
         $tree = new GrammarNode('ExtendedFile', array(
-            new RuleNode('Foo', new LiteralNode('"foo"', false))
+            new RuleNode('Foo', "'Foo'", new LiteralNode('"foo"', false))
         ));
 
         $tree->setBase('BaseFile');
 
         $this->parse('grammar ExtendedFile extends BaseFile { Foo = "foo"; }')->shouldBeLike($tree);
-    }
-
-    function it_should_parse_named_rules()
-    {
-        $tree = new GrammarNode('NamedRuleFile', array(
-            new RuleNode('Foo', '"expression"', new LiteralNode('"foo"', false))
-        ));
-
-        $this->parse('grammar NamedRuleFile { Foo "expression" = "foo"; }')->shouldBeLike($tree);
     }
 
     function it_should_ignore_comments()
