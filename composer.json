@@ -2,7 +2,7 @@
     "name": "scato/phpeg",
     "description": "PEG Parser Generator",
     "keywords": ["peg", "parser"],
-    "version": "0.3.2",
+    "version": "1.0.0",
     "type": "library",
     "license": "MIT",
     "require": {

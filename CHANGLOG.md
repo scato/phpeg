@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+1.0.0
+-----
+ - Named rules
+ - Better error reporting for .peg files
+
 0.3.2
 -----
 
