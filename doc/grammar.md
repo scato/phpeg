@@ -8,9 +8,8 @@ The grammar definition syntax is heaviliy inspired by [PEG.js](http://pegjs.majd
 
   - PHPeg includes a cut operator (^), which also influences error reporting
   - PHPeg does not support initializers
-  - PHPeg does not support named rules
 
-Unsupported features might be added in the future.
+Initializers might be added in the future.
 
 Grammar Definitions
 -------------------
@@ -29,14 +28,17 @@ grammar DemoFile
 {
     start DemoFile = Demo { return new FooNode(); };
 
-    Demo = "foo";
+    Demo "example" = "foo";
 }
 ```
 
-A top-level grammar should start with a start rule (a rule prefixed with the "start" keyword). Every rule must be
-terminated by a semi-colon. ``StudlyCaps`` are recommended for rule identifiers, since they are prefixed with "parse"
-in the generated code. The symbol ``_`` is usually used for layout characters like white space and comments. This can
-then be inserted into non-terminal rules as follows:
+A top-level grammar should start with a start rule (a rule prefixed with the "start" keyword). Every rule starts with
+an identifier (e.g. ``Demo``), optionally followed by a name (e.g. ``"example"``) and then an equality sign (``=``).
+Rules must be terminated by a semi-colon (``;``). Named rules are used for better [error reporting](error-reporting.md).
+
+``StudlyCaps`` are recommended for rule identifiers, since they are prefixed with "parse" in the generated code. The
+symbol ``_`` is usually used for layout characters like white space and comments. This can then be inserted into
+non-terminal rules as follows:
 
 ```
 grammar SumFile

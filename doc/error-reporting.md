@@ -24,8 +24,31 @@ grammar SumFile
 If we feed the parser with ``"(1 + 2 + 3 + x)"`` we get the error:
 
 ```
-Syntax error, expecting ' ', '
-', '(', Primary on line 1
+Syntax error, expecting " ", "\n", "(", Primary on line 1
+```
+
+Named Rules
+-----------
+
+If a rule fails, an error will be reported using the rule's identifier. Rules can also have names, by inserting it
+after the identifier:
+
+```
+grammar SumFile
+{
+    start SumFile = _ Sum _;
+
+    Sum "expression" = left:Primary (_ "+" _ right:Primary)*;
+    Primary "number" = $([0-9]+) / "(" _ Sum _ ")"
+
+    _ = (" " / "\n")*;
+}
+```
+
+The error above then changes to:
+
+```
+Syntax error, expecting " ", "\n", "(", number on line 1
 ```
 
 The Cut Operator
