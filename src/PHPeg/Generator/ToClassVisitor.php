@@ -363,10 +363,13 @@ EOS;
     public function visitNotPredicate(NotPredicateNode $node)
     {
         $position = $this->id('position');
+        $cut = $this->id('cut');
 
         $this->results[] = <<<EOS
 {$position} = \$this->position;
+{$cut} = \$this->cut;
 
+\$this->cut = false;
 {$this->getResult()}
 
 if (!\$_success) {
@@ -377,6 +380,7 @@ if (!\$_success) {
 }
 
 \$this->position = {$position};
+\$this->cut = {$cut};
 EOS;
     }
 
