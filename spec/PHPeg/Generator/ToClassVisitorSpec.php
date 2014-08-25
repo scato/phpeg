@@ -469,7 +469,9 @@ EOS;
         $notPredicateNode = new NotPredicateNode(new RuleReferenceNode('Foo'));
         $notPredicateCode = <<<EOS
 \$_position1 = \$this->position;
+\$_cut2 = \$this->cut;
 
+\$this->cut = false;
 \$_success = \$this->parseFoo();
 
 if (!\$_success) {
@@ -480,6 +482,7 @@ if (!\$_success) {
 }
 
 \$this->position = \$_position1;
+\$this->cut = \$_cut2;
 EOS;
 
         $notPredicateNode->accept($this->getWrappedObject());
