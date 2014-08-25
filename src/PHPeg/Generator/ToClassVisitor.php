@@ -197,10 +197,10 @@ class {$node->getName()}
     protected \$string;
     protected \$position;
     protected \$value;
-    protected \$cut = false;
     protected \$cache;
-    protected \$errors = array();
-    protected \$warnings = array();
+    protected \$cut;
+    protected \$errors;
+    protected \$warnings;
 
 EOS;
         } else {
@@ -235,11 +235,9 @@ EOS;
 
     protected function report(\$position, \$expecting)
     {
-        if (\$this->cut && !isset(\$this->errors[\$position])) {
-            \$this->errors[\$position] = \$expecting;
-        }
-
-        if (!\$this->cut) {
+        if (\$this->cut) {
+            \$this->errors[\$position][] = \$expecting;
+        } else {
             \$this->warnings[\$position][] = \$expecting;
         }
     }
@@ -249,7 +247,7 @@ EOS;
         if (!empty(\$this->errors)) {
             ksort(\$this->errors);
 
-            return end(\$this->errors);
+            return end(\$this->errors)[0];
         }
 
         ksort(\$this->warnings);
@@ -259,9 +257,13 @@ EOS;
 
     public function parse(\$_string)
     {
-        \$this->cache = array();
         \$this->string = \$_string;
         \$this->position = 0;
+        \$this->value = null;
+        \$this->cache = array();
+        \$this->cut = false;
+        \$this->errors = array();
+        \$this->warnings = array();
 
         \$_success = \$this->parse{$node->getStartSymbol()}();
 
