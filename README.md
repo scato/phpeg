@@ -12,7 +12,7 @@ Install this tool as a dev requirement:
 
 ```
 "require-dev": {
-    "scato/phpeg": "@dev"
+    "scato/phpeg": "1.*"
 }
 ```
 

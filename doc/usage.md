@@ -8,7 +8,7 @@ To generate your own parser, start with adding PHPeg as a dev requirement:
 
 ```
 "require-dev": {
-    "scato/phpeg": "@dev"
+    "scato/phpeg": "1.*"
 }
 ```
 
