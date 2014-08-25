@@ -35,7 +35,7 @@ grammar PegFile
     Grammar = "grammar" ^ _ name:Identifier
         (_ "extends" _ base:Identifier)?
         _ "{"
-            (_ "start" _ startSymbol:Rule)?
+            (_ "start" ^ _ startSymbol:Rule)?
             rules:(_ rule:Rule { return $rule; })*
         _ "}" {
             $rules = array_merge(isset($startSymbol) ? array($startSymbol) : array(), $rules);
@@ -48,11 +48,11 @@ grammar PegFile
            { return new RuleNode($identifier, isset($name) ? $name : "'$identifier'", $expression); };
 
     Label = name:Identifier _ ":" ^ _ expression:Predicate                { return new LabelNode($name, $expression); }
-          / Predicate;
+        / Predicate;
     Sequence = first:Label rest:(_ next:Label { return $next; })*         { return empty($rest) ? $first : new SequenceNode(array_merge(array($first), $rest)); };
     Code = $([^{}] / "{" Code "}")*;
-    Action = expression:Sequence _ "{" ^ code:Code "}"                    { return new ActionNode($expression, trim($code)); }
-           / Sequence;
+    Action "expression" = expression:Sequence _ "{" ^ code:Code "}"       { return new ActionNode($expression, trim($code)); }
+        / Sequence;
     Choice = first:Action rest:(_ "/" ^ _ next:Action { return $next; })* { return empty($rest) ? $first : new ChoiceNode(array_merge(array($first), $rest)); };
     Expression = Choice;
 
@@ -65,15 +65,16 @@ grammar PegFile
     AndAction = "&" _ "{" ^ code:Code "}"         { return new AndActionNode(trim($code)); };
     NotAction = "!" _ "{" ^ code:Code "}"         { return new NotActionNode(trim($code)); };
     MatchedString = "$" ^ _ expression:Repetition { return new MatchedStringNode($expression); };
-    Predicate = AndAction / NotAction / AndPredicate / NotPredicate / MatchedString / Repetition;
+
+    Predicate "expression" = AndAction / NotAction / AndPredicate / NotPredicate / MatchedString / Repetition;
 
     String = $("\"" ^ ([^\\"] / "\\" .)* "\"" / "'" ^ ([^\\'] / "\\" .)* "'");
-    Literal = string:String ci:"i"?                        { return new LiteralNode($string, isset($ci)); };
+    Identifier "identifier" = $(!("start" ![A-Za-z0-9_]) [A-Za-z_] [A-Za-z0-9_]*);
 
+    Literal = string:String ci:"i"?                        { return new LiteralNode($string, isset($ci)); };
     Any = "."                                              { return new AnyNode(); };
     Cut = "^"                                              { return new CutNode(); };
     CharacterClass = "[" ^ string:$([^\\\]] / "\\" .)* "]" { return new CharacterClassNode($string); };
-    Identifier = $(!("start" ![A-Za-z0-9_]) [A-Za-z_] [A-Za-z0-9_]*);
     RuleReference = name:Identifier                        { return new RuleReferenceNode($name); };
     SubExpression = "(" ^ _ expression:Expression _ ")"    { return $expression; };
     Terminal = RuleReference / Literal / Any / Cut / CharacterClass / SubExpression;
