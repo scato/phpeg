@@ -81,7 +81,7 @@ use Acme\Demo\Tree\GraphNode;
 
 grammar Parser
 {
-    start Graph = .* { new GraphNode(); };
+    start Graph = .* { return new GraphNode(); };
 }
 ```
 
