@@ -34,18 +34,32 @@ BDD With PHPSpec
 
 *This example uses PHPSpec, you could do this with PHPUnit just as well.*
 
-We don't have a parser yet, we only have the grammar file. We don't have a spec file either, so let's start with
-that:
+Start by setting up ``composer.json``. This is what it could look like:
 
 ```
-$ bin/phpspec describe Acme/Demo/Parser
+{
+    "require-dev": {
+        "scato/phpeg": "1.*",
+        "phpspec/phpspec": "~2.1"
+    },
+    "autoload": {
+        "psr-4": { "Acme\\": "src/Acme/" }
+    }
+}
+```
+
+After running ``composer install`` we can get started. We don't have a parser yet, we only have the grammar file.
+We don't have a spec file either, so let's start with that:
+
+```
+$ vendor/bin/phpspec describe Acme/Demo/Parser
 ```
 
 When we run it, PHPSpec will tell us that the parser does not exist. Don't let PHPSpec generate it for you. PHPeg
 should do that:
 
 ```
-$ bin/phpeg generate src/Acme/Demo/Parser.peg
+$ vendor/bin/phpeg generate src/Acme/Demo/Parser.peg
 ```
 
 Now, PHPSpec will succeed.
@@ -56,7 +70,7 @@ Next, start with the most simple input you'd like to parse. Suppose you'd like t
 GraphNode class that the parser should return:
 
 ```
-$ bin/phpspec describe Acme/Demo/Tree/GraphNode
+$ vendor/bin/phpspec describe Acme/Demo/Tree/GraphNode
 ```
 
 Once that's done, make sure you can parse an empty graph:
@@ -88,7 +102,7 @@ grammar Parser
 And finally, run PHPeg to update the parser:
 
 ```
-$ bin/phpeg generate src/Acme/Demo/Parser.peg
+$ vendor/bin/phpeg generate src/Acme/Demo/Parser.peg
 ```
 
 Now, PHPSpec should succeed again. Continue with a simple graph and keep adding node types and test cases until you
@@ -109,7 +123,7 @@ Once your grammar is finished, you might want to tweak it for speed and memory. 
 benchmark your parser:
 
 ```
-$ bin/phpeg benchmark src/Acme/Demo/Parser.peg example.txt
+$ vendor/bin/phpeg benchmark src/Acme/Demo/Parser.peg example.txt
 Memory usage: 4.42M
 Number of runs: 10
 Total time: 918ms
