@@ -15,12 +15,12 @@ To generate your own parser, start with adding PHPeg as a dev requirement:
 Run composer and get some coffee.
 
 You can now start writing your grammar. I'd recommend putting the grammar in the same location as your code. For
-example, the following file could be saved as ``src/Acme/Demo/Parser.peg``:
+example, the following file could be saved as ``src/Acme/Grammar/DemoFile.peg``:
 
 ```
-namespace Acme\Demo;
+namespace Acme\Grammar;
 
-grammar Parser
+grammar DemoFile
 {
 }
 ```
@@ -52,14 +52,14 @@ After running ``composer install`` we can get started. We don't have a parser ye
 We don't have a spec file either, so let's start with that:
 
 ```
-$ vendor/bin/phpspec describe Acme/Demo/Parser
+$ vendor/bin/phpspec describe Acme/Grammar/DemoFile
 ```
 
 When we run it, PHPSpec will tell us that the parser does not exist. Don't let PHPSpec generate it for you. PHPeg
 should do that:
 
 ```
-$ vendor/bin/phpeg generate src/Acme/Demo/Parser.peg
+$ vendor/bin/phpeg generate src/Acme/Grammar/DemoFile.peg
 ```
 
 Now, PHPSpec will succeed.
@@ -70,13 +70,13 @@ Next, start with the most simple input you'd like to parse. Suppose you'd like t
 GraphNode class that the parser should return:
 
 ```
-$ vendor/bin/phpspec describe Acme/Demo/Tree/GraphNode
+$ vendor/bin/phpspec describe Acme/Grammar/Tree/GraphNode
 ```
 
 Once that's done, make sure you can parse an empty graph:
 
 ```
-// spec/Acme/Demo/ParserSpec.php
+// spec/Acme/Grammar/DemoFileSpec.php
 
 function it_should_parse_an_empty_graph()
 {
@@ -84,16 +84,16 @@ function it_should_parse_an_empty_graph()
 }
 ```
 
-Then, change your parser:
+Then, change your grammar:
 
 ```
-// src/Acme/Demo/Parser.peg
+// src/Acme/Grammar/DemoFile.peg
 
-namespace Acme\Demo;
+namespace Acme\Grammar;
 
-use Acme\Demo\Tree\GraphNode;
+use Acme\Grammar\Tree\GraphNode;
 
-grammar Parser
+grammar DemoFile
 {
     start Graph = .* { return new GraphNode(); };
 }
@@ -102,15 +102,15 @@ grammar Parser
 And finally, run PHPeg to update the parser:
 
 ```
-$ vendor/bin/phpeg generate src/Acme/Demo/Parser.peg
+$ vendor/bin/phpeg generate src/Acme/Grammar/DemoFile.peg
 ```
 
 Now, PHPSpec should succeed again. Continue with a simple graph and keep adding node types and test cases until you
 are done! Using the parser in your code is easy:
 
 ```
-$parser = new \Acme\Demo\Parser();
-$graphNode = $parser->parse($string);
+$grammar = new \Acme\Grammar\DemoFile();
+$graphNode = $grammar->parse($string);
 ```
 
 If the input is invalid, an ``InvalidArgumentException`` is thrown. See the section on
@@ -123,7 +123,7 @@ Once your grammar is finished, you might want to tweak it for speed and memory. 
 benchmark your parser:
 
 ```
-$ vendor/bin/phpeg benchmark src/Acme/Demo/Parser.peg example.txt
+$ vendor/bin/phpeg benchmark src/Acme/Grammar/DemoFile.peg example.txt
 Memory usage: 4.42M
 Number of runs: 10
 Total time: 918ms
@@ -144,5 +144,8 @@ _ = (&[ \n\r\t\/] (Whitespace / BlockComment / InlineComment))*;
 ```
 
 After each whitespace, these three rules were called to check for more whitespace or a comment. Since both type of
-comments start with a slash, it's very easy to check whether the parser should look for one.
+comments start with a slash, the parser just has to check for one whitespace or slash.
+
+Hope this helps. Good luck!
+
 
