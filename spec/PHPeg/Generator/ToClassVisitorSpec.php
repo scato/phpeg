@@ -272,12 +272,14 @@ class FooFile
 
         \$_success = \$this->parseFoo();
 
-        if (!\$_success) {
-            throw new \InvalidArgumentException("Syntax error, expecting {\$this->expecting()} on line {\$this->line()}");
+        if (\$this->position < strlen(\$this->string)) {
+            \$_success = false;
+
+            \$this->report(\$this->position, "end of file");
         }
 
-        if (\$this->position < strlen(\$this->string)) {
-            throw new \InvalidArgumentException("Syntax error, unexpected {\$this->rest()} on line {\$this->line()}");
+        if (!\$_success) {
+            throw new \InvalidArgumentException("Syntax error, expecting {\$this->expecting()} on line {\$this->line()}");
         }
 
         return \$this->value;
