@@ -3499,7 +3499,13 @@ class PegFile
 
     private function line()
     {
-        return count(explode("\n", substr($this->string, 0, $this->position)));
+        if (!empty($this->errors)) {
+            $positions = array_keys($this->errors);
+        } else {
+            $positions = array_keys($this->warnings);
+        }
+
+        return count(explode("\n", substr($this->string, 0, max($positions))));
     }
 
     private function rest()
@@ -3541,12 +3547,14 @@ class PegFile
 
         $_success = $this->parsePegFile();
 
-        if (!$_success) {
-            throw new \InvalidArgumentException("Syntax error, expecting {$this->expecting()} on line {$this->line()}");
+        if ($_success && $this->position < strlen($this->string)) {
+            $_success = false;
+
+            $this->report($this->position, "end of file");
         }
 
-        if ($this->position < strlen($this->string)) {
-            throw new \InvalidArgumentException("Syntax error, unexpected {$this->rest()} on line {$this->line()}");
+        if (!$_success) {
+            throw new \InvalidArgumentException("Syntax error, expecting {$this->expecting()} on line {$this->line()}");
         }
 
         return $this->value;

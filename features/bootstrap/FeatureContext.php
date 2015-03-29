@@ -92,7 +92,15 @@ class FeatureContext extends BehatContext
     }
 
     /**
-     * @Then /^I get (?!an error|the error)(.*)$/
+     * @When /^I parse$/
+     */
+    public function iParseBlock(PyStringNode $string)
+    {
+        $this->iParse($string->__toString());
+    }
+
+    /**
+     * @Then /^I get (?!no errors|an error|the error)(.*)$/
      */
     public function iGet($result)
     {
@@ -101,6 +109,16 @@ class FeatureContext extends BehatContext
         }
 
         assertSame(json_decode($result), $this->result);
+    }
+
+    /**
+     * @Then /^I get no errors$/
+     */
+    public function iGetNoErrors()
+    {
+        if ($this->error !== null) {
+            throw $this->error;
+        }
     }
 
     /**
