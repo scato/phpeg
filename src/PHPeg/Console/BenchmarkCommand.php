@@ -24,7 +24,7 @@ class BenchmarkCommand extends Command
 
         $precision = 3 - strlen(floor($value));
 
-        return round($value, $precision) . $units{$order};
+        return round($value, $precision) . $units[$order];
     }
 
     protected function configure()
@@ -75,4 +75,4 @@ class BenchmarkCommand extends Command
         $output->writeln("Average time: {$avg}ms");
         $output->writeln("Runs per second: {$rps}");
     }
-} 
+}
